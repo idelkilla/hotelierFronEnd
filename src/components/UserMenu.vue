@@ -1,82 +1,122 @@
 <template>
   <div class="user-menu" ref="menuRef" role="menu" aria-label="User menu">
 
-    <button class="value" type="button">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2b3675" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-        <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
-        <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
-      </svg>
-      Mi perfil
+    <!-- HEADER -->
+    <div class="header">
+      <div class="header-info">
+        <p class="greeting">Hola, <strong>{{ user?.nombre ?? 'Usuario' }}</strong></p>
+        <p class="email">{{ user?.email ?? '' }}</p>
+      </div>
+      <span class="badge" :class="`badge-${(user?.nivel ?? 'blue').toLowerCase()}`">
+        {{ user?.nivel ?? 'Blue' }}
+      </span>
+    </div>
+
+    <div class="divider" />
+
+    <!-- PUNTOS -->
+    <div class="points-section">
+      <div class="points-label-row">
+        <span class="points-label">Puntos acumulados</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#718096" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+        </svg>
+      </div>
+      <p class="points-amount">${{ formatPoints(user?.puntos) }}</p>
+    </div>
+
+    <!-- PROGRESO -->
+    <button class="rewards-row" type="button">
+      <div class="rewards-avatar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#718096" stroke-width="1.5">
+          <circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/>
+        </svg>
+      </div>
+      <div class="rewards-text">
+        <span class="rewards-link-text">Ver actividad de recompensas</span>
+        <span class="rewards-sub">
+          {{ user?.componentes_actuales ?? 0 }} de {{ user?.componentes_requeridos ?? 5 }}
+          componentes de viaje para acceder al nivel <strong>{{ nextLevel }}</strong>
+        </span>
+      </div>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><path d="M9 6l6 6l-6 6"/></svg>
     </button>
 
-    <button class="value" type="button">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2b3675" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-        <path d="M3 7m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z" />
-        <path d="M8 7v-2a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v2" />
-        <path d="M12 12l0 .01" />
-        <path d="M3 13a20 20 0 0 0 18 0" />
-      </svg>
-      Reservas y Viajes
+    <div class="divider" />
+
+    <!-- BANNER PROMO -->
+    <button class="promo-card" type="button">
+      <div class="promo-img">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="#1a1aff" opacity="0.85">
+          <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20" stroke="#fff" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="promo-body">
+        <p class="promo-title">Acumula hasta $350 en crédito<br/>de puntos</p>
+        <p class="promo-sub">Se aplican términos y condiciones.</p>
+      </div>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><path d="M9 6l6 6l-6 6"/></svg>
     </button>
 
-    <button class="value" type="button">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2b3675" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-        <path d="M8 9h8" />
-        <path d="M8 13h6" />
-        <path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" />
-      </svg>
-      Comentarios y Opiniones
-    </button>
+    <div class="divider" />
 
-    <button class="value" type="button">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2b3675" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path stroke="none" d="M0 0h24v24H0z"/>
-        <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" />
-      </svg>
-      Favoritos
-    </button>
+    <!-- MENÚ ITEMS -->
+    <button class="menu-item" type="button">Mi cuenta</button>
+    <button class="menu-item" type="button">Lista de favoritos</button>
+    <button class="menu-item" type="button">Descubrir One Key</button>
+    <button class="menu-item" type="button">Sugerencias</button>
 
-    <!-- CERRAR SESIÓN -->
-    <button class="value" type="button" @click="logout">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2b3675" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-        <path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
-        <path d="M15 12h-12l3 -3" />
-        <path d="M6 15l-3 -3" />
-      </svg>
-      Cerrar sesión
-    </button>
+    <div class="divider" />
+
+    <button class="menu-item logout" type="button" @click="logout">Cerrar sesión</button>
 
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, defineEmits } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+
+const props = defineProps({
+  user: {
+    type: Object,
+    default: null,
+    // {
+    //   nombre: String,
+    //   email: String,
+    //   nivel: 'Blue' | 'Silver' | 'Gold',
+    //   puntos: Number,
+    //   componentes_actuales: Number,
+    //   componentes_requeridos: Number
+    // }
+  },
+});
 
 const emit = defineEmits(["close"]);
 const menuRef = ref(null);
 
-const handleClickOutside = (e) => {
-  if (menuRef.value && !menuRef.value.contains(e.target)) {
-    emit("close");
-  }
+const levelOrder = ["Blue", "Silver", "Gold"];
+
+const nextLevel = computed(() => {
+  const idx = levelOrder.indexOf(props.user?.nivel ?? "Blue");
+  return idx < levelOrder.length - 1 ? levelOrder[idx + 1] : "Gold";
+});
+
+const formatPoints = (val) => {
+  if (!val && val !== 0) return "0.00";
+  return Number(val).toLocaleString("es-DO", { minimumFractionDigits: 2 });
 };
 
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
+const handleClickOutside = (e) => {
+  if (menuRef.value && !menuRef.value.contains(e.target)) emit("close");
+};
 
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
+onMounted(() => document.addEventListener("click", handleClickOutside));
+onBeforeUnmount(() => document.removeEventListener("click", handleClickOutside));
 
 const logout = () => {
   localStorage.clear();
   emit("close");
-  location.reload(); 
+  location.reload();
 };
 </script>
 
