@@ -11,13 +11,8 @@
         <span>Planea tu viaje</span>
         <div class="chevron" :class="{ open: showServicesMenu }">
           <svg width="14" height="14" fill="none" viewBox="0 0 20 20">
-            <path
-              d="M5 7.5L10 12.5L15 7.5"
-              stroke="#191E3B"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
+            <path d="M5 7.5L10 12.5L15 7.5" stroke="#191E3B" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
           </svg>
         </div>
       </div>
@@ -28,46 +23,31 @@
     <div class="header-right">
       <nav class="header-links">
         <router-link to="/servicio-cliente" custom v-slot="{ navigate }">
-          <a @click="navigate" role="link" style="cursor: pointer"
-            >Servicio al cliente</a
-          >
+          <a @click="navigate" role="link" style="cursor: pointer">Servicio al cliente</a>
         </router-link>
         <a>Mis viajes</a>
       </nav>
 
       <div class="message-icon">
-        <svg
-          width="24"
-          height="24"
-          fill="none"
-          stroke="#191e3b"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+        <svg width="24" height="24" fill="none" stroke="#191e3b" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
           <path d="M8 9h8" />
           <path d="M8 13h6" />
-          <path
-            d="M15 18l-3 3l-3 -3h-3a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v5.5"
-          />
+          <path d="M15 18l-3 3l-3 -3h-3a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v5.5" />
           <path d="M19 16v3" />
           <path d="M19 22v.01" />
         </svg>
       </div>
 
       <div v-if="isLogged" class="user-container" @click.stop="toggleMenu">
-        <div
-          :class="[
-            'user-avatar',
-            user.photo && user.photo.startsWith('initial:') ? 'initial' : '',
-          ]"
-        >
+        <div :class="[
+          'user-avatar',
+          user.photo && user.photo.startsWith('initial:') ? 'initial' : '',
+        ]">
           <template v-if="user.photo && user.photo.startsWith('http')">
-            <img
-              :src="fixPhoto(user.photo)"
-              alt="User photo"
-              @error="handlePhotoError"
-            />
+            <img :src="fixPhoto(user.photo)" alt="User photo"
+              @error="(e) => { console.log('ERROR img:', e.target.src) }"
+              @load="(e) => { console.log('CARGÓ img:', e.target.src) }" />
           </template>
           <template v-else-if="user.photo && user.photo.startsWith('initial:')">
             {{ user.photo.split(':')[1] }}
@@ -145,9 +125,10 @@ const fixEncoding = (str) => {
 // Cargar datos de usuario
 const loadUserData = () => {
   const photo = localStorage.getItem('user_photo')
-  const name = fixEncoding(localStorage.getItem('user_name')) // 👈
+  console.log('URL de foto:', photo)
+  const name = fixEncoding(localStorage.getItem('user_name'))
   const emailStored = localStorage.getItem('user_email')
-  const initialStored = fixEncoding(localStorage.getItem('user_initial')) // 👈
+  const initialStored = fixEncoding(localStorage.getItem('user_initial'))
 
   user.value.photo = photo || null
   user.value.name = name || null
@@ -167,12 +148,20 @@ onBeforeUnmount(() => {
   window.removeEventListener('storage', loadUserData)
 })
 
+const handlePhotoError = () => {
+  user.value.photo = `initial:${user.value.initial || '?'}`
+}
+
 const fixPhoto = (url) => {
   if (!url) return ''
-  return url.includes('googleusercontent')
-    ? url.replace(/=s\d+-c/, '=s300-c')
-    : url
+  if (url.includes('googleusercontent')) {
+    return /=s\d+/.test(url)
+      ? url.replace(/=s\d+(-c)?/, '=s80-c')
+      : url
+  }
+  return url
 }
+
 
 const isLogged = computed(() => Boolean(localStorage.getItem('user_token')))
 
