@@ -17,18 +17,6 @@
       </div>
     </div>
 
-    <div class="options mobile-only">
-      <div
-        v-for="service in services"
-        :key="service.id"
-        :class="['item', { active: currentService === service.id }]"
-        @click="selectService(service.id)"
-      >
-        <img :src="service.icon" :alt="service.name" />
-        <span>{{ service.name }}</span>
-      </div>
-    </div>
-
     <ServicesMenu v-if="showServicesMenu" class="services-menu" />
 
     <div class="header-right">
