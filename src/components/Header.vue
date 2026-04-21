@@ -6,7 +6,7 @@
         <img src="../assets/img/logo1.png" alt="Logo" />
       </router-link>
       <router-link to="/home" class="header-title">Hotelier</router-link>
-      <div class="header-subtitle" @click.stop="toggleServicesMenu">
+      <div class="header-subtitle desktop-only" @click.stop="toggleServicesMenu">
         <span>Planea tu viaje</span>
         <div class="chevron" :class="{ open: showServicesMenu }">
           <svg width="14" height="14" fill="none" viewBox="0 0 20 20">
