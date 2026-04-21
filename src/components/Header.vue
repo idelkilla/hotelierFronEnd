@@ -17,6 +17,18 @@
       </div>
     </div>
 
+    <div class="options mobile-only">
+      <div
+        v-for="service in services"
+        :key="service.id"
+        :class="['item', { active: currentService === service.id }]"
+        @click="selectService(service.id)"
+      >
+        <img :src="service.icon" :alt="service.name" />
+        <span>{{ service.name }}</span>
+      </div>
+    </div>
+
     <ServicesMenu v-if="showServicesMenu" class="services-menu" />
 
     <div class="header-right">
@@ -73,6 +85,24 @@ const user = ref({ photo: null, email: null, name: null, initial: '?' })
 const showMenu = ref(false)
 const showServicesMenu = ref(false)
 const isMobile = ref(window.innerWidth <= 768)
+const currentService = ref('hospedaje')
+
+const services = ref([
+  { id: 'hospedaje',   name: 'Hospedaje',   icon: new URL('../assets/img/iconos/light__bed.svg', import.meta.url).href },
+  { id: 'vuelos',      name: 'Vuelos',      icon: new URL('../assets/img/iconos/light__flight.svg', import.meta.url).href },
+  { id: 'autos',       name: 'Autos',       icon: new URL('../assets/img/iconos/light__car.svg', import.meta.url).href },
+  { id: 'paquetes',    name: 'Paquetes',    icon: new URL('../assets/img/iconos/light__package.svg', import.meta.url).href },
+  { id: 'actividades', name: 'Actividades', icon: new URL('../assets/img/iconos/light__ticket.svg', import.meta.url).href },
+  { id: 'cruceros',    name: 'Cruceros',    icon: new URL('../assets/img/iconos/light__cruise.svg', import.meta.url).href },
+])
+
+const selectService = (id) => {
+  currentService.value = id
+  // Opcional: Redirigir o emitir evento según la lógica de negocio
+  if (id === 'hospedaje') router.push('/home')
+  // else if ...
+}
+
 
 const toggleMenu = () => (showMenu.value = !showMenu.value)
 const toggleServicesMenu = () => (showServicesMenu.value = !showServicesMenu.value)

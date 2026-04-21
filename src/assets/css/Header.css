@@ -166,6 +166,41 @@ header.header {
 .mobile-only { display: none; }
 .desktop-only { display: flex; }
 
+/* ── Items ───────────────────────────────────── */
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  /* Mantenemos el borde transparente para evitar saltos de layout */
+  border-bottom: 3px solid transparent;
+  /* Ajuste para que la línea no empuje el contenido hacia abajo */
+  margin-bottom: -1px;
+}
+.item span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #444444;
+  margin-top: 8px;
+  transition: color 0.3s ease;
+}
+/* Efecto combinando Hover y Active */
+.item:hover,
+.item.active {
+  border-bottom: 3px solid #005ce6;
+}
+/* El texto cambia a azul y negrita solo cuando está activo */
+.item.active span {
+  color: #005ce6;
+  font-weight: 700;
+}
+/* Opcional: El texto cambia ligeramente de color en hover */
+.item:hover span {
+  color: #191e3b;
+}
+
 /* ── Tablet ────────────────────────────────────── */
 @media (max-width: 1024px) {
   header.header { padding: 0 40px; }
