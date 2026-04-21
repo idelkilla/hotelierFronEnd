@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Outfit', 'Segoe UI', sans-serif;
+  background: #f0f4ff;
+}
+
+.admin-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: #f0f4ff;
+}
+
+.form-header {
+  padding: 28px 36px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #e8ecf4;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.breadcrumbs .material-symbols-outlined {
+  font-size: 16px;
+  color: #cbd5e1;
+}
+
+.breadcrumbs span.active {
+  color: #1a56ff;
+  font-weight: 600;
+}
+
+.form-header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.4px;
+}
+
+.form-container {
+  flex: 1;
+  padding: 28px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}

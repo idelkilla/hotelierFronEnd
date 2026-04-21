@@ -1,0 +1,195 @@
+/* ─────────────────────────────────────────
+   Variables — cambia solo aquí para recolor
+───────────────────────────────────────── */
+:root {
+  --sidebar-bg: #1a56ff;
+  --sidebar-w: 210px;
+  --item-radius: 22px;
+  --item-h: 48px;
+  --active-bg: #ffffff;
+  --font: 'Outfit', sans-serif;
+}
+
+/* ─────────────────────────────────────────
+   Sidebar shell
+───────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  height: 100vh;
+  background: var(--sidebar-bg);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font);
+  position: relative;
+  overflow: hidden; /* evita que ::before desborde */
+}
+
+/* Círculo decorativo de fondo */
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: -70px;
+  right: -70px;
+  width: 180px;
+  height: 180px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────
+   Brand
+───────────────────────────────────────── */
+.sidebar__brand {
+  padding: 28px 22px 22px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.4px;
+}
+
+/* ─────────────────────────────────────────
+   Nav
+───────────────────────────────────────── */
+.sidebar__nav {
+  flex: 1;
+  padding: 4px 0;
+}
+
+/* ─────────────────────────────────────────
+   Nav item base
+───────────────────────────────────────── */
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: var(--item-h);
+  padding: 0 22px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  user-select: none;
+}
+
+.nav-item:hover:not(.nav-item--active) {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* ─────────────────────────────────────────
+   Ítem activo — texto azul
+───────────────────────────────────────── */
+.nav-item--active {
+  color: var(--sidebar-bg);
+}
+
+/* ─────────────────────────────────────────
+   Capa blanca del ítem activo
+   (la "bandeja" que sale hacia la derecha)
+───────────────────────────────────────── */
+.nav-item__bg {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.2s ease;
+}
+
+.nav-item--active .nav-item__bg {
+  background: var(--active-bg);
+  border-radius: var(--item-radius) 0 0 var(--item-radius);
+}
+
+/* ─────────────────────────────────────────
+   Esquina cóncava SUPERIOR
+   Técnica: cuadrado del color del sidebar
+   con border-radius en la esquina interna
+   + box-shadow del color activo que "rellena"
+───────────────────────────────────────── */
+.nav-item--active .nav-item__bg::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: calc(-1 * var(--item-radius));
+  width: var(--item-radius);
+  height: var(--item-radius);
+  background: var(--sidebar-bg);
+  border-bottom-right-radius: var(--item-radius);
+  box-shadow: calc(var(--item-radius) / 2.5) calc(var(--item-radius) / 2.5) 0 calc(var(--item-radius) / 2.5) var(--active-bg);
+}
+
+/* ─────────────────────────────────────────
+   Esquina cóncava INFERIOR
+───────────────────────────────────────── */
+.nav-item--active .nav-item__bg::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: calc(-1 * var(--item-radius));
+  width: var(--item-radius);
+  height: var(--item-radius);
+  background: var(--sidebar-bg);
+  border-top-right-radius: var(--item-radius);
+  box-shadow: calc(var(--item-radius) / 2.5) calc(-1 * var(--item-radius) / 2.5) 0 calc(var(--item-radius) / 2.5) var(--active-bg);
+}
+
+/* ─────────────────────────────────────────
+   Ícono y label — encima del .nav-item__bg
+───────────────────────────────────────── */
+.nav-item__icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-item__label {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─────────────────────────────────────────
+   Badge
+───────────────────────────────────────── */
+.nav-item__badge {
+  margin-left: auto;
+  position: relative;
+  z-index: 1;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  transition: background 0.2s, color 0.2s;
+}
+
+.nav-item--active .nav-item__badge {
+  background: var(--sidebar-bg);
+  color: #fff;
+}
+
+/* ─────────────────────────────────────────
+   Footer links
+───────────────────────────────────────── */
+.sidebar__footer {
+  padding: 16px 22px 24px;
+  display: flex;
+  gap: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar__footer a {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.sidebar__footer a:hover {
+  color: rgba(255, 255, 255, 0.8);
+}

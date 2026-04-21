@@ -28,14 +28,32 @@
   color: #555;
   margin: 0;
 }
+
+/* Por defecto ocultamos los items extra */
+.mobile-only-content {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* Los mostramos solo en pantallas pequeñas */
+  .mobile-only-content {
+    display: flex;
+    align-items: center;
+  }
+  .user-menu {
+    width: 280px; /* Un poco más ancho para móvil si es necesario */
+    right: 10px;
+    top: 60px;
+  }
+}
 .badge {
   font-size: 12px;
   font-weight: 700;
   padding: 4px 14px;
-  border-radius: 6px;
+  border-radius: 20px;
   white-space: nowrap;
 }
-.badge-blue   { background: #1a3cff; color: #fff; }
+.badge-blue   { background: #265073; color: #fff; }
 .badge-silver { background: #a0aec0; color: #fff; }
 .badge-gold   { background: #d4a017; color: #fff; }
 
@@ -93,7 +111,7 @@
 .rewards-link-text {
   font-size: 13px;
   font-weight: 600;
-  color: #1a3cff;
+  color: #265073;
 }
 .rewards-sub {
   font-size: 11.5px;

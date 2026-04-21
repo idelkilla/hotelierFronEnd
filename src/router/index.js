@@ -1,28 +1,43 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Login                  from '../view/login.vue';
-import Register               from '../view/register.vue';
-import Home                   from '../view/Home.vue';
-import authService            from '../services/authService';
-import servicesMenu           from '../components/servicesMenu.vue';
-import head                   from '../view/head.vue';
-import servicioCliente        from '../view/servicioCliente.vue';
-import DetalleHospedaje from '../view/DetalleHospedaje.vue'; // Asegúrate de que el nombre coincida
+import authService from '../services/authService';
 
-const ADMIN_EMAIL = 'admin@gmail.com'
+
+import Login            from '../view/login.vue';
+import Register         from '../view/register.vue';
+import Home             from '../view/Home.vue';
+import head             from '../view/head.vue';
+import servicioCliente  from '../view/servicioCliente.vue';
+import DetalleHospedaje from '../view/DetalleHospedaje.vue';
+
+
+import servicesMenu     from '../components/servicesMenu.vue';
+
+import AdminRegistrarPropiedad from '../view/adminHotel.vue'; 
+
+const ADMIN_EMAIL = 'admin@gmail.com';
 
 const routes = [
+  { path: '/',                 redirect: '/home' },
+  { path: '/home',             name: 'Home',            component: Home },
   { path: '/login',            name: 'Login',           component: Login },
   { path: '/register',         name: 'Register',        component: Register },
-  { path: '/home',             name: 'Home',            component: Home },
   { path: '/services',         name: 'servicesMenu',    component: servicesMenu },
-  { path: '/',                 redirect: '/home' },
   { path: '/head',             name: 'Head',            component: head },
   { path: '/servicio-cliente', name: 'ServicioCliente', component: servicioCliente },
-  { path: '/hospedaje/:id',
-    component: () => import('../view/head.vue'), name: 'DetalleHospedaje', props: true},
-  // Admin — protegida por JWT
-  // { path: '/admin', name: 'Admin', component: AdminRegistrarPropiedad, meta: { soloAdmin: true } },
-  { path: '/hospedaje/:id',   name: 'DetalleHospedaje', component: DetalleHospedaje},
+  
+  { 
+    path: '/hospedaje/:id', 
+    name: 'DetalleHospedaje', 
+    component: DetalleHospedaje, 
+    props: true 
+  },
+
+  { 
+    path: '/admin', 
+    name: 'Admin', 
+    component: AdminRegistrarPropiedad, 
+    meta: { soloAdmin: true } 
+  },
 ];
 
 const router = createRouter({
@@ -39,6 +54,7 @@ router.beforeEach((to, from, next) => {
 
   if (to.meta.soloAdmin) {
     if (!isAuthenticated || emailGuardado !== ADMIN_EMAIL) {
+      console.warn("Acceso denegado: Se requiere rol de administrador.");
       return next({ name: 'Home' });
     }
   }
