@@ -7,12 +7,13 @@ import Register         from '../view/register.vue';
 import Home             from '../view/Home.vue';
 import head             from '../view/head.vue';
 import servicioCliente  from '../view/servicioCliente.vue';
-import DetalleHospedaje from '../view/DetalleHospedaje.vue';
 
 
 import servicesMenu     from '../components/servicesMenu.vue';
 
-import AdminRegistrarPropiedad from '../view/adminHotel.vue'; 
+import AdminLayout      from '../view/adminPanel.vue';
+import AdminDashboard from '../view/adminDashboard.vue'; 
+import AdminAgregarHotel from '../view/adminAgregarHotel.vue';
 
 const ADMIN_EMAIL = 'admin@gmail.com';
 
@@ -25,18 +26,15 @@ const routes = [
   { path: '/head',             name: 'Head',            component: head },
   { path: '/servicio-cliente', name: 'ServicioCliente', component: servicioCliente },
   
-  { 
-    path: '/hospedaje/:id', 
-    name: 'DetalleHospedaje', 
-    component: DetalleHospedaje, 
-    props: true 
-  },
 
   { 
-    path: '/admin', 
-    name: 'Admin', 
-    component: AdminRegistrarPropiedad, 
-    meta: { soloAdmin: true } 
+    path: '/admin',
+    component: AdminLayout,
+    meta: { soloAdmin: true },
+    children: [
+      { path: '', name: 'AdminDashboard', component: AdminDashboard },
+      { path: 'agregar-hotel', name: 'AdminAgregarHotel', component: AdminAgregarHotel },
+    ]
   },
 ];
 
@@ -51,15 +49,22 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const isAuthenticated = authService.isAuthenticated();
   const emailGuardado   = localStorage.getItem('user_email');
+  const isAdmin         = emailGuardado === ADMIN_EMAIL;
 
   if (to.meta.soloAdmin) {
-    if (!isAuthenticated || emailGuardado !== ADMIN_EMAIL) {
+    if (!isAuthenticated || !isAdmin) {
       console.warn("Acceso denegado: Se requiere rol de administrador.");
       return next({ name: 'Home' });
     }
   }
 
+  // Si está autenticado y es admin, siempre redirigir a /admin
+  if (isAuthenticated && isAdmin && (to.name === 'Home' || to.path === '/')) {
+    return next({ name: 'AdminDashboard' });
+  }
+
   if ((to.name === 'Login' || to.name === 'Register') && isAuthenticated) {
+    if (isAdmin) return next({ name: 'AdminDashboard' });
     return next({ name: 'Home' });
   }
 

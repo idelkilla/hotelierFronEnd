@@ -8,10 +8,48 @@
 
 .admin-layout {
   display: flex;
+  width: 100vw;
   height: 100vh;
   overflow: hidden;
   font-family: 'Outfit', 'Segoe UI', sans-serif;
-  background: #f0f4ff;
+  background: #ffffff;
+}
+
+.admin-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  min-width: 0;
+  background: #ffffff;
+}
+
+.admin-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 60px;
+  min-height: 60px;
+  background: #ffffff;
+  border-bottom: 1px solid #e8ecf4;
+  position: sticky;
+  box-sizing: border-box;
+  width: 100%;
+  top: 0;
+  z-index: 10;
+}
+
+.admin-topbar h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.admin-content {
+  flex: 1;
+  padding: 28px 36px;
+  overflow-y: auto;
 }
 
 .admin-main-content {
@@ -19,7 +57,50 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  background: #f0f4ff;
+  min-width: 0;
+  width: 100%;
+  background: #ffffff;
+}
+
+.topbar-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+
+.topbar-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.topbar-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.topbar-role {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.topbar-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #265073;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .form-header {
@@ -43,7 +124,7 @@
 }
 
 .breadcrumbs span.active {
-  color: #1a56ff;
+  color: #265073;
   font-weight: 600;
 }
 
