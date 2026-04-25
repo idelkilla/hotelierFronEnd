@@ -226,32 +226,6 @@
   align-self: flex-end;
 }
 
-.location-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: var(--radius-sm);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 999;
-  max-height: 300px;
-  overflow-y: auto;
-}
-.location-item {
-  display: flex;
-  align-items: center;
-  padding: 12px;
-  cursor: pointer;
-  border-bottom: 1px solid #eee;
-}
-.location-item:hover { background: #f0f7ff; }
-.location-text { display: flex; flex-direction: column; margin-left: 10px; text-align: left; }
-.loc-name { font-weight: bold; color: #1a1a1a; }
-.loc-details { font-size: 0.85rem; color: #5e5e5e; }
-.icon-gray { color: #5e5e5e; }
-
 .extra-options-row {
   display: flex;
   flex-direction: column;
@@ -412,4 +386,139 @@
   .item { padding: 6px 8px 0px; }
   .item img { width: 50px; height: 50px; }
   .item span { font-size: 11px; }
+}
+
+/* ── Estilos para VuelosSearch ────────────────────────────── */
+
+.vuelos-search {
+  padding: 12px 0;
+  width: 100%;
+}
+
+.vuelos-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.vuelo-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  cursor: pointer;
+  margin-bottom: -1px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.vuelo-tab:hover {
+  color: var(--color-primary);
+}
+
+.vuelo-tab.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.swap-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+  flex-shrink: 0;
+  align-self: center;
+  margin-top: 18px;
+  transition: background 0.2s, border-color 0.2s;
+  color: #555;
+}
+
+.swap-btn:hover {
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.multidestino-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vuelo-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+  min-width: 60px;
+  align-self: center;
+  margin-top: 18px;
+}
+
+.multidestino-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.multidestino-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.add-vuelo-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 4px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.add-vuelo-btn:hover { background: #e8f0fe; }
+.add-vuelo-btn:disabled { color: #aaa; cursor: not-allowed; }
+
+.remove-vuelo-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background: white;
+  color: #888;
+  cursor: pointer;
+  align-self: center;
+  margin-top: 18px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.remove-vuelo-btn:hover { background: #ffeaea; color: #d32f2f; border-color: #d32f2f; }
+.pasajeros-top { margin-bottom: 16px; }
+
+@media (max-width: 768px) {
+  .multidestino-row { flex-direction: column; }
+  .vuelo-label { margin-top: 0; }
+  .swap-btn, .remove-vuelo-btn { margin-top: 0; align-self: flex-end; }
+  .vuelos-tabs { overflow-x: auto; scrollbar-width: none; }
+  .vuelo-tab { white-space: nowrap; }
 }

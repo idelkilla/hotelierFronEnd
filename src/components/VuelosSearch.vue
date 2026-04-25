@@ -1,0 +1,461 @@
+<template>
+  <div class="vuelos-search">
+
+    <!-- Sub-tabs -->
+    <div class="vuelos-tabs">
+      <button
+        v-for="tab in tabs" :key="tab.id"
+        :class="['vuelo-tab', { active: tipoViaje === tab.id }]"
+        @click="tipoViaje = tab.id"
+      >
+        {{ tab.label }}
+      </button>
+    </div>
+
+    <!-- Pasajeros + clase (siempre visible) -->
+    <div
+      v-if="tipoViaje === 'MULTIDESTINO'"
+      class="dynamic-field-wrapper pasajeros-top"
+      style="position:relative; max-width: 240px;"
+    >
+      <div class="field-group border-style" @click="togglePasajeros">
+        <label>Pasajeros, clase de cabina</label>
+        <div class="input-with-icon">
+          <span class="material-symbols-outlined custom-icon">person</span>
+          <input type="text" readonly :value="resumenPasajeros" class="readonly-input" />
+        </div>
+      </div>
+      <PasajerosSelector
+        v-if="mostrarPasajeros"
+        v-model:pasajeros="pasajeros"
+        v-model:clase="claseSeleccionada"
+        :clases="clases"
+        @close="mostrarPasajeros = false"
+      />
+    </div>
+
+    <!-- ── VIAJE REDONDO / SENCILLO ───────────────────────────── -->
+    <div v-if="tipoViaje !== 'MULTIDESTINO'" class="search-fields-dynamic">
+
+      <!-- Origen -->
+      <div class="dynamic-field-wrapper" style="position:relative;" ref="origenWrapper">
+        <div class="field-group border-style">
+          <label>Origen</label>
+          <div class="input-with-icon">
+            <span class="material-symbols-outlined custom-icon">location_on</span>
+            <input
+              type="text" v-model="origen" autocomplete="off"
+              placeholder="¿Desde dónde viajas?"
+              @focus="abrirDropdownOrigen"
+              @input="fetchOrigen"
+            />
+          </div>
+        </div>
+        <LocationDropdown
+          v-if="mostrarDropOrigen"
+          :loading="loadingOrigen"
+          :items="sugerenciasOrigen"
+          @select="seleccionarOrigen"
+        />
+      </div>
+
+      <!-- Swap -->
+      <button class="swap-btn" @click="swapOrigenDestino" title="Intercambiar">
+        <span class="material-symbols-outlined">swap_horiz</span>
+      </button>
+
+      <!-- Destino -->
+      <div class="dynamic-field-wrapper" style="position:relative;" ref="destinoWrapper">
+        <div class="field-group border-style">
+          <label>Destino</label>
+          <div class="input-with-icon">
+            <span class="material-symbols-outlined custom-icon">location_on</span>
+            <input
+              type="text" v-model="destino" autocomplete="off"
+              placeholder="Destino"
+              @focus="abrirDropdownDestino"
+              @input="fetchDestino"
+            />
+          </div>
+        </div>
+        <LocationDropdown
+          v-if="mostrarDropDestino"
+          :loading="loadingDestino"
+          :items="sugerenciasDestino"
+          @select="seleccionarDestino"
+        />
+      </div>
+
+      <!-- Fechas -->
+      <div class="dynamic-field-wrapper date-field" style="position:relative;">
+        <div class="field-group border-style" @click="toggleCalendario">
+          <label>{{ tipoViaje === 'REDONDO' ? 'Fechas' : 'Fecha' }}</label>
+          <div class="input-with-icon">
+            <span class="material-symbols-outlined custom-icon">calendar_month</span>
+            <input type="text" readonly :value="resumenFechas" placeholder="Seleccionar" class="readonly-input" />
+          </div>
+        </div>
+        <CalendarSelector
+          v-if="mostrarCalendario"
+          :range="tipoViaje === 'REDONDO'"
+          @update:dates="onDatesSelected"
+          @close="mostrarCalendario = false"
+        />
+      </div>
+
+      <!-- Pasajeros + clase -->
+      <div class="dynamic-field-wrapper" style="position:relative;" ref="pasajerosWrapper">
+        <div class="field-group border-style" @click="togglePasajeros">
+          <label>Pasajeros, clase de cabina</label>
+          <div class="input-with-icon">
+            <span class="material-symbols-outlined custom-icon">person</span>
+            <input type="text" readonly :value="resumenPasajeros" class="readonly-input" />
+          </div>
+        </div>
+        <PasajerosSelector
+          v-if="mostrarPasajeros"
+          v-model:pasajeros="pasajeros"
+          v-model:clase="claseSeleccionada"
+          :clases="clases"
+          @close="mostrarPasajeros = false"
+        />
+      </div>
+
+      <!-- Buscar -->
+      <div class="search-button-container">
+        <BuscarButton @click="handleSearch" />
+      </div>
+    </div>
+
+    <!-- ── MULTIDESTINO ───────────────────────────────────────── -->
+    <div v-else class="multidestino-container">
+
+      <div
+        v-for="(vuelo, idx) in vuelos"
+        :key="idx"
+        class="multidestino-row"
+      >
+        <span class="vuelo-label">Vuelo {{ idx + 1 }}</span>
+
+        <!-- Origen -->
+        <div class="dynamic-field-wrapper" style="position:relative; flex:1">
+          <div class="field-group border-style">
+            <div class="input-with-icon">
+              <span class="material-symbols-outlined custom-icon">location_on</span>
+              <input
+                type="text" v-model="vuelo.origen" autocomplete="off"
+                placeholder="Origen"
+                @focus="() => abrirMultiOrigen(idx)"
+                @input="() => fetchMultiOrigen(idx)"
+              />
+            </div>
+          </div>
+          <LocationDropdown
+            v-if="vuelo.mostrarDropOrigen"
+            :loading="vuelo.loadingOrigen"
+            :items="vuelo.sugerenciasOrigen"
+            @select="(loc) => seleccionarMultiOrigen(idx, loc)"
+          />
+        </div>
+
+        <!-- Swap -->
+        <button class="swap-btn" @click="swapMulti(idx)">
+          <span class="material-symbols-outlined">swap_horiz</span>
+        </button>
+
+        <!-- Destino -->
+        <div class="dynamic-field-wrapper" style="position:relative; flex:1">
+          <div class="field-group border-style">
+            <div class="input-with-icon">
+              <span class="material-symbols-outlined custom-icon">location_on</span>
+              <input
+                type="text" v-model="vuelo.destino" autocomplete="off"
+                placeholder="Destino"
+                @focus="() => abrirMultiDestino(idx)"
+                @input="() => fetchMultiDestino(idx)"
+              />
+            </div>
+          </div>
+          <LocationDropdown
+            v-if="vuelo.mostrarDropDestino"
+            :loading="vuelo.loadingDestino"
+            :items="vuelo.sugerenciasDestino"
+            @select="(loc) => seleccionarMultiDestino(idx, loc)"
+          />
+        </div>
+
+        <!-- Fecha -->
+        <div class="dynamic-field-wrapper date-field" style="position:relative; flex:1">
+          <div class="field-group border-style" @click="() => toggleMultiCalendario(idx)">
+            <label>Fecha</label>
+            <div class="input-with-icon">
+              <span class="material-symbols-outlined custom-icon">calendar_month</span>
+              <input type="text" readonly :value="fmtFecha(vuelo.fecha)" placeholder="Seleccionar" class="readonly-input" />
+            </div>
+          </div>
+          <CalendarSelector
+            v-if="vuelo.mostrarCalendario"
+            :range="false"
+            @update:dates="(d) => { vuelo.fecha = d.start; vuelo.mostrarCalendario = false }"
+            @close="vuelo.mostrarCalendario = false"
+          />
+        </div>
+
+        <!-- Eliminar (si hay más de 2) -->
+        <button v-if="vuelos.length > 2" class="remove-vuelo-btn" @click="quitarVuelo(idx)">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <!-- Agregar vuelo + Buscar -->
+      <div class="multidestino-actions">
+        <button class="add-vuelo-btn" @click="agregarVuelo" :disabled="vuelos.length >= 6">
+          <span class="material-symbols-outlined">add</span>
+          Agregar otro vuelo
+        </button>
+        <BuscarButton @click="handleSearch" />
+      </div>
+    </div>
+
+    <!-- Extras -->
+    <div class="extra-options-row">
+      <div class="checkbox-group">
+        <label class="custom-checkbox">
+          <input type="checkbox" v-model="agregarHospedaje" />
+          <span class="checkmark"></span>
+          Agregar hospedaje
+        </label>
+        <label v-if="tipoViaje !== 'MULTIDESTINO'" class="custom-checkbox">
+          <input type="checkbox" v-model="agregarAuto" />
+          <span class="checkmark"></span>
+          Agregar un auto
+        </label>
+      </div>
+    </div>
+
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import BuscarButton    from '../components/ButtonSearch.vue'
+import CalendarSelector from '../components/CalendarSelector.vue'
+import LocationDropdown from '../components/LocationDropdown.vue'
+import PasajerosSelector from '../components/PasajerosSelector.vue'
+
+const API_URL = 'http://localhost:3000'
+const router  = useRouter()
+
+const props = defineProps({
+  initialDestino: String,
+  initialEntrada: String,
+  initialSalida:  String,
+})
+
+// Referencias para detectar clics fuera
+const origenWrapper = ref(null)
+const destinoWrapper = ref(null)
+const pasajerosWrapper = ref(null)
+
+// Sincronizar destino si cambia la prop inicial
+watch(() => props.initialDestino, (val) => {
+  if (val) destino.value = val
+})
+
+const tabs = [
+  { id: 'REDONDO',      label: 'Viaje redondo'  },
+  { id: 'SENCILLO',     label: 'Viaje sencillo' },
+  { id: 'MULTIDESTINO', label: 'Multidestino'   },
+]
+const tipoViaje = ref('REDONDO')
+
+const clases = ['Económica', 'Business', 'Primera clase']
+const pasajeros       = ref(1)
+const claseSeleccionada = ref('Económica')
+const mostrarPasajeros  = ref(false)
+const togglePasajeros   = () => (mostrarPasajeros.value = !mostrarPasajeros.value)
+const resumenPasajeros  = computed(
+  () => `${pasajeros.value} pasajero${pasajeros.value > 1 ? 's' : ''}, ${claseSeleccionada.value}`
+)
+
+const origen  = ref('')
+const destino = ref(props.initialDestino || '')
+const selectedOrigen  = ref(null)
+const selectedDestino = ref(null)
+const mostrarDropOrigen  = ref(false)
+const mostrarDropDestino = ref(false)
+const loadingOrigen      = ref(false)
+const loadingDestino     = ref(false)
+const sugerenciasOrigen  = ref([])
+const sugerenciasDestino = ref([])
+
+async function fetchLugares(q, sugerencias, loading, esOrigen = true) {
+  loading.value = true
+  const endpoint = esOrigen ? 'aeropuertos' : 'ubicaciones'
+  try {
+    const res = await fetch(`${API_URL}/api/search/${endpoint}?q=${q}`)
+    sugerencias.value = await res.json()
+  } catch { sugerencias.value = [] }
+  finally { loading.value = false }
+}
+const abrirDropdownOrigen  = () => { mostrarDropOrigen.value = true;  fetchOrigen() }
+const abrirDropdownDestino = () => { mostrarDropDestino.value = true; fetchDestino() }
+const fetchOrigen  = () => fetchLugares(origen.value,  sugerenciasOrigen,  loadingOrigen, true)
+const fetchDestino = () => fetchLugares(destino.value, sugerenciasDestino, loadingDestino, false)
+function seleccionarOrigen(loc) {
+  selectedOrigen.value = loc
+  origen.value = `${loc.ubicacion}, ${loc.ciudad}, ${loc.pais}`
+  mostrarDropOrigen.value = false
+}
+function seleccionarDestino(loc) {
+  selectedDestino.value = loc
+  destino.value = `${loc.ubicacion}, ${loc.ciudad}, ${loc.pais}`
+  mostrarDropDestino.value = false
+}
+function swapOrigenDestino() {
+  ;[origen.value, destino.value] = [destino.value, origen.value]
+  ;[selectedOrigen.value, selectedDestino.value] = [selectedDestino.value, selectedOrigen.value]
+}
+
+const fechaInicio      = ref(props.initialEntrada || '')
+const fechaFin         = ref(props.initialSalida  || '')
+const mostrarCalendario = ref(false)
+const toggleCalendario  = () => (mostrarCalendario.value = !mostrarCalendario.value)
+function onDatesSelected(dates) {
+  fechaInicio.value = dates.start
+  fechaFin.value    = tipoViaje.value === 'REDONDO' ? dates.end : ''
+  mostrarCalendario.value = false
+}
+function fmtFecha(str) {
+  if (!str) return ''
+  const [y, m, d] = str.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', weekday: 'short' })
+}
+const resumenFechas = computed(() => {
+  if (!fechaInicio.value) return ''
+  if (tipoViaje.value === 'SENCILLO') return fmtFecha(fechaInicio.value)
+  const fin = fechaFin.value ? fmtFecha(fechaFin.value) : '...'
+  return `${fmtFecha(fechaInicio.value)} — ${fin}`
+})
+
+function nuevoVuelo(destPrefill = '') {
+  return {
+    origen: '', destino: destPrefill,
+    fecha: '',
+    selectedOrigen: null, selectedDestino: null,
+    mostrarDropOrigen: false, mostrarDropDestino: false,
+    mostrarCalendario: false,
+    loadingOrigen: false,    loadingDestino: false,
+    sugerenciasOrigen: [],   sugerenciasDestino: [],
+  }
+}
+const vuelos = ref([ nuevoVuelo(props.initialDestino || ''), nuevoVuelo() ])
+const agregarVuelo = () => { if (vuelos.value.length < 6) vuelos.value.push(nuevoVuelo()) }
+const quitarVuelo  = (i) => vuelos.value.splice(i, 1)
+const swapMulti    = (i) => {
+  const v = vuelos.value[i]
+  ;[v.origen, v.destino] = [v.destino, v.origen]
+  ;[v.selectedOrigen, v.selectedDestino] = [v.selectedDestino, v.selectedOrigen]
+}
+async function fetchMultiOrigen(i) {
+  const v = vuelos.value[i]
+  v.mostrarDropOrigen = true; v.loadingOrigen = true
+  try {
+    const res = await fetch(`${API_URL}/api/search/aeropuertos?q=${v.origen}`)
+    v.sugerenciasOrigen = await res.json()
+  } catch { v.sugerenciasOrigen = [] }
+  finally { v.loadingOrigen = false }
+}
+async function fetchMultiDestino(i) {
+  const v = vuelos.value[i]
+  v.mostrarDropDestino = true; v.loadingDestino = true
+  try {
+    const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${v.destino}`)
+    v.sugerenciasDestino = await res.json()
+  } catch { v.sugerenciasDestino = [] }
+  finally { v.loadingDestino = false }
+}
+const abrirMultiOrigen  = (i) => { vuelos.value[i].mostrarDropOrigen  = true; fetchMultiOrigen(i)  }
+const abrirMultiDestino = (i) => { vuelos.value[i].mostrarDropDestino = true; fetchMultiDestino(i) }
+function seleccionarMultiOrigen(i, loc) {
+  const v = vuelos.value[i]
+  v.selectedOrigen = loc
+  v.origen = `${loc.ubicacion}, ${loc.ciudad}, ${loc.pais}`
+  v.mostrarDropOrigen = false
+}
+function seleccionarMultiDestino(i, loc) {
+  const v = vuelos.value[i]
+  v.selectedDestino = loc
+  v.destino = `${loc.ubicacion}, ${loc.ciudad}, ${loc.pais}`
+  v.mostrarDropDestino = false
+}
+function toggleMultiCalendario(i) {
+  vuelos.value.forEach((v, idx) => { if (idx !== i) v.mostrarCalendario = false })
+  vuelos.value[i].mostrarCalendario = !vuelos.value[i].mostrarCalendario
+}
+
+const agregarHospedaje = ref(false)
+const agregarAuto      = ref(false)
+
+// Cerrar todos los menús abiertos
+function cerrarTodos() {
+  mostrarDropOrigen.value = false
+  mostrarDropDestino.value = false
+  mostrarCalendario.value = false
+  mostrarPasajeros.value = false
+  vuelos.value.forEach(v => {
+    v.mostrarDropOrigen = false
+    v.mostrarDropDestino = false
+    v.mostrarCalendario = false
+  })
+}
+
+const handleOutsideClick = (e) => {
+  if (!e.target.closest('.dynamic-field-wrapper') && 
+      !e.target.closest('.pasajeros-panel') &&
+      !e.target.closest('.calendar-modal')) {
+    cerrarTodos()
+  }
+}
+
+onMounted(() => window.addEventListener('mousedown', handleOutsideClick))
+onUnmounted(() => window.removeEventListener('mousedown', handleOutsideClick))
+
+function handleSearch() {
+  if (tipoViaje.value === 'MULTIDESTINO') {
+    const incompleto = vuelos.value.some(v => !v.origen || !v.destino || !v.fecha)
+    if (incompleto) { alert('Completa todos los tramos'); return }
+    router.push({
+      path: '/vuelos',
+      query: {
+        tipo: 'MULTIDESTINO',
+        vuelos: JSON.stringify(vuelos.value.map(v => ({
+          id_origen:  v.selectedOrigen?.id  ?? '',
+          id_destino: v.selectedDestino?.id ?? '',
+          origen: v.origen, destino: v.destino, fecha: v.fecha,
+        }))),
+        pasajeros: pasajeros.value, clase: claseSeleccionada.value, con_hospedaje: agregarHospedaje.value,
+      }
+    })
+  } else {
+    if (!origen.value || !destino.value || !fechaInicio.value) { alert('Completa origen, destino y fecha'); return }
+    router.push({
+      path: '/vuelos',
+      query: {
+        tipo: tipoViaje.value,
+        id_origen: selectedOrigen.value?.id  ?? '',
+        id_destino: selectedDestino.value?.id ?? '',
+        origen: origen.value, destino: destino.value,
+        entrada: fechaInicio.value, salida: tipoViaje.value === 'REDONDO' ? fechaFin.value : '',
+        pasajeros: pasajeros.value, clase: claseSeleccionada.value,
+        con_hospedaje: agregarHospedaje.value, con_auto: agregarAuto.value,
+      }
+    })
+  }
+}
+</script>
+
+<style scoped>
+@import '../assets/css/FormSearch.css';
+</style>

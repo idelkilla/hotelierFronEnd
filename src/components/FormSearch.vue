@@ -1,13 +1,13 @@
 <template>
-  <div class="search-container">
-    <div class="hero">
+  <div :class="['search-container', { 'compact-mode': compact }]">
+    <div v-if="!compact" class="hero">
       <h1>Vivimos para viajar</h1>
     </div>
 
     <!-- Card compacta mobile / form desktop -->
-    <div class="form-box">
+    <div :class="['form-box', { 'compact-form-box': compact }]">
       <!-- Opciones (Hospedaje, Vuelos, etc.) -->
-      <div class="options">
+      <div v-if="!compact" class="options">
         <div v-for="option in options" :key="option.id"
           :class="['item', { active: activeOption === option.id }]"
           @click="selectOption(option.id)">
@@ -16,135 +16,133 @@
         </div>
       </div>
 
-      <!-- Campos de búsqueda — stack vertical en mobile -->
-      <div class="search-fields-dynamic">
+      <VuelosSearch
+        v-if="activeOption === 'vuelos'"
+        :initialDestino="busquedaDestino"
+        :initialEntrada="fechaInicio"
+        :initialSalida="fechaFin"
+      />
 
-        <!-- Destino -->
-        <div class="dynamic-field-wrapper" id="destination-wrapper" style="position: relative;">
-          <div class="field-group border-style">
-            <label>¿A dónde quieres ir?</label>
-            <div class="input-with-icon">
-              <span class="material-symbols-outlined custom-icon">location_on</span>
-              <input type="text" v-model="busquedaDestino" @focus="abrirMenu" @input="fetchUbicaciones"
-                placeholder="Destino" autocomplete="off" />
-            </div>
-          </div>
+      <template v-else>
+        <!-- Campos de búsqueda — stack vertical en mobile -->
+        <div class="search-fields-dynamic">
 
-          <div v-if="mostrarDropdown" class="location-dropdown">
-            <div v-if="loadingUbicaciones" class="location-item">
-              <span class="loc-details">Cargando ubicaciones...</span>
-            </div>
-            <div v-else-if="sugerencias.length === 0" class="location-item">
-              <span class="loc-details">No se encontraron ubicaciones</span>
-            </div>
-            <div v-for="loc in sugerencias" :key="loc.id" class="location-item"
-              @mousedown="seleccionarUbicacion(loc)">
-              <span class="material-symbols-outlined icon-gray">
-                {{ loc.id_tipo === 1 ? 'apartment' : 'location_on' }}
-              </span>
-              <div class="location-text">
-                <span class="loc-name">{{ loc.ubicacion }}</span>
-                <span class="loc-details">{{ loc.ciudad }}, {{ loc.pais }}</span>
+          <!-- Destino -->
+          <div class="dynamic-field-wrapper" id="destination-wrapper" style="position: relative;">
+            <div class="field-group border-style">
+              <label>¿A dónde quieres ir?</label>
+              <div class="input-with-icon">
+                <span class="material-symbols-outlined custom-icon">location_on</span>
+                <input type="text" v-model="busquedaDestino" @focus="abrirMenu" @input="fetchUbicaciones"
+                  placeholder="Destino" autocomplete="off" />
               </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Fechas -->
-        <div class="dynamic-field-wrapper date-field" style="position: relative;">
-          <div class="field-group border-style" @click="toggleCalendar">
-            <label>Fechas</label>
-            <div class="input-with-icon">
-              <span class="material-symbols-outlined custom-icon">calendar_month</span>
-              <input type="text" readonly :value="resumenFechas" placeholder="Entrada — Salida"
-                class="readonly-input" />
-            </div>
-          </div>
-          <CalendarSelector v-if="mostrarCalendario" @update:dates="onDatesSelected"
-            @close="mostrarCalendario = false" />
-        </div>
-
-        <!-- Huéspedes -->
-        <div class="dynamic-field-wrapper" id="guest-wrapper" style="position: relative;">
-          <div class="field-group border-style" @click="toggleHuespedes">
-            <label>Huéspedes</label>
-            <div class="input-with-icon">
-              <span class="material-symbols-outlined custom-icon">person</span>
-              <input type="text" readonly :value="resumenHuespedes" class="readonly-input" />
-            </div>
-          </div>
-          <GuestSelector v-if="mostrarHuespedes" v-model="habitaciones" @close="mostrarHuespedes = false" />
-        </div>
-
-        <!-- Botón buscar -->
-        <div class="search-button-container">
-          <BuscarButton @click="handleSearch" />
-        </div>
-
-      </div>
-
-      <!-- Extras -->
-      <div class="extra-options-row">
-        <div class="checkbox-group">
-          <label class="custom-checkbox">
-            <input type="checkbox" v-model="agregarVuelo" />
-            <span class="checkmark"></span>
-            Agregar un vuelo
-          </label>
-          <label class="custom-checkbox">
-            <input type="checkbox" v-model="agregarAuto" />
-            <span class="checkmark"></span>
-            Agregar un auto
-          </label>
-        </div>
-
-        <div v-if="agregarVuelo" class="origin-field-container" id="origin-wrapper" style="position: relative;">
-          <div class="field-group border-style">
-            <label>Origen</label>
-            <div class="input-with-icon">
-              <span class="material-symbols-outlined custom-icon">location_on</span>
-              <input type="text" v-model="origenVuelo" @focus="abrirMenuOrigen" @input="fetchUbicacionesOrigen"
-                placeholder="¿Desde dónde viajas?" autocomplete="off" />
-            </div>
+            <LocationDropdown
+              v-if="mostrarDropdown"
+              :loading="loadingUbicaciones"
+              :items="sugerencias"
+              @select="seleccionarUbicacion"
+            />
           </div>
 
-          <div v-if="mostrarDropdownOrigen" class="location-dropdown">
-            <div v-if="loadingUbicacionesOrigen" class="location-item">
-              <span class="loc-details">Cargando ubicaciones...</span>
-            </div>
-            <div v-else-if="sugerenciasOrigen.length === 0" class="location-item">
-              <span class="loc-details">No se encontraron ubicaciones</span>
-            </div>
-            <div v-for="loc in sugerenciasOrigen" :key="loc.id" class="location-item"
-              @mousedown="seleccionarUbicacionOrigen(loc)">
-              <span class="material-symbols-outlined icon-gray">
-                {{ loc.id_tipo === 1 ? 'apartment' : 'location_on' }}
-              </span>
-              <div class="location-text">
-                <span class="loc-name">{{ loc.ubicacion }}</span>
-                <span class="loc-details">{{ loc.ciudad }}, {{ loc.pais }}</span>
+          <!-- Fechas -->
+          <div class="dynamic-field-wrapper date-field" style="position: relative;">
+            <div class="field-group border-style" @click="toggleCalendar">
+              <label>Fechas</label>
+              <div class="input-with-icon">
+                <span class="material-symbols-outlined custom-icon">calendar_month</span>
+                <input type="text" readonly :value="resumenFechas" placeholder="Entrada — Salida"
+                  class="readonly-input" />
               </div>
             </div>
+            <CalendarSelector v-if="mostrarCalendario" @update:dates="onDatesSelected"
+              @close="mostrarCalendario = false" />
+          </div>
+
+          <!-- Huéspedes -->
+          <div class="dynamic-field-wrapper" id="guest-wrapper" style="position: relative;">
+            <div class="field-group border-style" @click="toggleHuespedes">
+              <label>Huéspedes</label>
+              <div class="input-with-icon">
+                <span class="material-symbols-outlined custom-icon">person</span>
+                <input type="text" readonly :value="resumenHuespedes" class="readonly-input" />
+              </div>
+            </div>
+            <GuestSelector v-if="mostrarHuespedes" v-model="habitaciones" @close="mostrarHuespedes = false" />
+          </div>
+
+          <!-- Botón buscar -->
+          <div class="search-button-container">
+            <BuscarButton @click="handleSearch" />
+          </div>
+
+        </div>
+
+        <!-- Extras -->
+        <div v-if="!compact" class="extra-options-row">
+          <div class="checkbox-group">
+            <label class="custom-checkbox">
+              <input type="checkbox" v-model="agregarVuelo" />
+              <span class="checkmark"></span>
+              Agregar un vuelo
+            </label>
+            <label class="custom-checkbox">
+              <input type="checkbox" v-model="agregarAuto" />
+              <span class="checkmark"></span>
+              Agregar un auto
+            </label>
+          </div>
+
+          <div v-if="agregarVuelo" class="origin-field-container" id="origin-wrapper" style="position: relative;">
+            <div class="field-group border-style">
+              <label>Origen</label>
+              <div class="input-with-icon">
+                <span class="material-symbols-outlined custom-icon">location_on</span>
+                <input type="text" v-model="origenVuelo" @focus="abrirMenuOrigen" @input="fetchUbicacionesOrigen"
+                  placeholder="¿Desde dónde viajas?" autocomplete="off" />
+              </div>
+            </div>
+
+            <LocationDropdown
+              v-if="mostrarDropdownOrigen"
+              :loading="loadingUbicacionesOrigen"
+              :items="sugerenciasOrigen"
+              @select="seleccionarUbicacionOrigen"
+            />
           </div>
         </div>
-      </div>
+      </template>
 
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import BuscarButton from './ButtonSearch.vue'
 import GuestSelector from './GuestSelector.vue'
 import CalendarSelector from './CalendarSelector.vue'
+import LocationDropdown from './LocationDropdown.vue'
+import VuelosSearch from './VuelosSearch.vue'
+
+const props = defineProps({
+  compact: Boolean,
+  initialDestino: String,
+  initialEntrada: String,
+  initialSalida: String,
+  initialHuespedes: Array,
+});
 
 const API_URL = 'http://localhost:3000'
 const router  = useRouter()
 
 const activeOption      = ref('hospedaje')
-const busquedaDestino   = ref('')
+const busquedaDestino   = ref(props.initialDestino || '')
+const origenVuelo       = ref('')
+const fechaInicio       = ref(props.initialEntrada || '')
+const fechaFin          = ref(props.initialSalida || '')
 const selectedUbicacion = ref(null)
 const sugerencias       = ref([])
 const sugerenciasOrigen = ref([])
@@ -156,9 +154,14 @@ const loadingUbicaciones = ref(false)
 const loadingUbicacionesOrigen = ref(false)
 const agregarVuelo      = ref(false)
 const agregarAuto       = ref(false)
-const origenVuelo       = ref('')
-const fechaInicio       = ref('')
-const fechaFin          = ref('')
+
+// Sincronizar con props cuando cambian (ej. al navegar entre resultados)
+watch(() => props.initialDestino, (val) => busquedaDestino.value = val || '')
+watch(() => props.initialEntrada, (val) => fechaInicio.value = val || '')
+watch(() => props.initialSalida,  (val) => fechaFin.value = val || '')
+watch(() => props.initialHuespedes, (val) => {
+  if (val) habitaciones.value = JSON.parse(JSON.stringify(val))
+}, { deep: true })
 
 function onDatesSelected(dates) {
   fechaInicio.value = dates.start
@@ -180,7 +183,7 @@ const resumenFechas = computed(() => {
   return `${ini} — ${fin}`
 })
 
-const habitaciones = ref([{ adultos: 2, ninos: 0, edadesNinos: [] }])
+const habitaciones = ref(props.initialHuespedes ? JSON.parse(JSON.stringify(props.initialHuespedes)) : [{ adultos: 2, ninos: 0, edadesNinos: [] }]);
 
 const resumenHuespedes = computed(() => {
   const totalPersonas = habitaciones.value.reduce((acc, h) => acc + h.adultos + h.ninos, 0)
@@ -296,4 +299,21 @@ onUnmounted(() => window.removeEventListener('mousedown', handleOutsideClick))
 
 <style scoped>
 @import '../assets/css/FormSearch.css';
+
+/* Estilos para el modo compacto (usado en Cuerpo.vue) */
+.search-container.compact-mode {
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: auto !important;
+  box-shadow: none !important;
+}
+
+.compact-form-box {
+  background: white !important;
+  margin: 0 auto !important;
+  padding: 10px !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
 </style>
