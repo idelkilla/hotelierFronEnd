@@ -49,18 +49,20 @@ function cambiar(delta) {
   left: 0;
   z-index: 100;
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  padding: 16px;
-  min-width: 260px;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 2px 6px 2px rgba(60,64,67,0.15);
+  padding: 20px;
+  min-width: 280px;
 }
 
 .pasajero-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
-  font-size: 15px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #3c4043;
 }
 
 .counter {
@@ -70,28 +72,39 @@ function cambiar(delta) {
 }
 
 .counter button {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  border: 1px solid #ccc;
-  background: white;
-  font-size: 18px;
+  border: 1px solid #dadce0;
+  background: transparent;
+  color: #265073;
+  font-size: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.counter button:hover:not(:disabled) {
+  background-color: #f8f9fa;
+  border-color: #d2e3fc;
 }
 
 .counter button:disabled {
-  opacity: 0.3;
+  color: #bdc1c6;
+  border-color: #f1f3f4;
   cursor: not-allowed;
 }
 
 .clase-selector label {
-  font-size: 13px;
-  color: #666;
+  font-size: 12px;
+  font-weight: 500;
+  color: #70757a;
   margin-bottom: 8px;
   display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .clase-options {
@@ -101,33 +114,44 @@ function cambiar(delta) {
 }
 
 .clase-btn {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: white;
+  padding: 10px 14px;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  background: transparent;
   cursor: pointer;
   text-align: left;
   font-size: 14px;
+  color: #3c4043;
   transition: all 0.2s;
 }
 
+.clase-btn:hover:not(.active) {
+  background-color: #f8f9fa;
+}
+
 .clase-btn.active {
-  border-color: #1a73e8;
+  border-color: transparent;
   background: #e8f0fe;
-  color: #1a73e8;
-  font-weight: 500;
+  color: #265073;
+  font-weight: 600;
 }
 
 .apply-btn {
-  margin-top: 14px;
-  width: 100%;
-  padding: 10px;
-  background: #1a73e8;
-  color: white;
-  border: none;
-  border-radius: 8px;
+  margin-top: 20px;
+  float: right;
+  padding: 8px 24px;
+  background: transparent;
+  color: #265073;
+  border: 1px solid transparent;
+  border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.apply-btn:hover {
+  background-color: #f8f9fa;
+  color: #174ea6;
 }
 </style>

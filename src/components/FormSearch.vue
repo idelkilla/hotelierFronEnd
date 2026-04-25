@@ -31,9 +31,20 @@
           <div class="dynamic-field-wrapper" id="destination-wrapper" style="position: relative;">
             <div class="field-group border-style">
               <label>¿A dónde quieres ir?</label>
-              <div class="input-with-icon">
+              <div class="input-with-icon" :class="{ 'has-chip': selectedUbicacion && destinoActivo }">
                 <span class="material-symbols-outlined custom-icon">location_on</span>
-                <input type="text" v-model="busquedaDestino" @focus="abrirMenu" @input="fetchUbicaciones"
+
+                <!-- CHIP cuando está activo y hay selección -->
+                <div v-if="selectedUbicacion && destinoActivo" class="location-chip" @click="abrirMenu">
+                  <span class="chip-text">{{ labelUbicacion }}</span>
+                  <button class="chip-clear" @click.stop="clearDestino">
+                    <span class="material-symbols-outlined" style="font-size:14px">close</span>
+                  </button>
+                </div>
+
+                <!-- INPUT en todos los demás casos -->
+                <input v-else type="text" :value="destinoActivo ? busquedaDestino : (selectedUbicacion ? labelUbicacion : busquedaDestino)"
+                  @input="e => { busquedaDestino = e.target.value; fetchUbicaciones() }" @focus="abrirMenu"
                   placeholder="Destino" autocomplete="off" />
               </div>
             </div>
@@ -94,12 +105,23 @@
             </label>
           </div>
 
-          <div v-if="agregarVuelo" class="origin-field-container" id="origin-wrapper" style="position: relative;">
+          <div v-if="agregarVuelo" class="origin-field-container" ref="originWrapper" id="origin-wrapper" style="position: relative;">
             <div class="field-group border-style">
               <label>Origen</label>
-              <div class="input-with-icon">
+              <div class="input-with-icon" :class="{ 'has-chip': selectedOrigenVuelo && origenVueloActivo }">
                 <span class="material-symbols-outlined custom-icon">location_on</span>
-                <input type="text" v-model="origenVuelo" @focus="abrirMenuOrigen" @input="fetchUbicacionesOrigen"
+
+                <div v-if="selectedOrigenVuelo && origenVueloActivo" class="location-chip" @click="editarOrigenVuelo">
+                  <span class="chip-text">{{ labelOrigenVuelo }}</span>
+                  <button class="chip-clear" @click.stop="clearOrigenVuelo">
+                    <span class="material-symbols-outlined" style="font-size:14px">close</span>
+                  </button>
+                </div>
+
+                <input v-else type="text" 
+                  :value="origenVueloActivo ? origenVuelo : (selectedOrigenVuelo ? labelOrigenVuelo : origenVuelo)"
+                  @input="e => { origenVuelo = e.target.value; fetchUbicacionesOrigen() }" 
+                  @focus="abrirMenuOrigen"
                   placeholder="¿Desde dónde viajas?" autocomplete="off" />
               </div>
             </div>
@@ -119,7 +141,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import BuscarButton from './ButtonSearch.vue'
 import GuestSelector from './GuestSelector.vue'
@@ -138,12 +160,20 @@ const props = defineProps({
 const API_URL = 'http://localhost:3000'
 const router  = useRouter()
 
+const originWrapper = ref(null)
+const destinationWrapper = ref(null)
+
 const activeOption      = ref('hospedaje')
 const busquedaDestino   = ref(props.initialDestino || '')
 const origenVuelo       = ref('')
 const fechaInicio       = ref(props.initialEntrada || '')
 const fechaFin          = ref(props.initialSalida || '')
 const selectedUbicacion = ref(null)
+const labelUbicacion    = ref('')
+const destinoActivo     = ref(false)
+const selectedOrigenVuelo = ref(null)
+const labelOrigenVuelo    = ref('')
+const origenVueloActivo   = ref(false)
 const sugerencias       = ref([])
 const sugerenciasOrigen = ref([])
 const mostrarDropdown   = ref(false)
@@ -212,11 +242,11 @@ const toggleHuespedes = () => {
 }
 
 async function fetchUbicaciones() {
+  destinoActivo.value      = true
   mostrarDropdown.value    = true
   mostrarHuespedes.value   = false
   mostrarCalendario.value  = false
   loadingUbicaciones.value = true
-  selectedUbicacion.value  = null
   try {
     const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${busquedaDestino.value}`)
     sugerencias.value = await res.json()
@@ -228,8 +258,11 @@ async function fetchUbicaciones() {
 }
 
 async function fetchUbicacionesOrigen() {
+  origenVueloActivo.value     = true
   mostrarDropdownOrigen.value = true
-  cerrarTodos()
+  mostrarDropdown.value       = false
+  mostrarHuespedes.value      = false
+  mostrarCalendario.value     = false
   loadingUbicacionesOrigen.value = true
   try {
     const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${origenVuelo.value}`)
@@ -241,12 +274,25 @@ async function fetchUbicacionesOrigen() {
   }
 }
 
-const abrirMenu = fetchUbicaciones
+const abrirMenu = () => {
+  destinoActivo.value     = true
+  mostrarDropdown.value   = true
+  mostrarHuespedes.value  = false
+  mostrarCalendario.value = false
+  loadingUbicaciones.value = true
+  fetch(`${API_URL}/api/search/ubicaciones?q=${busquedaDestino.value}`)
+    .then(r => r.json())
+    .then(d => sugerencias.value = d)
+    .catch(() => sugerencias.value = [])
+    .finally(() => loadingUbicaciones.value = false)
+}
 const abrirMenuOrigen = fetchUbicacionesOrigen
 
 function seleccionarUbicacion(loc) {
   selectedUbicacion.value = loc
   busquedaDestino.value   = `${loc.ubicacion}, ${loc.ciudad}, ${loc.pais}`
+  labelUbicacion.value    = `${loc.ciudad}, ${loc.pais}`
+  destinoActivo.value     = false
   mostrarDropdown.value   = false
 }
 
@@ -262,10 +308,39 @@ function getIconPath(name) {
 }
 
 function cerrarTodos() {
+  destinoActivo.value     = false
   mostrarDropdown.value   = false
   mostrarHuespedes.value  = false
   mostrarCalendario.value = false
   mostrarDropdownOrigen.value = false
+}
+
+function clearDestino() {
+  selectedUbicacion.value = null
+  labelUbicacion.value    = ''
+  busquedaDestino.value   = ''
+  destinoActivo.value     = false
+  mostrarDropdown.value   = false
+}
+
+function clearOrigenVuelo() {
+  selectedOrigenVuelo.value   = null
+  labelOrigenVuelo.value      = ''
+  origenVuelo.value           = ''
+  origenVueloActivo.value     = false
+  mostrarDropdownOrigen.value = false
+}
+
+function editarOrigenVuelo() {
+  clearOrigenVuelo()
+  origenVueloActivo.value = true
+  nextTick(() => originWrapper.value?.querySelector('input')?.focus())
+}
+
+function editarDestino() {
+  clearDestino()
+  destinoActivo.value = true
+  nextTick(() => destinationWrapper.value?.querySelector('input')?.focus())
 }
 
 async function handleSearch() {

@@ -41,13 +41,26 @@
       <div class="dynamic-field-wrapper" style="position:relative;" ref="origenWrapper">
         <div class="field-group border-style">
           <label>Origen</label>
-          <div class="input-with-icon">
+            <div class="input-with-icon" :class="{ 'has-chip': selectedOrigen && origenActivo }">
             <span class="material-symbols-outlined custom-icon">location_on</span>
+
+            <!-- CHIP cuando hay selección -->
+              <div v-if="selectedOrigen && origenActivo" class="location-chip" @click="editarOrigen">
+              <span class="chip-text">{{ labelOrigen }}</span>
+              <button class="chip-clear" @click.stop="clearOrigen">
+                <span class="material-symbols-outlined" style="font-size:14px">close</span>
+              </button>
+            </div>
+
+              <!-- INPUT cuando no hay selección O cuando no está activo -->
             <input
-              type="text" v-model="origen" autocomplete="off"
-              placeholder="¿Desde dónde viajas?"
+              v-else
+                type="text"
+                :value="origenActivo ? origen : (selectedOrigen ? labelOrigen : origen)"
+                @input="e => { origen = e.target.value; fetchOrigen() }"
+                autocomplete="off"
+                placeholder="¿Desde dónde viajas?"
               @focus="abrirDropdownOrigen"
-              @input="fetchOrigen"
             />
           </div>
         </div>
@@ -68,13 +81,26 @@
       <div class="dynamic-field-wrapper" style="position:relative;" ref="destinoWrapper">
         <div class="field-group border-style">
           <label>Destino</label>
-          <div class="input-with-icon">
+            <div class="input-with-icon" :class="{ 'has-chip': selectedDestino && destinoActivo }">
             <span class="material-symbols-outlined custom-icon">location_on</span>
+
+            <!-- CHIP cuando hay selección -->
+              <div v-if="selectedDestino && destinoActivo" class="location-chip" @click="editarDestino">
+              <span class="chip-text">{{ labelDestino }}</span>
+              <button class="chip-clear" @click.stop="clearDestino">
+                <span class="material-symbols-outlined" style="font-size:14px">close</span>
+              </button>
+            </div>
+
+              <!-- INPUT cuando no hay selección O cuando no está activo -->
             <input
-              type="text" v-model="destino" autocomplete="off"
-              placeholder="Destino"
+              v-else
+                type="text"
+                :value="destinoActivo ? destino : (selectedDestino ? labelDestino : destino)"
+                @input="e => { destino = e.target.value; fetchDestino() }"
+                autocomplete="off"
+                placeholder="Destino"
               @focus="abrirDropdownDestino"
-              @input="fetchDestino"
             />
           </div>
         </div>
@@ -140,13 +166,26 @@
         <!-- Origen -->
         <div class="dynamic-field-wrapper" style="position:relative; flex:1">
           <div class="field-group border-style">
-            <div class="input-with-icon">
+            <div class="input-with-icon" :class="{ 'has-chip': vuelo.selectedOrigen && vuelo.activoOrigen }">
               <span class="material-symbols-outlined custom-icon">location_on</span>
+
+              <div v-if="vuelo.selectedOrigen && vuelo.activoOrigen" class="location-chip" @click="editarMultiOrigen(idx)">
+                <span class="chip-text">{{ vuelo.labelOrigen }}</span>
+                <button class="chip-clear" @click.stop="clearMultiOrigen(idx)">
+                  <span class="material-symbols-outlined" style="font-size:14px">close</span>
+                </button>
+              </div>
+
               <input
-                type="text" v-model="vuelo.origen" autocomplete="off"
+                v-else
+                type="text"
+                :value="vuelo.activoOrigen ? vuelo.origen : (vuelo.selectedOrigen ? vuelo.labelOrigen : vuelo.origen)"
+                @input="e => { vuelo.origen = e.target.value; fetchMultiOrigen(idx) }"
+                autocomplete="off"
                 placeholder="Origen"
-                @focus="() => abrirMultiOrigen(idx)"
-                @input="() => fetchMultiOrigen(idx)"
+                @focus="() => { 
+                  cerrarTodos();
+                  vuelo.activoOrigen = true; abrirMultiOrigen(idx); }"
               />
             </div>
           </div>
@@ -166,13 +205,26 @@
         <!-- Destino -->
         <div class="dynamic-field-wrapper" style="position:relative; flex:1">
           <div class="field-group border-style">
-            <div class="input-with-icon">
+            <div class="input-with-icon" :class="{ 'has-chip': vuelo.selectedDestino && vuelo.activoDestino }">
               <span class="material-symbols-outlined custom-icon">location_on</span>
+
+              <div v-if="vuelo.selectedDestino && vuelo.activoDestino" class="location-chip" @click="editarMultiDestino(idx)">
+                <span class="chip-text">{{ vuelo.labelDestino }}</span>
+                <button class="chip-clear" @click.stop="clearMultiDestino(idx)">
+                  <span class="material-symbols-outlined" style="font-size:14px">close</span>
+                </button>
+              </div>
+
               <input
-                type="text" v-model="vuelo.destino" autocomplete="off"
+                v-else
+                type="text"
+                :value="vuelo.activoDestino ? vuelo.destino : (vuelo.selectedDestino ? vuelo.labelDestino : vuelo.destino)"
+                @input="e => { vuelo.destino = e.target.value; fetchMultiDestino(idx) }"
+                autocomplete="off"
                 placeholder="Destino"
-                @focus="() => abrirMultiDestino(idx)"
-                @input="() => fetchMultiDestino(idx)"
+                @focus="() => { 
+                  cerrarTodos();
+                  vuelo.activoDestino = true; abrirMultiDestino(idx); }"
               />
             </div>
           </div>
@@ -237,7 +289,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import BuscarButton    from '../components/ButtonSearch.vue'
 import CalendarSelector from '../components/CalendarSelector.vue'
@@ -282,7 +334,11 @@ const resumenPasajeros  = computed(
 const origen  = ref('')
 const destino = ref(props.initialDestino || '')
 const selectedOrigen  = ref(null)
+const labelOrigen     = ref('')
+const origenActivo    = ref(false)
 const selectedDestino = ref(null)
+const labelDestino    = ref('')
+const destinoActivo   = ref(false)
 const mostrarDropOrigen  = ref(false)
 const mostrarDropDestino = ref(false)
 const loadingOrigen      = ref(false)
@@ -299,23 +355,105 @@ async function fetchLugares(q, sugerencias, loading, esOrigen = true) {
   } catch { sugerencias.value = [] }
   finally { loading.value = false }
 }
-const abrirDropdownOrigen  = () => { mostrarDropOrigen.value = true;  fetchOrigen() }
-const abrirDropdownDestino = () => { mostrarDropDestino.value = true; fetchDestino() }
+const abrirDropdownOrigen = () => {
+  origenActivo.value = true
+  mostrarDropOrigen.value = true
+  fetchOrigen()
+}
+const abrirDropdownDestino = () => {
+  destinoActivo.value = true
+  mostrarDropDestino.value = true
+  fetchDestino()
+}
 const fetchOrigen  = () => fetchLugares(origen.value,  sugerenciasOrigen,  loadingOrigen, true)
 const fetchDestino = () => fetchLugares(destino.value, sugerenciasDestino, loadingDestino, false)
 function seleccionarOrigen(loc) {
   selectedOrigen.value = loc
   origen.value = `${loc.ubicacion}, ${loc.ciudad}, ${loc.pais}`
+  labelOrigen.value = loc.iata 
+    ? `${loc.iata} · ${loc.ciudad}` 
+    : `${loc.ciudad}, ${loc.pais}`
+  origenActivo.value = false
   mostrarDropOrigen.value = false
 }
 function seleccionarDestino(loc) {
   selectedDestino.value = loc
   destino.value = `${loc.ubicacion}, ${loc.ciudad}, ${loc.pais}`
+  labelDestino.value = loc.iata 
+    ? `${loc.iata} · ${loc.ciudad}` 
+    : `${loc.ciudad}, ${loc.pais}`
+  destinoActivo.value = false
   mostrarDropDestino.value = false
 }
 function swapOrigenDestino() {
   ;[origen.value, destino.value] = [destino.value, origen.value]
   ;[selectedOrigen.value, selectedDestino.value] = [selectedDestino.value, selectedOrigen.value]
+  ;[labelOrigen.value, labelDestino.value] = [labelDestino.value, labelOrigen.value]
+  ;[origenActivo.value, destinoActivo.value] = [destinoActivo.value, origenActivo.value]
+}
+
+function clearOrigen() {
+  selectedOrigen.value = null
+  labelOrigen.value = ''
+  origen.value = ''
+  origenActivo.value = false
+  mostrarDropOrigen.value = false
+}
+
+function clearDestino() {
+  selectedDestino.value = null
+  labelDestino.value = ''
+  destino.value = ''
+  destinoActivo.value = false
+  mostrarDropDestino.value = false
+}
+
+function editarOrigen() {
+  clearOrigen()
+  nextTick(() => {
+    origenWrapper.value?.querySelector('input')?.focus()
+  })
+}
+
+function editarDestino() {
+  clearDestino()
+  nextTick(() => {
+    destinoWrapper.value?.querySelector('input')?.focus()
+  })
+}
+
+function clearMultiOrigen(i) {
+  vuelos.value[i].origen = ''
+  vuelos.value[i].labelOrigen = ''
+  vuelos.value[i].activoOrigen = true
+  vuelos.value[i].selectedOrigen = null
+  vuelos.value[i].mostrarDropOrigen = false
+}
+
+function clearMultiDestino(i) {
+  vuelos.value[i].destino = ''
+  vuelos.value[i].labelDestino = ''
+  vuelos.value[i].activoDestino = true
+  vuelos.value[i].selectedDestino = null
+  vuelos.value[i].mostrarDropDestino = false
+}
+
+function editarMultiOrigen(i) {
+  clearMultiOrigen(i)
+  nextTick(() => {
+    const rows = document.querySelectorAll('.multidestino-row')
+    rows[i]?.querySelector('input')?.focus()
+  })
+}
+
+function editarMultiDestino(i) {
+  clearMultiDestino(i)
+  nextTick(() => {
+    const rows = document.querySelectorAll('.multidestino-row')
+    // Buscamos los wrappers de campos dinámicos; el destino es el segundo (índice 1)
+    const wrappers = rows[i]?.querySelectorAll('.dynamic-field-wrapper')
+    wrappers[1]?.querySelector('input')?.focus()
+  })
 }
 
 const fechaInicio      = ref(props.initialEntrada || '')
@@ -342,6 +480,8 @@ const resumenFechas = computed(() => {
 function nuevoVuelo(destPrefill = '') {
   return {
     origen: '', destino: destPrefill,
+    labelOrigen: '', labelDestino: '',
+    activoOrigen: false, activoDestino: false,
     fecha: '',
     selectedOrigen: null, selectedDestino: null,
     mostrarDropOrigen: false, mostrarDropDestino: false,
@@ -357,6 +497,8 @@ const swapMulti    = (i) => {
   const v = vuelos.value[i]
   ;[v.origen, v.destino] = [v.destino, v.origen]
   ;[v.selectedOrigen, v.selectedDestino] = [v.selectedDestino, v.selectedOrigen]
+  ;[v.activoOrigen, v.activoDestino] = [v.activoDestino, v.activoOrigen]
+  ;[v.labelOrigen, v.labelDestino] = [v.labelDestino, v.labelOrigen]
 }
 async function fetchMultiOrigen(i) {
   const v = vuelos.value[i]
@@ -382,12 +524,20 @@ function seleccionarMultiOrigen(i, loc) {
   const v = vuelos.value[i]
   v.selectedOrigen = loc
   v.origen = `${loc.ubicacion}, ${loc.ciudad}, ${loc.pais}`
+  v.labelOrigen = loc.iata 
+    ? `${loc.iata} · ${loc.ciudad}` 
+    : `${loc.ciudad}, ${loc.pais}`
+  v.activoOrigen = false
   v.mostrarDropOrigen = false
 }
 function seleccionarMultiDestino(i, loc) {
   const v = vuelos.value[i]
   v.selectedDestino = loc
   v.destino = `${loc.ubicacion}, ${loc.ciudad}, ${loc.pais}`
+  v.labelDestino = loc.iata 
+    ? `${loc.iata} · ${loc.ciudad}` 
+    : `${loc.ciudad}, ${loc.pais}`
+  v.activoDestino = false
   v.mostrarDropDestino = false
 }
 function toggleMultiCalendario(i) {
@@ -400,11 +550,15 @@ const agregarAuto      = ref(false)
 
 // Cerrar todos los menús abiertos
 function cerrarTodos() {
+  origenActivo.value  = false
+  destinoActivo.value = false
   mostrarDropOrigen.value = false
   mostrarDropDestino.value = false
   mostrarCalendario.value = false
   mostrarPasajeros.value = false
   vuelos.value.forEach(v => {
+    v.activoOrigen = false
+    v.activoDestino = false
     v.mostrarDropOrigen = false
     v.mostrarDropDestino = false
     v.mostrarCalendario = false
