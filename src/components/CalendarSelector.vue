@@ -67,27 +67,6 @@
         </div>
 
       </div>
-
-      <!-- Footer chips -->
-      <div class="cal-footer">
-        <div class="cal-footer-top" v-if="range">
-          <button v-for="chip in chips" :key="chip.id"
-            :class="['cal-chip', { active: activeChip === chip.id }]"
-            @click="selectChip(chip.id)">
-            <svg v-if="chip.id !== 'exactas'" width="14" height="14" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-              <line x1="12" y1="5" x2="12" y2="19"/>
-              <line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-            {{ chip.label }}
-          </button>
-        </div>
-        
-        <div class="cal-actions">
-          <button class="btn-clear" @click="clearDates">Borrar fechas</button>
-          <button class="btn-done" @click="confirmSelection">Listo</button>
-        </div>
-      </div>
     </template>
 
     <!-- ── FECHAS FLEXIBLES ───────────────────────────── -->
@@ -138,6 +117,27 @@
 
       </div>
     </template>
+
+    <!-- Footer compartido (Visible tanto en Calendario como en Flexibles) -->
+    <div class="cal-footer">
+      <!-- Los chips de proximidad solo se muestran en la pestaña de calendario y si es rango -->
+      <div class="cal-footer-top" v-if="activeTab === 'calendario' && range">
+        <button v-for="chip in chips" :key="chip.id"
+          :class="['cal-chip', { active: activeChip === chip.id }]"
+          @click="selectChip(chip.id)">
+          <svg v-if="chip.id !== 'exactas'" width="14" height="14" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          {{ chip.label }}
+        </button>
+      </div>
+      <div class="cal-actions">
+        <button class="btn-clear" @click="clearDates">Borrar fechas</button>
+        <button class="btn-done" @click="confirmSelection">Listo</button>
+      </div>
+    </div>
 
   </div>
 </template>
@@ -327,11 +327,19 @@ function emitRange() {
 }
 
 function clearDates() {
-  rangeStart.value = null
-  rangeEnd.value   = null
-  displayStart.value = null
-  displayEnd.value   = null
-  emitRange()
+  if (activeTab.value === 'calendario') {
+    rangeStart.value = null
+    rangeEnd.value   = null
+    displayStart.value = null
+    displayEnd.value   = null
+    emitRange()
+  } else {
+    // Limpia la selección de fechas flexibles
+    mesesSel.value = []
+    duracionSel.value = '1n'
+    incluyeFinde.value = false
+    emit('update:dates', { start: '', end: '' })
+  }
 }
 
 function selectChip(id) {
@@ -353,44 +361,3 @@ function navigate(dir) {
 </script>
 
 <style scoped src="../assets/css/CalendarSelector.css"></style>
-
-<style scoped>
-.cal-footer {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.cal-footer-top {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.cal-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding-top: 8px;
-}
-.btn-clear {
-  background: none;
-  border: none;
-  color: #0071c2;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 14px;
-}
-.btn-done {
-  background: #003580;
-  color: white;
-  border: none;
-  padding: 10px 32px;
-  border-radius: 25px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.btn-done:hover {
-  background: #002254;
-}
-</style>
