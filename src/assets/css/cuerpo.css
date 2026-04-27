@@ -999,3 +999,144 @@ padding-top:2px ;
 color:#113955;
 font-size: 17px;    
 }
+
+.filters-column {
+    display: flex;
+    flex-direction: column;
+    font-family: sans-serif;
+    gap: 16px;
+}
+
+.filters-column > p { display: none; }
+.filter-card-box {
+    background: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.filter-card-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: #113955;
+    margin: 0 0 14px 0;
+}
+
+.filter-checkbox-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 0;
+}
+
+.filter-checkbox-row:not(:last-child) {
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.filter-checkbox-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-checkbox-row input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid #aab0bc;
+    border-radius: 4px;
+    cursor: pointer;
+    background: white;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.filter-checkbox-row input[type="checkbox"]:checked {
+    background-color: #113955;
+    border-color: #113955;
+}
+
+.filter-checkbox-row input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: 2px solid white;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+}
+
+.filter-checkbox-label {
+    font-size: 13px;
+    color: #333;
+}
+
+.filter-checkbox-count {
+    font-size: 12px;
+    color: #888;
+}
+
+.star-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 0;
+}
+
+.star-row:not(:last-child) {
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.star-icons {
+    display: inline-flex;
+    gap: 2px;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    max-width: 100%;
+}
+
+.service-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1/1;
+    min-height: 70px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    padding: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+.service-card:hover {
+    border-color: #113955;
+    background: #f0f5fa;
+}
+
+.service-icon {
+    width: 22px;
+    height: 22px;
+    margin-bottom: 5px;
+    color: #113955;
+}
+
+.service-name {
+    font-size: 10px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    line-height: 1.2;
+}

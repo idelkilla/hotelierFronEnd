@@ -264,13 +264,11 @@ function handleClick(y, m, day) {
   const date = makeDate(y, m, day)
   if (date < today) return
 
-  // Selección única: cualquier clic establece el día y limpia cualquier rango previo
   if (!props.range) {
     rangeStart.value = date
     rangeEnd.value   = null
-    displayStart.value = null
-    displayEnd.value   = null
-    activeChip.value = 'exactas'
+    emitRange()
+    emit('close')
     return
   }
 
@@ -280,14 +278,19 @@ function handleClick(y, m, day) {
     displayStart.value = null
     displayEnd.value   = null
     activeChip.value = 'exactas'
-    if (!props.range) emitRange()
+    emitRange() 
   } else if (date.getTime() === rangeStart.value.getTime()) {
     rangeStart.value = null
+    emitRange()
   } else if (date < rangeStart.value) {
     rangeEnd.value   = rangeStart.value
     rangeStart.value = date
+    emitRange()
+    emit('close')
   } else {
     rangeEnd.value = date
+    emitRange()
+    emit('close')
   }
 }
 

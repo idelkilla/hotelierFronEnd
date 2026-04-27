@@ -54,8 +54,8 @@
       </div>
 
       <!-- Fechas — mismo patrón que FormSearch -->
-      <div class="inputs-fecha date-field" ref="dateFieldRef" @click="toggleCalendario">
-        <div class="campo">
+      <div class="inputs-fecha date-field" ref="dateFieldRef">
+        <div class="campo" @click="abrirCalendario('inicio')">
           <label>CHECK-IN</label>
           <input
             type="text"
@@ -65,7 +65,7 @@
             class="readonly-input"
           />
         </div>
-        <div class="campo">
+        <div class="campo" @click="abrirCalendario('fin')">
           <label>CHECK-OUT</label>
           <input
             type="text"
@@ -81,18 +81,24 @@
       <CalendarSelector
         v-if="mostrarCalendario"
         :model-value="{ 
-          start: fechaInicio ? new Date(fechaInicio + 'T00:00:00') : null, 
-          end: fechaFin ? new Date(fechaFin + 'T00:00:00') : null 
+          start: (campoEditando === 'inicio' ? fechaInicio : fechaFin) 
+                 ? new Date((campoEditando === 'inicio' ? fechaInicio : fechaFin) + 'T00:00:00') 
+                 : null, 
+          end: null 
         }"
+        :range="false"
         @update:dates="onDatesSelected"
         @close="mostrarCalendario = false"
       />
 
-      <div class="campo-personas">
-        <label>PERSONAS</label>
-        <select>
-          <option>2 personas, 1 habitación</option>
-        </select>
+      <div class="campo-personas" id="guest-field">
+        <label>HUÉSPEDES</label>
+        <div class="personas-input-wrapper" @click="toggleHuespedes">
+          <span class="material-symbols-outlined personas-icon">person</span>
+          <input type="text" readonly :value="resumenHuespedes" class="readonly-input-personas" />
+          <span class="material-symbols-outlined dropdown-icon">expand_more</span>
+        </div>
+        <GuestSelector v-if="mostrarHuespedes" v-model="habitaciones" @close="mostrarHuespedes = false" />
       </div>
 
       <div class="desglose">
@@ -113,26 +119,64 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import CalendarSelector from './CalendarSelector.vue'
+import GuestSelector from './GuestSelector.vue'
+
+const props = defineProps({
+  hotel: Object
+})
+
+// ── Estado de huéspedes (sincronizado con URL como en FormSearch) ──
+const route = useRoute()
+const mostrarHuespedes = ref(false)
+const habitaciones = ref(
+  route.query.huespedes ? JSON.parse(route.query.huespedes) : [{ adultos: 2, ninos: 0, edadesNinos: [] }]
+)
+const resumenHuespedes = computed(() => {
+  const totalPersonas = habitaciones.value.reduce((acc, h) => acc + h.adultos + h.ninos, 0)
+  return `${totalPersonas} personas, ${habitaciones.value.length} habitación`
+})
 
 // ── Estado del calendario (igual que FormSearch) ──────────────────
 const mostrarCalendario = ref(false)
 const fechaInicio       = ref('')
 const fechaFin          = ref('')
+const campoEditando     = ref('inicio') // 'inicio' o 'fin'
 const dateFieldRef      = ref(null)
 
-function toggleCalendario() {
-  mostrarCalendario.value = !mostrarCalendario.value
+function abrirCalendario(campo) {
+  campoEditando.value = campo
+  mostrarCalendario.value = true
+  mostrarHuespedes.value = false // Cierra huéspedes al abrir calendario
+}
+
+function toggleHuespedes() {
+  mostrarHuespedes.value = !mostrarHuespedes.value
+  if (mostrarHuespedes.value) mostrarCalendario.value = false // Cierra calendario al abrir huéspedes
 }
 
 // Recibe las fechas desde CalendarSelector — mismo handler que FormSearch
 function onDatesSelected(dates) {
-  fechaInicio.value = dates.start   // formato YYYY-MM-DD
-  fechaFin.value    = dates.end
-  if (dates.start && dates.end) {
-    mostrarCalendario.value = false
+  const seleccion = dates.start // En modo range=false, la fecha elegida viene en .start
+
+  if (campoEditando.value === 'inicio') {
+    fechaInicio.value = seleccion
+    // Si la nueva fecha de entrada es posterior o igual a la salida, reseteamos la salida
+    if (fechaFin.value && seleccion >= fechaFin.value) {
+      fechaFin.value = ''
+    }
+  } else {
+    // Estamos editando el Check-out
+    if (fechaInicio.value && seleccion <= fechaInicio.value) {
+      // Evitamos que seleccionen una fecha de salida anterior o igual a la de entrada
+      return
+    }
+    fechaFin.value = seleccion
   }
+  
+  mostrarCalendario.value = false
 }
 
 // ── Display formateado (DD/MM/YYYY) ───────────────────────────────
@@ -160,6 +204,9 @@ const totalPrecio = computed(() => noches.value > 0 ? 890 * noches.value : 0)
 function handleOutsideClick(e) {
   if (!e.target.closest('.date-field') && !e.target.closest('.calendar-modal')) {
     mostrarCalendario.value = false
+  }
+  if (!e.target.closest('#guest-field')) {
+    mostrarHuespedes.value = false
   }
 }
 
@@ -258,7 +305,10 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', handleOutsideClick
   max-width: 95vw;
 }
 
-.campo-personas { margin-top: 15px; }
+.campo-personas { 
+  margin-top: 15px; 
+  position: relative; 
+}
 .campo-personas label {
   display: block;
   font-size: 11px;
@@ -267,13 +317,45 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', handleOutsideClick
   color: #666;
 }
 
-select {
-  width: 100%;
+.personas-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 8px;
-  font-size: 13px;
+  cursor: pointer;
+  background: white;
+}
+
+.personas-icon {
+  font-size: 20px;
+  color: #113956;
+}
+
+.readonly-input-personas {
+  flex: 1;
+  border: none;
   outline: none;
+  font-size: 13px;
+  color: #113956;
+  background: transparent;
+  cursor: pointer;
+}
+
+.dropdown-icon {
+  font-size: 20px;
+  color: #666;
+}
+
+/* Estilos para el modal de huéspedes */
+:deep(.guests-dropdown) {
+  position: absolute;
+  top: 0;               /* Alineado arriba de la tarjeta */
+  left: auto;
+  right: calc(100% + 20px); /* Desplazado a la izquierda */
+  margin-top: 0;
+  z-index: 1000;
 }
 
 .desglose { margin-top: 25px; }
@@ -323,6 +405,14 @@ hr        { border: 0; border-top: 1px solid #eee; margin: 15px 0; }
     width: 90vw !important;
     max-height: 85vh;
     overflow-y: auto;
+  }
+
+  :deep(.guests-dropdown) {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90vw !important;
   }
 }
 

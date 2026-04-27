@@ -57,244 +57,126 @@
 
     <div class="main-content-layout">
 
-      <!-- FILTROS -->
-      <div class="filters-column">
+     <div class="filters-column">
 
-      <!-- precios de mayor a menor -->
-        <div class="price-section">
-          <p class="price-title">Rango de Precio</p>
-          <div class="price-inputs-container">
-            <div class="price-card">
-              <span class="price-label">Mínimo</span>
-              <div class="price-input-wrapper">
-                <span class="currency">$</span>
-                <input type="text" v-model="minPrice" />
-              </div>
-            </div>
-            <div class="price-card">
-              <span class="price-label">Máximo</span>
-              <div class="price-input-wrapper">
-                <span class="currency">$</span>
-                <input type="text" v-model="maxPrice" />
-              </div>
-            </div>
-          </div>
-       </div>
-        <div class="accommodation-section">
-          <p class="filter-title-bold">Tipo de alojamiento</p>
-          <div class="accommodation-list">
-            <div v-for="tipo in tiposDisponibles" :key="tipo" class="accommodation-row">
-              <div class="checkbox-group">
-                <label class="checkBox">
-                  <input type="checkbox" :value="tipo" v-model="selectedTipos" />
-                  <div class="transition"></div>
-                </label>
-                <label class="label-text">{{ tipo }}</label>
-              </div>
-            </div>
-          </div>
-        </div>
-        <p>Filtrar por:</p>
-        <div v-for="servicio in serviciosDisponibles" :key="servicio" class="filter-option">
-          <label class="checkBox">
-            <input type="checkbox" :value="servicio" v-model="selectedServicios" />
-            <div class="transition"></div>
-          </label>
-          <label>{{ servicio }}</label>
-        </div>
-        <div class="services-section">
-          <p class="filter-title-bold">Servicios</p>
-          <div class="services-grid">
-            <div class="service-card">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path d="M12 18l.01 0" />
-                <path d="M9.172 15.172a4 4 0 0 1 5.656 0" />
-                <path d="M6.343 12.343a8 8 0 0 1 11.314 0" />
-                <path d="M3.515 9.515c4.686 -4.687 12.284 -4.687 17 0" />
-              </svg>
-              <span class="service-name">Wifi ({{ contarPorServicio('Wifi') }})</span>
-            </div>
-            <div class="service-card">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path
-                  d="M2 20a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1" />
-                <path
-                  d="M2 16a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1" />
-                <path d="M15 12v-7.5a1.5 1.5 0 0 1 3 0" />
-                <path d="M9 12v-7.5a1.5 1.5 0 0 0 -3 0" />
-                <path d="M15 5l-6 0" />
-                <path d="M9 10l6 0" />
-              </svg>
-              <span class="service-name">Alberca ({{ contarPorServicio('Alberca') }})</span>
-            </div>
-            <div class="service-card">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path d="M8 16a3 3 0 0 1 -3 3" />
-                <path d="M16 16a3 3 0 0 0 3 3" />
-                <path d="M12 16v4" />
-                <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2l0 -4" />
-                <path d="M7 13v-3a1 1 0 0 1 1 -1h8a1 1 0 0 1 1 1v3" />
-              </svg>
-              <span class="service-name">Aire acondicionado ({{ contarPorServicio('Aire acondicionado') }})</span>
-            </div>
-            <div class="service-card">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path d="M3 7a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1l0 -10" />
-                <path d="M15 6v12" />
-                <path d="M18 12h.01" />
-                <path d="M18 15h.01" />
-                <path d="M18 9h.01" />
-                <path d="M6.5 10.5c1 -.667 1.5 -.667 2.5 0c.833 .347 1.667 .926 2.5 0" />
-                <path d="M6.5 13.5c1 -.667 1.5 -.667 2.5 0c.833 .347 1.667 .926 2.5 0" />
-              </svg>
-              <span class="service-name">Cocina ({{ contarPorServicio('Cocina') }})</span>
-            </div>
-            <div class="service-card">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path d="M8 21h8" />
-                <path d="M12 15v6" />
-                <path d="M5 5a7 2 0 1 0 14 0a7 2 0 1 0 -14 0" />
-                <path
-                  d="M5 5v.388c0 .432 .126 .853 .362 1.206l5 7.509c.633 .951 1.88 1.183 2.785 .517c.191 -.141 .358 -.316 .491 -.517l5 -7.509c.236 -.353 .362 -.774 .362 -1.206v-.388" />
-              </svg>
-              <span class="service-name">Bar ({{ contarPorServicio('Bar') }})</span>
-            </div>
-            <div class="service-card">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path
-                  d="M14.7 13.5c-1.1 -2 -1.441 -2.5 -2.7 -2.5c-1.259 0 -1.736 .755 -2.836 2.747c-.942 1.703 -2.846 1.845 -3.321 3.291c-.097 .265 -.145 .677 -.143 .962c0 1.176 .787 2 1.8 2c1.259 0 3 -1 4.5 -1s3.241 1 4.5 1c1.013 0 1.8 -.823 1.8 -2c0 -.285 -.049 -.697 -.146 -.962c-.475 -1.451 -2.512 -1.835 -3.454 -3.538" />
-                <path
-                  d="M20.188 8.082a1.039 1.039 0 0 0 -.406 -.082h-.015c-.735 .012 -1.56 .75 -1.993 1.866c-.519 1.335 -.28 2.7 .538 3.052c.129 .055 .267 .082 .406 .082c.739 0 1.575 -.742 2.011 -1.866c.516 -1.335 .273 -2.7 -.54 -3.052l-.001 0" />
-                <path
-                  d="M9.474 9c.055 0 .109 0 .163 -.011c.944 -.128 1.533 -1.346 1.32 -2.722c-.203 -1.297 -1.047 -2.267 -1.932 -2.267c-.055 0 -.109 0 -.163 .011c-.944 .128 -1.533 1.346 -1.32 2.722c.204 1.293 1.048 2.267 1.933 2.267" />
-                <path
-                  d="M16.456 6.733c.214 -1.376 -.375 -2.594 -1.32 -2.722a1.164 1.164 0 0 0 -.162 -.011c-.885 0 -1.728 .97 -1.93 2.267c-.214 1.376 .375 2.594 1.32 2.722c.054 .007 .108 .011 .162 .011c.885 0 1.73 -.974 1.93 -2.267" />
-                <path
-                  d="M5.69 12.918c.816 -.352 1.054 -1.719 .536 -3.052c-.436 -1.124 -1.271 -1.866 -2.009 -1.866c-.14 0 -.277 .027 -.407 .082c-.816 .352 -1.054 1.719 -.536 3.052c.436 1.124 1.271 1.866 2.009 1.866c.14 0 .277 -.027 .407 -.082" />
-              </svg>
-              <span class="service-name">Mascotas ({{ contarPorServicio('Mascotas') }})</span>
-            </div>
-            <div class="service-card">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path d="M2 9a10 10 0 1 0 20 0" />
-                <path d="M12 19a10 10 0 0 1 10 -10" />
-                <path d="M2 9a10 10 0 0 1 10 10" />
-                <path d="M12 4a9.7 9.7 0 0 1 2.99 7.5" />
-                <path d="M9.01 11.5a9.7 9.7 0 0 1 2.99 -7.5" />
-              </svg>
-              <span class="service-name">Spa ({{ contarPorServicio('Spa') }})</span>
-            </div>
-            <div class="service-card">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14" />
-                <path d="M10 16v-8h2.667c.736 0 1.333 .895 1.333 2s-.597 2 -1.333 2h-2.667" />
-              </svg>
-              <span class="service-name">Estacionamiento ({{ contarPorServicio('Estacionamiento') }})</span>
-            </div>
-            <div class="service-card">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path d="M5 5a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2l0 -14" />
-                <path d="M8 14a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
-                <path d="M8 6h.01" />
-                <path d="M11 6h.01" />
-                <path d="M14 6h2" />
-                <path d="M8 14c1.333 -.667 2.667 -.667 4 0c1.333 .667 2.667 .667 4 0" />
-              </svg>
-              <span class="service-name">Lavadora ({{ contarPorServicio('Lavadora') }})</span>
-            </div>
-            <div class="service-card">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path
-                  d="M19 3v12h-5c-.023 -3.681 .184 -7.406 5 -12m0 12v6h-1v-3m-10 -14v17m-3 -17v3a3 3 0 1 0 6 0v-3" />
-              </svg>
-              <span class="service-name">Restaurante ({{ contarPorServicio('Restaurante') }})</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="stars-section">
-          <p class="filter-title-bold">Estrellas</p>
-          <div class="stars-list">
-            <div class="star-row">
-              <div class="checkbox-group">
-                <label class="checkBox">
-                  <input type="checkbox" id="star-5" v-model="selectedStars" value="5" />
-                  <div class="transition"></div>
-                </label>
-                <label for="star-5">
-                  <span class="star-icons">
-                    <svg v-for="i in 5" :key="i" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                      viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2">
-                      <path
-                        d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z" />
-                    </svg>
-                  </span>
-                </label>
-              </div>
-              <span class="count-text">{{ contarPorCalificacion(9) }}</span>
-            </div>
-
-            <div class="star-row">
-              <div class="checkbox-group">
-                <label class="checkBox">
-                  <input type="checkbox" id="star-4" v-model="selectedStars" value="4" />
-                  <div class="transition"></div>
-                </label>
-                <label for="star-4">
-                  <span class="star-icons">
-                    <svg v-for="i in 4" :key="i" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                      viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2">
-                      <path
-                        d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z" />
-                    </svg>
-                  </span>
-                </label>
-              </div>
-              <span class="count-text">{{ contarPorCalificacion(7) }}</span>
-            </div>
-
-            <div class="star-row">
-              <div class="checkbox-group">
-                <label class="checkBox">
-                  <input type="checkbox" id="star-3" v-model="selectedStars" value="3" />
-                  <div class="transition"></div>
-                </label>
-                <label for="star-3">
-                  <span class="star-icons">
-                    <svg v-for="i in 3" :key="i" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                      viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2">
-                      <path
-                        d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z" />
-                    </svg>
-                  </span>
-                </label>
-              </div>
-              <span class="count-text">{{ contarPorCalificacion(5) }}</span>
-            </div>
-          </div>
+  <div class="filter-card-box">
+    <p class="filter-card-title">Rango de Precio</p>
+    <div class="price-inputs-container">
+      <div class="price-card">
+        <span class="price-label">Mínimo</span>
+        <div class="price-input-wrapper">
+          <span class="currency">$</span>
+          <input type="text" v-model="minPrice" placeholder="0" />
         </div>
       </div>
+      <div class="price-card">
+        <span class="price-label">Máximo</span>
+        <div class="price-input-wrapper">
+          <span class="currency">$</span>
+          <input type="text" v-model="maxPrice" placeholder="0" />
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <div class="filter-card-box">
+    <p class="filter-card-title">Tipo de alojamiento</p>
+    <div v-for="tipo in tiposDisponibles" :key="tipo" class="filter-checkbox-row">
+      <div class="filter-checkbox-left">
+        <input type="checkbox" :value="tipo" v-model="selectedTipos" />
+        <span class="filter-checkbox-label">{{ tipo }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-card-box">
+    <p class="filter-card-title">Filtros populares</p>
+    <div v-for="servicio in serviciosDisponibles" :key="servicio" class="filter-checkbox-row">
+      <div class="filter-checkbox-left">
+        <input type="checkbox" :value="servicio" v-model="selectedServicios" />
+        <span class="filter-checkbox-label">{{ servicio }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-card-box">
+    <p class="filter-card-title">Servicios</p>
+    <div class="services-grid">
+      <div class="service-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 18l.01 0"/><path d="M9.172 15.172a4 4 0 0 1 5.656 0"/><path d="M6.343 12.343a8 8 0 0 1 11.314 0"/><path d="M3.515 9.515c4.686 -4.687 12.284 -4.687 17 0"/></svg>
+        <span class="service-name">Wifi ({{ contarPorServicio('Wifi') }})</span>
+      </div>
+      <div class="service-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M2 20a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1"/><path d="M15 12v-7.5a1.5 1.5 0 0 1 3 0"/><path d="M9 12v-7.5a1.5 1.5 0 0 0 -3 0"/><path d="M15 5l-6 0"/><path d="M9 10l6 0"/></svg>
+        <span class="service-name">Alberca ({{ contarPorServicio('Alberca') }})</span>
+      </div>
+      <div class="service-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 16a3 3 0 0 1 -3 3"/><path d="M16 16a3 3 0 0 0 3 3"/><path d="M12 16v4"/><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2l0 -4"/><path d="M7 13v-3a1 1 0 0 1 1 -1h8a1 1 0 0 1 1 1v3"/></svg>
+        <span class="service-name">Aire acond. ({{ contarPorServicio('Aire acondicionado') }})</span>
+      </div>
+      <div class="service-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1l0 -10"/><path d="M15 6v12"/><path d="M18 12h.01"/><path d="M6.5 10.5c1 -.667 1.5 -.667 2.5 0c.833 .347 1.667 .926 2.5 0"/><path d="M6.5 13.5c1 -.667 1.5 -.667 2.5 0c.833 .347 1.667 .926 2.5 0"/></svg>
+        <span class="service-name">Cocina ({{ contarPorServicio('Cocina') }})</span>
+      </div>
+      <div class="service-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M2 9a10 10 0 1 0 20 0"/><path d="M12 19a10 10 0 0 1 10 -10"/><path d="M2 9a10 10 0 0 1 10 10"/><path d="M12 4a9.7 9.7 0 0 1 2.99 7.5"/><path d="M9.01 11.5a9.7 9.7 0 0 1 2.99 -7.5"/></svg>
+        <span class="service-name">Spa ({{ contarPorServicio('Spa') }})</span>
+      </div>
+      <div class="service-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 21h8"/><path d="M12 15v6"/><path d="M5 5a7 2 0 1 0 14 0a7 2 0 1 0 -14 0"/><path d="M5 5v.388c0 .432 .126 .853 .362 1.206l5 7.509c.633 .951 1.88 1.183 2.785 .517c.191 -.141 .358 -.316 .491 -.517l5 -7.509c.236 -.353 .362 -.774 .362 -1.206v-.388"/></svg>
+        <span class="service-name">Bar ({{ contarPorServicio('Bar') }})</span>
+      </div>
+      <div class="service-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14"/><path d="M10 16v-8h2.667c.736 0 1.333 .895 1.333 2s-.597 2 -1.333 2h-2.667"/></svg>
+        <span class="service-name">Parking ({{ contarPorServicio('Estacionamiento') }})</span>
+      </div>
+      <div class="service-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19 3v12h-5c-.023 -3.681 .184 -7.406 5 -12m0 12v6h-1v-3m-10 -14v17m-3 -17v3a3 3 0 1 0 6 0v-3"/></svg>
+        <span class="service-name">Restaurante ({{ contarPorServicio('Restaurante') }})</span>
+      </div>
+      <div class="service-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 5a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2l0 -14"/><path d="M8 14a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M8 6h.01"/><path d="M11 6h.01"/><path d="M14 6h2"/><path d="M8 14c1.333 -.667 2.667 -.667 4 0c1.333 .667 2.667 .667 4 0"/></svg>
+        <span class="service-name">Lavadora ({{ contarPorServicio('Lavadora') }})</span>
+      </div>
+      <div class="service-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.7 13.5c-1.1 -2 -1.441 -2.5 -2.7 -2.5c-1.259 0 -1.736 .755 -2.836 2.747c-.942 1.703 -2.846 1.845 -3.321 3.291c-.097 .265 -.145 .677 -.143 .962c0 1.176 .787 2 1.8 2c1.259 0 3 -1 4.5 -1s3.241 1 4.5 1c1.013 0 1.8 -.823 1.8 -2c0 -.285 -.049 -.697 -.146 -.962c-.475 -1.451 -2.512 -1.835 -3.454 -3.538"/></svg>
+        <span class="service-name">Mascotas ({{ contarPorServicio('Mascotas') }})</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-card-box">
+    <p class="filter-card-title">Estrellas</p>
+    <div class="star-row">
+      <div class="filter-checkbox-left">
+        <input type="checkbox" id="star-5" v-model="selectedStars" value="5" />
+        <span class="star-icons">
+          <svg v-for="i in 5" :key="i" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2"><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/></svg>
+        </span>
+      </div>
+      <span class="filter-checkbox-count">{{ contarPorCalificacion(9) }}</span>
+    </div>
+    <div class="star-row">
+      <div class="filter-checkbox-left">
+        <input type="checkbox" id="star-4" v-model="selectedStars" value="4" />
+        <span class="star-icons">
+          <svg v-for="i in 4" :key="i" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2"><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/></svg>
+        </span>
+      </div>
+      <span class="filter-checkbox-count">{{ contarPorCalificacion(7) }}</span>
+    </div>
+    <div class="star-row">
+      <div class="filter-checkbox-left">
+        <input type="checkbox" id="star-3" v-model="selectedStars" value="3" />
+        <span class="star-icons">
+          <svg v-for="i in 3" :key="i" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2"><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/></svg>
+        </span>
+      </div>
+      <span class="filter-checkbox-count">{{ contarPorCalificacion(5) }}</span>
+    </div>
+  </div>
+
+</div>
       <!-- RESULTADOS -->
       <div class="listings-column">
 
