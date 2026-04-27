@@ -391,7 +391,7 @@
 
               <div class="slider-dots">
                 <span v-for="(img, index) in hotel.imagenes" :key="index"
-                  :class="{ active: index === hotel.currentImg }"></span>h
+                  :class="{ active: index === hotel.currentImg }"></span>
               </div>
             </div>
 
@@ -402,13 +402,7 @@
               <div class="amenities">
                 <span v-for="amenity in hotel.amenidades.slice(0, 4)" :key="amenity" class="amenity-tag">
                   {{ amenity }}
-                  <svg v-if="amenity === 'Todo Incluido'" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" style="margin-left: 5px; vertical-align: middle">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path
-                      d="M9.828 9.172a4 4 0 1 0 0 5.656a10 10 0 0 0 2.172 -2.828a10 10 0 0 1 2.172 -2.828a4 4 0 1 1 0 5.656a10 10 0 0 1 -2.172 -2.828a10 10 0 0 0 -2.172 -2.828" />
-                  </svg>
+                
                 </span>
                 <span v-if="hotel.amenidades.length > 4" class="amenity-tag">
                   +{{ hotel.amenidades.length - 4 }} más

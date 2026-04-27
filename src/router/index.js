@@ -6,7 +6,8 @@ import authService            from '../services/authService';
 import servicesMenu           from '../components/servicesMenu.vue';
 import head                   from '../view/head.vue';
 import servicioCliente        from '../view/servicioCliente.vue';
-import DetalleHospedaje from '../view/DetalleHospedaje.vue'; // Asegúrate de que el nombre coincida
+import DetalleHospedaje from '../view/DetalleHospedaje.vue'; 
+import Vuelos from '../view/Vuelos.vue';// Asegúrate de que el nombre coincida
 
 const ADMIN_EMAIL = 'admin@gmail.com'
 
@@ -23,6 +24,8 @@ const routes = [
   // Admin — protegida por JWT
   // { path: '/admin', name: 'Admin', component: AdminRegistrarPropiedad, meta: { soloAdmin: true } },
   { path: '/hospedaje/:id',   name: 'DetalleHospedaje', component: DetalleHospedaje},
+  { path: '/vuelos', name: 'Vuelos', component: Vuelos },
+
 ];
 
 const router = createRouter({
