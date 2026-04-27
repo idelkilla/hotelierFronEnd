@@ -1,4 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import Login                  from '../view/login.vue';
+import Register               from '../view/register.vue';
+import Home                   from '../view/Home.vue';
+import authService            from '../services/authService';
+import servicesMenu           from '../components/servicesMenu.vue';
+
+import head                   from '../view/head.vue';
+import servicioCliente        from '../view/servicioCliente.vue';
+import DetalleHospedaje from '../view/DetalleHospedaje.vue'; 
+import Vuelos from '../view/Vuelos.vue';// Asegúrate de que el nombre coincida
 import authService from '../services/authService';
 
 
@@ -25,6 +35,13 @@ const routes = [
   { path: '/services',         name: 'servicesMenu',    component: servicesMenu },
   { path: '/head',             name: 'Head',            component: head },
   { path: '/servicio-cliente', name: 'ServicioCliente', component: servicioCliente },
+  { path: '/hospedaje/:id',
+    component: () => import('../view/head.vue'), name: 'DetalleHospedaje', props: true},
+  // Admin — protegida por JWT
+  // { path: '/admin', name: 'Admin', component: AdminRegistrarPropiedad, meta: { soloAdmin: true } },
+  { path: '/hospedaje/:id',   name: 'DetalleHospedaje', component: DetalleHospedaje},
+  { path: '/vuelos', name: 'Vuelos', component: Vuelos },
+
   
 
   { 
