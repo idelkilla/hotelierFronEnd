@@ -13,6 +13,15 @@
 /* ─────────────────────────────────────────
    Sidebar shell
 ───────────────────────────────────────── */
+.sidebar-wrapper {
+  border-radius: 0 28px 28px 0;
+  overflow: hidden;
+  height: 100vh;
+  flex-shrink: 0;
+  background: transparent;
+  z-index: 20;
+}
+
 .sidebar {
   width: var(--sidebar-w);
   min-width: var(--sidebar-w);

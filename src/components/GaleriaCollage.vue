@@ -1,4 +1,19 @@
 <template>
+  <div class="contenedor-limpio">
+    <div class="galeria-grid">
+      <div class="foto-principal">
+        <img src="https://images.pexels.com/photos/271639/pexels-photo-271639.jpeg" alt="Principal">
+      </div>
+
+      <div class="bloque-secundario">
+        <img src="https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg" class="img-top">
+        
+        <div class="fila-inferior">
+          <img src="https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg">
+          <img src="https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg" class="img-bottom-right">
+        </div>
+      </div>
+    </div>
   <div class="galeria-grid" :class="{ 'solo-una': misImagenes.length === 1 }" v-if="misImagenes.length > 0">
     <div class="foto-grande" :class="{ 'full-width': misImagenes.length === 1 }">
       <!-- Soporta tanto array de strings como objetos de la BD -->
@@ -20,6 +35,7 @@
         <p>No hay imágenes disponibles para este hospedaje</p>
      </div>
   </div>
+  </div>
 </template>
 
 <script setup>
@@ -35,7 +51,6 @@ const props = defineProps({
 const misImagenes = computed(() => props.imagenesBd);
 </script>
 
->>>>>>> e60c33d22fe499b364d92a452216bd730975a260
 <style scoped>
 .contenedor-limpio {
   background-color: white;

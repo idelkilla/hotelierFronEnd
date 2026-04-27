@@ -23,6 +23,17 @@
         :initialSalida="fechaFin"
       />
 
+      <ActividadesSearch
+        v-else-if="activeOption === 'actividades'"
+        :initialDestino="busquedaDestino"
+        :initialEntrada="fechaInicio"
+        :initialSalida="fechaFin"
+      />
+
+      <CrucerosSearch
+        v-else-if="activeOption === 'cruceros'"
+      />
+
       <template v-else>
         <!-- Campos de búsqueda — stack vertical en mobile -->
         <div class="search-fields-dynamic">
@@ -148,6 +159,8 @@ import GuestSelector from './GuestSelector.vue'
 import CalendarSelector from './CalendarSelector.vue'
 import LocationDropdown from './LocationDropdown.vue'
 import VuelosSearch from './VuelosSearch.vue'
+import ActividadesSearch from './ActividadesSearch.vue'
+import CrucerosSearch from './CrucerosSearch.vue'
 
 const props = defineProps({
   compact: Boolean,

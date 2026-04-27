@@ -594,3 +594,94 @@
 @media (max-width: 768px) {
   .input-with-icon.has-chip { height: 46px; }
 }
+
+
+.cruceros-search {
+  width: 100%;
+}
+
+.info-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  color: #444;
+  margin-top: 20px;
+}
+
+.banner-icon {
+  font-size: 18px;
+  color: #888;
+  flex-shrink: 0;
+}
+
+.info-banner p {
+  margin: 0;
+}
+
+/* Dropdown duración */
+.duracion-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 200;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  min-width: 200px;
+  overflow: hidden;
+}
+
+.duracion-item {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.duracion-item:hover {
+  background: #f5f5f5;
+}
+
+.duracion-item.selected {
+  background: #eef4ff;
+  color: #265073;
+  font-weight: 600;
+}
+
+.actividades-search {
+  width: 100%;
+}
+
+.info-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  color: #444;
+}
+
+.banner-icon {
+  font-size: 18px;
+  color: #888;
+  flex-shrink: 0;
+}
+
+.info-banner p {
+  margin: 0;
+}
+
+.link-entradas {
+  color: #265073;
+  font-weight: 500;
+  text-decoration: none;
+  margin-left: 4px;
+}
+
+.link-entradas:hover {
+  text-decoration: underline;
+}

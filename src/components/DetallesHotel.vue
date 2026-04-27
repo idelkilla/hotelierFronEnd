@@ -80,6 +80,10 @@
       <!-- Dropdown calendario -->
       <CalendarSelector
         v-if="mostrarCalendario"
+        :model-value="{ 
+          start: fechaInicio ? new Date(fechaInicio + 'T00:00:00') : null, 
+          end: fechaFin ? new Date(fechaFin + 'T00:00:00') : null 
+        }"
         @update:dates="onDatesSelected"
         @close="mostrarCalendario = false"
       />
@@ -110,7 +114,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import  Caleandarelector  from '../components/CalendarSelector.vue'
+import CalendarSelector from './CalendarSelector.vue'
 
 // ── Estado del calendario (igual que FormSearch) ──────────────────
 const mostrarCalendario = ref(false)
