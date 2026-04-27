@@ -436,8 +436,9 @@
   background: white;
   cursor: pointer;
   flex-shrink: 0;
-  align-self: center;
-  margin-top: 18px;
+  align-self: flex-end;
+  margin-top: 0;
+  margin-bottom: 0;
   transition: background 0.2s, border-color 0.2s;
   color: #555;
 }
@@ -465,37 +466,22 @@
 
 .multidestino-row {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  width: 100%;
 }
 
 .multidestino-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 8px;
+  margin-top: 20px;
   flex-wrap: wrap;
   gap: 12px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 16px;
 }
-
-.add-vuelo-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: none;
-  border: none;
-  color: var(--color-primary);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 6px 4px;
-  border-radius: 6px;
-  transition: background 0.2s;
-}
-
-.add-vuelo-btn:hover { background: #e8f0fe; }
-.add-vuelo-btn:disabled { color: #aaa; cursor: not-allowed; }
 
 .remove-vuelo-btn {
   display: flex;
@@ -508,8 +494,9 @@
   background: white;
   color: #888;
   cursor: pointer;
-  align-self: center;
-  margin-top: 18px;
+  align-self: flex-end;
+  margin-top: 0;
+  margin-bottom: 0;
   transition: background 0.2s, color 0.2s;
 }
 
@@ -522,6 +509,11 @@
   .swap-btn, .remove-vuelo-btn { margin-top: 0; align-self: flex-end; }
   .vuelos-tabs { overflow-x: auto; scrollbar-width: none; }
   .vuelo-tab { white-space: nowrap; }
+
+  /* EXCEPCIÓN: dentro de multidestino-actions, el botón es pill y no full width */
+  .multidestino-actions .search-button-container { width: auto !important; flex-shrink: 0; }
+  .multidestino-actions .search-button-container > *,
+  .multidestino-actions .search-button-container button { width: auto !important; min-width: 120px; padding: 0 28px !important; }
 }
 
 /* El contenedor solo actúa como input azul cuando hay selección Y está activo */
@@ -684,4 +676,38 @@
 
 .link-entradas:hover {
   text-decoration: underline;
+}
+
+.add-vuelo-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 4px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.add-vuelo-btn:hover { background: #e8f0fe; }
+.add-vuelo-btn:disabled { color: #aaa; cursor: not-allowed; }
+
+/* Ajuste específico para el botón de búsqueda dentro de multidestino */
+.multidestino-actions .search-button-container {
+  width: 100% !important;
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+.multidestino-actions .search-button-container > *,
+.multidestino-actions .search-button-container button {
+  width: auto !important;
+  min-width: 100px;
+  padding: 0 20px !important;
+  height: 38px !important;
+  border-radius: 25px !important;
 }

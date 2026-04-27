@@ -265,7 +265,9 @@
           <span class="material-symbols-outlined">add</span>
           Agregar otro vuelo
         </button>
-        <BuscarButton @click="handleSearch" />
+        <div class="buscar-pill-wrapper">
+          <BuscarButton @click="handleSearch" />
+        </div>
       </div>
     </div>
 
@@ -596,4 +598,22 @@ function handleSearch() {
 
 <style scoped>
 @import '../assets/css/FormSearch.css';
+
+/* Fuerza el botón en multidestino a ser pill, nunca full-width */
+.buscar-pill-wrapper {
+  flex-shrink: 0;
+  width: auto !important;
+}
+
+.buscar-pill-wrapper > * {
+  width: auto !important;
+  min-width: 120px;
+  border-radius: 25px !important;
+}
+
+/* Mobile: tampoco se expande */
+@media (max-width: 768px) {
+  .buscar-pill-wrapper { width: auto !important; }
+  .buscar-pill-wrapper > * { width: auto !important; }
+}
 </style>
