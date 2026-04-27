@@ -372,3 +372,42 @@
 .flex-month-card.active .flex-month-year {
   color: #003580;
 }
+
+.cal-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.cal-footer-top {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.cal-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-top: 8px;
+}
+.btn-clear {
+  background: none;
+  border: none;
+  color: #0071c2;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+.btn-done {
+  background: #003580;
+  color: white;
+  border: none;
+  padding: 10px 32px;
+  border-radius: 25px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-done:hover {
+  background: #002254;
+}
