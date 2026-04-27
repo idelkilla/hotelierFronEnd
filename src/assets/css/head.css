@@ -103,10 +103,9 @@ header.header {
   opacity: 0.85;
 }
 
-/* AVATAR */
 .user-avatar {
-  width: 35px;
-  height: 35px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   overflow: hidden;
   border-color: #265073;

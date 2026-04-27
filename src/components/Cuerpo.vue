@@ -2,67 +2,14 @@
   <div class="main-container">
     <div class="search-section-container">
       <div class="search-bar-content">
-        <div class="search-inputs-row">
-          <div class="dropdown-container">
-            <div class="input-group location-input">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M12 11.5C10.621 11.5 9.5 10.379 9.5 9C9.5 7.621 10.621 6.5 12 6.5C13.379 6.5 14.5 7.621 14.5 9C14.5 10.379 13.379 11.5 12 11.5Z"
-                  stroke="#333" stroke-width="1.5" />
-                <path
-                  d="M12 21C14.773 18.026 18.5 14.5 18.5 9.5C18.5 5.358 15.029 2 12 2C8.971 2 5.5 5.358 5.5 9.5C5.5 14.5 9.227 18.026 12 21Z"
-                  stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-              <div class="input-text-area">
-                <label>¿A dónde quieres ir?</label>
-                <input type="text" v-model="searchDestino" placeholder="Sosúa, Puerto Plata República..." />
-              </div>
-            </div>
-          </div>
-
-          <div class="input-group date-input">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="4" width="18" height="18" rx="2" stroke="#333" stroke-width="1.5" />
-              <path d="M7 2V4" stroke="#333" stroke-width="1.5" stroke-linecap="round" />
-              <path d="M17 2V4" stroke="#333" stroke-width="1.5" stroke-linecap="round" />
-              <path d="M3 8H21" stroke="#333" stroke-width="1.5" stroke-linecap="round" />
-            </svg>
-            <div class="input-text-area">
-              <label>Entrada</label>
-              <input type="date" v-model="searchEntrada" />
-            </div>
-          </div>
-
-          <div class="input-group date-input">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="4" width="18" height="18" rx="2" stroke="#333" stroke-width="1.5" />
-              <path d="M7 2V4" stroke="#333" stroke-width="1.5" stroke-linecap="round" />
-              <path d="M17 2V4" stroke="#333" stroke-width="1.5" stroke-linecap="round" />
-              <path d="M3 8H21" stroke="#333" stroke-width="1.5" stroke-linecap="round" />
-            </svg>
-            <div class="input-text-area">
-              <label>Salida</label>
-              <input type="date" v-model="searchSalida" />
-            </div>
-          </div>
-
-          <div class="input-group guests-input">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
-                stroke="#333" stroke-width="1.5" />
-              <path d="M12 14C16.4183 14 20 17.1333 20 21H4C4 17.1333 7.58172 14 12 14Z" stroke="#333"
-                stroke-width="1.5" />
-            </svg>
-            <div class="input-text-area">
-              <label>Huéspedes</label>
-              <input type="text" :value="resumenHuespedes" readonly />
-            </div>
-          </div>
-
-          <button class="search-button" @click="ejecutarBusqueda">Buscar</button>
-        </div>
-
+        <!-- Reemplazamos el buscador actual con el componente FormSearch -->
+        <FormSearch
+          :initial-destino="searchDestino"
+          :initial-entrada="searchEntrada"
+          :initial-salida="searchSalida"
+          :initial-huespedes="habitaciones"
+          compact
+        />
         <div class="accommodation-tabs">
           <div class="slider-background" :class="sliderClass"></div>
 
@@ -437,7 +384,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
@@ -451,6 +398,13 @@ const idUbicacion = ref(route.query.id_ubicacion || '')
 const habitaciones = ref(
   route.query.huespedes ? JSON.parse(route.query.huespedes) : [{ adultos: 2, ninos: 0 }]
 )
+
+// Vigilamos los cambios en la URL para refrescar la búsqueda y sincronizar el formulario
+watch(() => route.query, () => {
+  ejecutarBusqueda()
+}, { deep: true })
+
+import FormSearch from './formSearch.vue';
 
 // ── Estado ────────────────────────────────────────────────────────────────────
 const hoteles = ref([])
@@ -579,6 +533,7 @@ async function ejecutarBusqueda() {
   searchDestino.value = destino
   searchEntrada.value = fechaInicio
   searchSalida.value = fechaFin
+  habitaciones.value = habs
 
   console.log('EJECUTANDO BÚSQUEDA CON:', { destino, fechaInicio, fechaFin, habs })
 
