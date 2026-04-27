@@ -291,8 +291,28 @@ function handleClick(y, m, day) {
   }
 }
 
+const flexibleSummary = computed(() => {
+  const dur = duraciones.find(d => d.id === duracionSel.value)?.label || ''
+  const selectedMonthNames = mesesSel.value.map(key => {
+    const mes = mesesDisponibles.value.find(m => m.key === key)
+    return mes ? mes.nombre : ''
+  }).filter(Boolean)
+  
+  let monthStr = ''
+  if (selectedMonthNames.length > 0) {
+    monthStr = ' en ' + selectedMonthNames.join(', ')
+  }
+  
+  const weekend = incluyeFinde.value ? ' (incl. finde)' : ''
+  return `${dur}${monthStr}${weekend}`
+})
+
 function confirmSelection() {
-  emitRange()
+  if (activeTab.value === 'flexibles') {
+    emit('update:dates', { start: flexibleSummary.value, end: 'FLEXIBLE' })
+  } else {
+    emitRange()
+  }
   emit('close')
 }
 

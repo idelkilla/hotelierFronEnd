@@ -151,12 +151,14 @@ function onDatesSelected(dates) {
 
 function fmtFecha(str) {
   if (!str) return ''
+  if (!str.includes('-')) return str
   const [y, m, d] = str.split('-').map(Number)
   return new Date(y, m - 1, d).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
 }
 
 const resumenFechas = computed(() => {
   if (!fechaInicio.value) return ''
+  if (fechaFin.value === 'FLEXIBLE') return fechaInicio.value
   const ini = fmtFecha(fechaInicio.value)
   const fin  = fechaFin.value ? fmtFecha(fechaFin.value) : '...'
   return `${ini} — ${fin}`

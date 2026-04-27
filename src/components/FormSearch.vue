@@ -213,7 +213,10 @@ function onDatesSelected(dates) {
 
 function fmtFecha(str) {
   if (!str) return ''
-  const [y, m, d] = str.split('-').map(Number)
+  if (!str.includes('-')) return str // Es un resumen flexible
+  const parts = str.split('-')
+  if (parts.length !== 3) return str
+  const [y, m, d] = parts.map(Number)
   return new Date(y, m - 1, d).toLocaleDateString('es-ES', {
     day: 'numeric', month: 'short',
   })
@@ -221,6 +224,7 @@ function fmtFecha(str) {
 
 const resumenFechas = computed(() => {
   if (!fechaInicio.value) return ''
+  if (fechaFin.value === 'FLEXIBLE') return fechaInicio.value
   const ini = fmtFecha(fechaInicio.value)
   const fin  = fechaFin.value ? fmtFecha(fechaFin.value) : '...'
   return `${ini} — ${fin}`

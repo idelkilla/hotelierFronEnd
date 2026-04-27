@@ -461,16 +461,23 @@ const fechaFin         = ref(props.initialSalida  || '')
 const mostrarCalendario = ref(false)
 const toggleCalendario  = () => (mostrarCalendario.value = !mostrarCalendario.value)
 function onDatesSelected(dates) {
-  fechaInicio.value = dates.start
-  fechaFin.value    = tipoViaje.value === 'REDONDO' ? dates.end : ''
+  if (dates.end === 'FLEXIBLE') {
+    fechaInicio.value = dates.start
+    fechaFin.value = 'FLEXIBLE'
+  } else {
+    fechaInicio.value = dates.start
+    fechaFin.value    = tipoViaje.value === 'REDONDO' ? dates.end : ''
+  }
 }
 function fmtFecha(str) {
   if (!str) return ''
+  if (!str.includes('-')) return str
   const [y, m, d] = str.split('-').map(Number)
   return new Date(y, m - 1, d).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', weekday: 'short' })
 }
 const resumenFechas = computed(() => {
   if (!fechaInicio.value) return ''
+  if (fechaFin.value === 'FLEXIBLE') return fechaInicio.value
   if (tipoViaje.value === 'SENCILLO') return fmtFecha(fechaInicio.value)
   const fin = fechaFin.value ? fmtFecha(fechaFin.value) : '...'
   return `${fmtFecha(fechaInicio.value)} — ${fin}`
