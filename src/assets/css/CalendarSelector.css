@@ -1,82 +1,75 @@
-/* ─────────────────────────────────────────────────────────
-   CalendarSelector.css  —  src/assets/css/CalendarSelector.css
-   ───────────────────────────────────────────────────────── */
-
 :root {
-  --cal-border:     #e0e0e0;
-
+  --cal-primary: #003580;
+  --cal-range: #d6eaf8;
 }
 
-/* ── Modal ──────────────────────────────────────────────────
-   Igual que .guests-dropdown: absolute, top:100%, left:0
-   El padre (field-group / input-with-icon) debe tener
-   position: relative para que este se ancle a él.
-──────────────────────────────────────────────────────────── */
 .calendar-modal {
   position: absolute;
-  top: calc(100% + 8px);   /* 8px debajo del input */
+  top: calc(100% + 8px);
   left: 0;
   z-index: 200;
-
   background: white;
-  border-radius: 30px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   width: 760px;
   user-select: none;
-  font-family: 'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family:
+    'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   animation: cal-drop-in 0.16s ease;
+  overflow: hidden;
 }
-
 @keyframes cal-drop-in {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: translateY(0);    }
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* ── Tabs ────────────────────────────────────────────────── */
+/* ── Tabs ── */
 .cal-tabs {
-  border-radius: 30px;
   display: flex;
   border-bottom: 1px solid #e0e0e0;
 }
-
 .cal-tab {
   flex: 1;
   background: none;
   border: none;
-  padding: 14px 0;
+  padding: 16px 0;
   font-size: 15px;
-  font-family: inherit;
   font-weight: 500;
   color: #6e6e6e;
   cursor: pointer;
   position: relative;
-  transition: color .2s;
+  transition: color 0.2s;
 }
-
 .cal-tab.active {
   color: #0071c2;
   font-weight: 700;
 }
-
 .cal-tab.active::after {
   content: '';
   position: absolute;
   bottom: -1px;
-  left: 0; right: 0;
+  left: 0;
+  right: 0;
   height: 2px;
   background: #0071c2;
   border-radius: 2px 2px 0 0;
 }
 
-/* ── Grid dos meses ──────────────────────────────────────── */
+/* ── Grid dos meses ── */
 .cal-grid {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   padding: 24px 28px 8px;
 }
-
-.cal-month { min-width: 0; }
-
+.cal-month {
+  min-width: 0;
+}
 .cal-divider {
   width: 1px;
   background: #e0e0e0;
@@ -84,7 +77,6 @@
   align-self: stretch;
 }
 
-/* ── Encabezado de mes ───────────────────────────────────── */
 .cal-month-header {
   display: flex;
   align-items: center;
@@ -95,7 +87,6 @@
   margin-bottom: 16px;
   text-transform: capitalize;
 }
-
 .cal-nav {
   background: none;
   border: none;
@@ -109,21 +100,20 @@
   width: 28px;
   height: 28px;
   flex-shrink: 0;
-  transition: background .15s, color .15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
-
 .cal-nav:hover {
   background: #f0f0f0;
   color: #1a1a1a;
 }
 
-/* ── Encabezado días semana ──────────────────────────────── */
 .cal-week-header {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   margin-bottom: 4px;
 }
-
 .cal-week-header span {
   text-align: center;
   font-size: 12px;
@@ -131,14 +121,13 @@
   color: #888;
   padding: 4px 0 8px;
   text-transform: uppercase;
-  letter-spacing: .04em;
+  letter-spacing: 0.04em;
 }
 
-/* ── Celdas de días ──────────────────────────────────────── */
+/* ── Días ── */
 .cal-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
 }
 
 .cal-day {
@@ -146,37 +135,42 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  position: relative;
+  /* sin border-radius aquí — lo maneja .cal-day-inner */
+}
+
+.cal-day-inner {
+  width: 36px;
+  height: 36px;
+  display: flex;           /* ← antes no tenía display:flex */
+  align-items: center;
+  justify-content: center;
   font-size: 14px;
   font-weight: 500;
   color: #1a1a1a;
-  cursor: pointer;
   border-radius: 50%;
-  transition: background .12s, color .12s;
   position: relative;
   z-index: 1;
+  flex-shrink: 0;          /* ← evita que se encoja */
+  transition: background 0.12s, color 0.12s;
 }
 
-.cal-day:not(.empty):not(.past):hover {
-  background: #d6eaf8;
-  color: #0071c2;
+.cal-day:not(.empty):not(.past):not(.range-start):not(.range-end):hover .cal-day-inner {
+  background: #f0f0f0;
 }
 
-.cal-day.empty {
-  cursor: default;
-  pointer-events: none;
-}
+.cal-day.empty { cursor: default; pointer-events: none; }
 
 /* Hoy */
-.cal-day.today:not(.range-start):not(.range-end):not(.in-range) {
+.cal-day.today:not(.range-start):not(.range-end) .cal-day-inner {
   color: #0071c2;
   font-weight: 700;
 }
-
-.cal-day.today:not(.range-start):not(.range-end):not(.in-range)::before {
+.cal-day.today:not(.range-start):not(.range-end) .cal-day-inner::after {
   content: '';
   position: absolute;
-  bottom: 4px;
-  left: 50%;
+  bottom: 3px; left: 50%;
   transform: translateX(-50%);
   width: 4px; height: 4px;
   border-radius: 50%;
@@ -184,84 +178,197 @@
 }
 
 /* Pasados */
-.cal-day.past {
-  color: #bbb;
-  cursor: default;
-  pointer-events: none;
-}
+.cal-day.past { pointer-events: none; }
+.cal-day.past .cal-day-inner { color: #bbb; }
 
-/* Banda de rango */
+/* Banda de rango — el fondo va en .cal-day, el círculo en .cal-day-inner */
 .cal-day.in-range {
   background: #d6eaf8;
+}
+.cal-day.in-range .cal-day-inner {
   color: #0071c2;
-  border-radius: 0;
-}
-
-/* Inicio y fin */
-.cal-day.range-start,
-.cal-day.range-end {
-  color: #fff;
-  font-weight: 700;
-  background: #d6eaf8;
-}
-
-.cal-day.range-start { border-radius: 50% 0 0 50%; }
-.cal-day.range-end   { border-radius: 0 50% 50% 0; }
-
-.cal-day.range-start::after,
-.cal-day.range-end::after {
-  content: '';
-  position: absolute;
-  inset: 2px;
-  background: #003580;
-  border-radius: 50%;
-  z-index: -1;
-}
-
-/* Día único */
-.cal-day.range-start.range-end {
-  border-radius: 50%;
   background: transparent;
 }
 
-/* ── Footer ──────────────────────────────────────────────── */
+/* Inicio de rango: media-banda a la derecha */
+.cal-day.range-start {
+  background: linear-gradient(to right, transparent 50%, #d6eaf8 50%);
+}
+.cal-day.range-start .cal-day-inner {
+  background: #003580;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Fin de rango: media-banda a la izquierda */
+.cal-day.range-end {
+  background: linear-gradient(to left, transparent 50%, #d6eaf8 50%);
+}
+.cal-day.range-end .cal-day-inner {
+  background: #003580;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Día único (inicio = fin): sin banda */
+.cal-day.range-start.range-end {
+  background: transparent;
+}
+
+/* ── Footer chips ── */
 .cal-footer {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 16px 28px 22px;
+  gap: 8px;
+  padding: 14px 28px 20px;
   border-top: 1px solid #ececec;
   flex-wrap: wrap;
   margin-top: 8px;
 }
 
-/* ── Chips ───────────────────────────────────────────────── */
 .cal-chip {
   background: #fff;
   border: 1px solid #d0d0d0;
   padding: 7px 14px;
   border-radius: 20px;
   font-size: 13.5px;
-  font-family: inherit;
   font-weight: 500;
   color: #3a3a3a;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 5px;
-  transition: border-color .15s, background .15s, color .15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    color 0.15s;
+  font-family: inherit;
 }
-
 .cal-chip:hover {
   border-color: #0071c2;
   color: #0071c2;
 }
-
 .cal-chip.active {
   background: #f0f7ff;
-  border-color: #0071c2;
-  color: #0071c2;
+  border-color: #003580;
+  color: #003580;
   font-weight: 700;
 }
 
-.cal-chip svg { flex-shrink: 0; }
+/* ── Fechas Flexibles ── */
+.flex-body {
+  padding: 24px 32px 28px;
+}
+
+.flex-section {
+  margin-bottom: 0;
+}
+
+.flex-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: center;
+  margin: 0 0 16px;
+}
+
+.flex-subtitle {
+  font-size: 13px;
+  color: #6e6e6e;
+  text-align: center;
+  margin: -10px 0 16px;
+}
+
+.flex-chips {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.flex-weekend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+.flex-weekend input {
+  display: none;
+}
+
+.flex-check-box {
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  border: 1.5px solid #6e6e6e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  flex-shrink: 0;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+.flex-check-box.checked {
+  background: #003580;
+  border-color: #003580;
+}
+
+.flex-divider {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 20px 0;
+}
+
+.flex-months {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.flex-month-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1.5px solid #d0d0d0;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  min-width: 80px;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+  font-family: inherit;
+}
+.flex-month-card:hover {
+  border-color: #0071c2;
+}
+.flex-month-card.active {
+  border-color: #003580;
+  background: #f0f7ff;
+}
+.flex-month-card.active svg {
+  stroke: #003580;
+}
+
+.flex-month-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.flex-month-year {
+  font-size: 12px;
+  color: #6e6e6e;
+}
+.flex-month-card.active .flex-month-name,
+.flex-month-card.active .flex-month-year {
+  color: #003580;
+}
