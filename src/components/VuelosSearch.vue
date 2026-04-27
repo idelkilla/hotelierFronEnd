@@ -269,22 +269,6 @@
       </div>
     </div>
 
-    <!-- Extras -->
-    <div class="extra-options-row">
-      <div class="checkbox-group">
-        <label class="custom-checkbox">
-          <input type="checkbox" v-model="agregarHospedaje" />
-          <span class="checkmark"></span>
-          Agregar hospedaje
-        </label>
-        <label v-if="tipoViaje !== 'MULTIDESTINO'" class="custom-checkbox">
-          <input type="checkbox" v-model="agregarAuto" />
-          <span class="checkmark"></span>
-          Agregar un auto
-        </label>
-      </div>
-    </div>
-
   </div>
 </template>
 
@@ -461,23 +445,17 @@ const fechaFin         = ref(props.initialSalida  || '')
 const mostrarCalendario = ref(false)
 const toggleCalendario  = () => (mostrarCalendario.value = !mostrarCalendario.value)
 function onDatesSelected(dates) {
-  if (dates.end === 'FLEXIBLE') {
-    fechaInicio.value = dates.start
-    fechaFin.value = 'FLEXIBLE'
-  } else {
-    fechaInicio.value = dates.start
-    fechaFin.value    = tipoViaje.value === 'REDONDO' ? dates.end : ''
-  }
+  fechaInicio.value = dates.start
+  fechaFin.value    = tipoViaje.value === 'REDONDO' ? dates.end : ''
+  mostrarCalendario.value = false
 }
 function fmtFecha(str) {
   if (!str) return ''
-  if (!str.includes('-')) return str
   const [y, m, d] = str.split('-').map(Number)
   return new Date(y, m - 1, d).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', weekday: 'short' })
 }
 const resumenFechas = computed(() => {
   if (!fechaInicio.value) return ''
-  if (fechaFin.value === 'FLEXIBLE') return fechaInicio.value
   if (tipoViaje.value === 'SENCILLO') return fmtFecha(fechaInicio.value)
   const fin = fechaFin.value ? fmtFecha(fechaFin.value) : '...'
   return `${fmtFecha(fechaInicio.value)} — ${fin}`
