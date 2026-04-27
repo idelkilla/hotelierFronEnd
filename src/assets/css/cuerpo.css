@@ -409,11 +409,63 @@ padding-top:2px ;
 }
 
 .filters-column {
-    padding-top: 17px;
+    /* padding-top: 17px;  -- Eliminado, ahora el padding lo maneja .filters-card */
     display: flex;
     flex-direction: column;
     gap: 10px;
     font-family: sans-serif;
+}
+
+/* ── TARJETA UNIFICADA ── */
+.filters-card {
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.filters-card-header {
+    padding: 16px 20px 14px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.filters-main-title {
+    font-size: 18px !important;
+    font-weight: bold !important;
+    color: #113955 !important;
+    margin: 0 !important;
+}
+
+/* Cada sección interna separada por línea */
+.filters-card .price-section,
+.filters-card .accommodation-section,
+.filters-card .popular-section,
+.filters-card .services-section,
+.filters-card .stars-section {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e5e7eb;
+    margin: 0 !important;
+}
+
+.filters-card .stars-section {
+    border-bottom: none;
+}
+
+/* Ajuste de títulos dentro de la card */
+.filters-card .filter-title-bold,
+.filters-card .price-title,
+.filters-card p {
+    margin-left: 0 !important;
+    margin-bottom: 10px;
+}
+
+/* Checkboxes y opciones alineados */
+.filters-card .checkbox-group {
+    margin-left: 0 !important;
+}
+
+.filters-card .filter-option {
+    margin-left: 0 !important;
 }
 
 .filters-column p {
@@ -422,6 +474,11 @@ padding-top:2px ;
     margin-left: 30px;
     margin-bottom: 12px;
     color: #113955;
+}
+
+/* Ocultar el <p>Filtrar por:</p> suelto original */
+.filters-column > p {
+    display: none;
 }
 
 .filter-option {

@@ -543,7 +543,7 @@ const publicar = async () => {
     }
 
     mostrarAlerta('¡Propiedad publicada exitosamente!', 'exito')
-    setTimeout(() => router.push(`/hospedajes/${idHospedaje}`), 1500)
+    setTimeout(() => router.push(`/detalle-hospedaje/${idHospedaje}`), 1500)
 
   } catch (e) {
     mostrarAlerta('Error al publicar: ' + e.message)

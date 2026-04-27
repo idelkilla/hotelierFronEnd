@@ -1,19 +1,4 @@
 <template>
-<<<<<<< HEAD
-  <div class="contenedor-limpio">
-    <div class="galeria-grid">
-      <div class="foto-principal">
-        <img src="https://images.pexels.com/photos/271639/pexels-photo-271639.jpeg" alt="Principal">
-      </div>
-
-      <div class="bloque-secundario">
-        <img src="https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg" class="img-top">
-        
-        <div class="fila-inferior">
-          <img src="https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg">
-          <img src="https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg" class="img-bottom-right">
-        </div>
-=======
   <div class="galeria-grid" :class="{ 'solo-una': misImagenes.length === 1 }" v-if="misImagenes.length > 0">
     <div class="foto-grande" :class="{ 'full-width': misImagenes.length === 1 }">
       <!-- Soporta tanto array de strings como objetos de la BD -->
@@ -26,7 +11,6 @@
       <div class="fila-abajo" v-if="misImagenes.length > 2">
         <img v-if="misImagenes[2]" :src="misImagenes[2]?.URL || misImagenes[2]" class="foto-pequena border-bottom-left-fix">
         <img v-if="misImagenes[3]" :src="misImagenes[3]?.URL || misImagenes[3]" class="foto-pequena border-bottom-right">
->>>>>>> e60c33d22fe499b364d92a452216bd730975a260
       </div>
     </div>
   </div>
@@ -38,8 +22,6 @@
   </div>
 </template>
 
-<<<<<<< HEAD
-=======
 <script setup>
 import { computed } from 'vue';
 
@@ -92,12 +74,11 @@ img {
   display: block;
 }
 
-<<<<<<< HEAD
 /* Bordes redondeados */
 .foto-principal img { border-radius: 12px 0 0 12px; }
 .img-top { border-radius: 0 12px 0 0; }
 .img-bottom-right { border-radius: 0 0 12px 0; }
-=======
+
 /* Estilos específicos para la columna 1 (Foto Grande) */
 .foto-grande img {
   border-radius: 15px 0 0 15px; /* Bordes redondeados solo a la izquierda */
@@ -137,5 +118,22 @@ img {
 .border-bottom-left-fix {
     border-radius: 0;
 }
->>>>>>> e60c33d22fe499b364d92a452216bd730975a260
+
+@media (max-width: 768px) {
+  .galeria-grid {
+    grid-template-columns: 1fr;
+    height: 250px;
+  }
+
+  .fotos-secundarias-col {
+    display: none; /* Ocultamos fotos secundarias en móvil para mantener limpieza */
+  }
+
+  .foto-grande img {
+    border-radius: 12px;
+  }
+  .img-sin-foto-detalle {
+    height: 250px !important;
+  }
+}
 </style>

@@ -294,5 +294,12 @@ function navigate(dir) {
   if (viewMonth.value < 0)  { viewMonth.value = 11; viewYear.value-- }
 }
 </script>
-
 <style scoped src="../assets/css/CalendarSelector.css"></style>
+
+<style scoped>
+@media (max-width: 750px) {
+  :deep(.cal-grid) {
+    flex-direction: column;
+  }
+}
+</style>

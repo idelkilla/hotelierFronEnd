@@ -46,4 +46,15 @@ import DetallesHotel  from "../components/DetallesHotel.vue";
   flex-direction: column;
   gap: 20px;
 }
+
+@media (max-width: 768px) {
+  .main-container {
+    padding-top: 70px;
+  }
+  .layout-detalle {
+    width: 95%;
+    margin: 10px auto;
+    gap: 15px;
+  }
+}
 </style>
