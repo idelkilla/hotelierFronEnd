@@ -2,7 +2,7 @@
   <div class="calendar-modal">
 
     <!-- Tabs -->
-    <div class="cal-tabs">
+    <div class="cal-tabs" v-if="range">
       <button v-for="tab in tabs" :key="tab.id"
         :class="['cal-tab', { active: activeTab === tab.id }]"
         @click="activeTab = tab.id">{{ tab.label }}</button>
@@ -70,16 +70,23 @@
 
       <!-- Footer chips -->
       <div class="cal-footer">
-        <button v-for="chip in chips" :key="chip.id"
-          :class="['cal-chip', { active: activeChip === chip.id }]"
-          @click="selectChip(chip.id)">
-          <svg v-if="chip.id !== 'exactas'" width="14" height="14" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <line x1="12" y1="5" x2="12" y2="19"/>
-            <line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
-          {{ chip.label }}
-        </button>
+        <div class="cal-footer-top" v-if="range">
+          <button v-for="chip in chips" :key="chip.id"
+            :class="['cal-chip', { active: activeChip === chip.id }]"
+            @click="selectChip(chip.id)">
+            <svg v-if="chip.id !== 'exactas'" width="14" height="14" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            {{ chip.label }}
+          </button>
+        </div>
+        
+        <div class="cal-actions">
+          <button class="btn-clear" @click="clearDates">Borrar fechas</button>
+          <button class="btn-done" @click="confirmSelection">Listo</button>
+        </div>
       </div>
     </template>
 
@@ -227,6 +234,14 @@ function dayClasses(y, m, day) {
   if (date < today) return [...cls, 'past']
   if (t === today.getTime()) cls.push('today')
 
+  // Si no es un rango, solo marcamos el día seleccionado como inicio y fin (círculo azul simple)
+  if (!props.range) {
+    if (rangeStart.value && t === rangeStart.value.getTime()) {
+      cls.push('range-start', 'range-end')
+    }
+    return cls
+  }
+
   const lo_date = activeChip.value !== 'exactas' && displayStart.value ? displayStart.value : rangeStart.value
   const hi_date = activeChip.value !== 'exactas' && displayEnd.value   ? displayEnd.value   : (rangeEnd.value ?? hovering.value ?? null)
 
@@ -249,22 +264,36 @@ function handleClick(y, m, day) {
   const date = makeDate(y, m, day)
   if (date < today) return
 
+  // Selección única: cualquier clic establece el día y limpia cualquier rango previo
+  if (!props.range) {
+    rangeStart.value = date
+    rangeEnd.value   = null
+    displayStart.value = null
+    displayEnd.value   = null
+    activeChip.value = 'exactas'
+    return
+  }
+
   if (!rangeStart.value || rangeEnd.value) {
     rangeStart.value = date
     rangeEnd.value   = null
     displayStart.value = null
     displayEnd.value   = null
     activeChip.value = 'exactas'
+    if (!props.range) emitRange()
   } else if (date.getTime() === rangeStart.value.getTime()) {
     rangeStart.value = null
   } else if (date < rangeStart.value) {
     rangeEnd.value   = rangeStart.value
     rangeStart.value = date
-    emitRange()
   } else {
     rangeEnd.value = date
-    emitRange()
   }
+}
+
+function confirmSelection() {
+  emitRange()
+  emit('close')
 }
 
 function emitRange() {
@@ -275,6 +304,14 @@ function emitRange() {
     start: formatDateStr(rangeStart.value),
     end:   formatDateStr(rangeEnd.value),
   })
+}
+
+function clearDates() {
+  rangeStart.value = null
+  rangeEnd.value   = null
+  displayStart.value = null
+  displayEnd.value   = null
+  emitRange()
 }
 
 function selectChip(id) {
@@ -296,3 +333,44 @@ function navigate(dir) {
 </script>
 
 <style scoped src="../assets/css/CalendarSelector.css"></style>
+
+<style scoped>
+.cal-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.cal-footer-top {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.cal-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-top: 8px;
+}
+.btn-clear {
+  background: none;
+  border: none;
+  color: #0071c2;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+.btn-done {
+  background: #003580;
+  color: white;
+  border: none;
+  padding: 10px 32px;
+  border-radius: 25px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-done:hover {
+  background: #002254;
+}
+</style>

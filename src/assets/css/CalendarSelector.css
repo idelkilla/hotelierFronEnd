@@ -6,7 +6,7 @@
 .calendar-modal {
   position: absolute;
   top: calc(100% + 8px);
-  left: 0;
+  right: 0;
   z-index: 200;
   background: white;
   border-radius: 20px;

@@ -463,7 +463,6 @@ const toggleCalendario  = () => (mostrarCalendario.value = !mostrarCalendario.va
 function onDatesSelected(dates) {
   fechaInicio.value = dates.start
   fechaFin.value    = tipoViaje.value === 'REDONDO' ? dates.end : ''
-  mostrarCalendario.value = false
 }
 function fmtFecha(str) {
   if (!str) return ''
