@@ -272,6 +272,8 @@ import { useRoute, useRouter } from 'vue-router'
 const route = useRoute()
 const router = useRouter()
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
 // ── Parámetros de la URL ──────────────────────────────────────────────────────
 const searchDestino = ref(route.query.destino || '')
 const searchEntrada = ref(route.query.entrada || '')
@@ -420,7 +422,7 @@ async function ejecutarBusqueda() {
   console.log('EJECUTANDO BÚSQUEDA CON:', { destino, fechaInicio, fechaFin, habs })
 
   try {
-    const res = await fetch('http://localhost:3000/api/search/hospedaje', {
+    const res = await fetch(`${API_URL}/api/search/hospedaje`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

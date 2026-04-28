@@ -85,6 +85,8 @@ const props = defineProps({
   isMobile: { type: Boolean, default: false } // Nueva prop
 });
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
 const emit = defineEmits(["close"]);
 const menuRef = ref(null);
 const levelOrder = ["Blue", "Silver", "Gold"];
@@ -126,7 +128,7 @@ const fetchProfile = async () => {
   if (!token) return;
 
   try {
-    const response = await fetch('http://localhost:3000/api/user/profile', {
+    const response = await fetch(`${API_URL}/api/user/profile`, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
 
