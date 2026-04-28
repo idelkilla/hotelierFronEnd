@@ -58,7 +58,7 @@
 
     <div class="divider" />
 
-    <button class="menu-item" type="button">Mi cuenta</button>
+    <button class="menu-item" type="button" @click="irAPerfil">Mi cuenta</button>
     <button class="menu-item" type="button">Lista de favoritos</button>
     <button class="menu-item" type="button">Descubrir One Key</button>
     <button class="menu-item" type="button">Sugerencias</button>
@@ -79,11 +79,16 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watchEffect } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const props = defineProps({
   user: { type: Object, default: null },
   isMobile: { type: Boolean, default: false } // Nueva prop
 });
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 const emit = defineEmits(["close"]);
 const menuRef = ref(null);
@@ -126,7 +131,7 @@ const fetchProfile = async () => {
   if (!token) return;
 
   try {
-    const response = await fetch('http://localhost:3000/api/user/profile', {
+    const response = await fetch(`${API_URL}/api/user/profile`, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
 
@@ -161,6 +166,11 @@ onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
   window.removeEventListener("resize", handleResize);
 });
+
+const irAPerfil = () => {
+  router.push('/perfil');
+  emit("close");
+};
 
 const logout = () => {
   localStorage.clear();

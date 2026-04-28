@@ -11,6 +11,7 @@ import authService      from '../services/authService';
 import AdminLayout      from '../view/adminPanel.vue';
 import AdminDashboard from '../view/adminDashboard.vue'; 
 import AdminAgregarHotel from '../view/adminAgregarHotel.vue';
+import Perfil from '../view/Perfil.vue';
 
 const ADMIN_EMAIL = 'admin@gmail.com';
 
@@ -24,6 +25,7 @@ const routes = [
   { path: '/servicio-cliente', name: 'ServicioCliente', component: servicioCliente },
   { path: '/hospedaje/:id',    name: 'DetalleHospedaje', component: DetalleHospedaje, props: true },
   { path: '/vuelos', name: 'Vuelos', component: Vuelos },
+  { path: '/perfil',           name: 'Perfil',           component: Perfil, meta: { requiresAuth: true } },
 
   { 
     path: '/admin',
@@ -54,6 +56,11 @@ router.beforeEach((to, from, next) => {
       console.warn("Acceso denegado: Se requiere rol de administrador.");
       return next({ name: 'Home' });
     }
+  }
+
+  // Proteccion de ruta perfil (solo usuarios logueados)
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    return next({ name: 'Login' });
   }
 
   // Si está autenticado y es admin, siempre redirigir a /admin

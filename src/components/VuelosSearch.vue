@@ -265,7 +265,9 @@
           <span class="material-symbols-outlined">add</span>
           Agregar otro vuelo
         </button>
-        <BuscarButton @click="handleSearch" />
+        <div class="buscar-pill-wrapper">
+          <BuscarButton @click="handleSearch" />
+        </div>
       </div>
     </div>
 
@@ -280,7 +282,7 @@ import CalendarSelector from '../components/CalendarSelector.vue'
 import LocationDropdown from '../components/LocationDropdown.vue'
 import PasajerosSelector from '../components/PasajerosSelector.vue'
 
-const API_URL = 'http://localhost:3000'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 const router  = useRouter()
 
 const props = defineProps({
