@@ -9,6 +9,9 @@
     <div class="layout-detalle">
       <DetallesHotel />
     </div>
+    <div class="layout-detalle">
+      <Reviewssection />   <!-- ← aquí -->
+    </div>
   </div>
 </template>
 
@@ -18,6 +21,7 @@ import Header from "../components/Header.vue";
 import BuscadorPrincipal from "../components/MenuDet.vue";
 import GaleriaCollage from "../components/GaleriaCollage.vue";
 import DetallesHotel from "../components/DetallesHotel.vue";
+import Reviewssection from "../components/Reviewssection.vue";
 
 // Imágenes de prueba — reemplazar con fetch cuando esté el backend
 const imagenesHotel = ref([

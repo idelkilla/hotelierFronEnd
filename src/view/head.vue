@@ -10,5 +10,6 @@
 <script setup>
 import Header from "../components/Header.vue";
 import Cuerpo from "../components/Cuerpo.vue";
+
 </script>
 

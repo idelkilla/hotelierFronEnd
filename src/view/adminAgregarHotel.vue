@@ -119,8 +119,8 @@
                     </option>
                   </select>
                 </td>
-                <td><input type="number" v-model.number="hab.capacidad_adulto" min="1" max="10" /></td>
-                <td><input type="number" v-model.number="hab.capacidad_ninos" min="0" max="6" /></td>
+                <td><input type="number" v-model.number="hab.capacidad_adulto" min="1" max="20" /></td>
+                <td><input type="number" v-model.number="hab.capacidad_ninos" min="0" max="15" /></td>
                 <td>
                   <div class="ah-price">
                     <span>$</span>
