@@ -77,7 +77,7 @@
         placeholder="ej., Marriott"
         class="name-search-input"
       />
-    </div>
+    </div> 
   </div>
 
  <div class="filter-card-box">
