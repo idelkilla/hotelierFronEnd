@@ -286,7 +286,7 @@ watch(() => route.query, () => {
   ejecutarBusqueda()
 }, { deep: true })
 
-import FormSearch from './formSearch.vue';
+import FormSearch from './FormSearch.vue';
 
 // ── Estado ────────────────────────────────────────────────────────────────────
 const hoteles = ref([])
