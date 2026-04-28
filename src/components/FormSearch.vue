@@ -34,6 +34,13 @@
         v-else-if="activeOption === 'cruceros'"
       />
 
+      <AutosSearch
+        v-else-if="activeOption === 'autos'"
+        :initialDestino="busquedaDestino"
+        :initialEntrada="fechaInicio"
+        :initialSalida="fechaFin"
+      />
+
       <template v-else>
         <!-- Campos de búsqueda — stack vertical en mobile -->
         <div class="search-fields-dynamic">
@@ -161,6 +168,7 @@ import LocationDropdown from './LocationDropdown.vue'
 import VuelosSearch from './VuelosSearch.vue'
 import ActividadesSearch from './ActividadesSearch.vue'
 import CrucerosSearch from './CrucerosSearch.vue'
+import AutosSearch from './AutosSearch.vue'
 
 const props = defineProps({
   compact: Boolean,

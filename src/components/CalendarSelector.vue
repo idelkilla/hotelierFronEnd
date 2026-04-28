@@ -242,19 +242,18 @@ function dayClasses(y, m, day) {
     return cls
   }
 
-  const lo_date = activeChip.value !== 'exactas' && displayStart.value ? displayStart.value : rangeStart.value
-  const hi_date = activeChip.value !== 'exactas' && displayEnd.value   ? displayEnd.value   : (rangeEnd.value ?? hovering.value ?? null)
+  const start = rangeStart.value?.getTime()
+  const end = (rangeEnd.value || hovering.value)?.getTime()
 
-  if (lo_date) {
-    const start  = lo_date.getTime()
-    const rawEnd = hi_date?.getTime() ?? null
-    const lo = rawEnd !== null ? Math.min(start, rawEnd) : start
-    const hi = rawEnd !== null ? Math.max(start, rawEnd) : start
+  if (start && end) {
+    const lo = Math.min(start, end)
+    const hi = Math.max(start, end)
 
-    if      (t === lo && t === hi) cls.push('range-start', 'range-end')
-    else if (t === lo)             cls.push('range-start')
-    else if (t === hi)             cls.push('range-end')
-    else if (t > lo && t < hi)    cls.push('in-range')
+    if (t === lo) cls.push('range-start')
+    if (t === hi) cls.push('range-end')
+    if (t > lo && t < hi) cls.push('in-range')
+  } else if (start && t === start) {
+    cls.push('range-start')
   }
 
   return cls
@@ -268,7 +267,6 @@ function handleClick(y, m, day) {
     rangeStart.value = date
     rangeEnd.value   = null
     emitRange()
-    emit('close')
     return
   }
 
@@ -278,19 +276,15 @@ function handleClick(y, m, day) {
     displayStart.value = null
     displayEnd.value   = null
     activeChip.value = 'exactas'
-    emitRange() 
   } else if (date.getTime() === rangeStart.value.getTime()) {
     rangeStart.value = null
-    emitRange()
   } else if (date < rangeStart.value) {
     rangeEnd.value   = rangeStart.value
     rangeStart.value = date
     emitRange()
-    emit('close')
   } else {
     rangeEnd.value = date
     emitRange()
-    emit('close')
   }
 }
 

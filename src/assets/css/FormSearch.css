@@ -711,3 +711,88 @@
   height: 38px !important;
   border-radius: 25px !important;
 }
+
+
+/* Fuerza el botón en multidestino a ser pill, nunca full-width */
+.buscar-pill-wrapper {
+  flex-shrink: 0;
+  width: auto !important;
+}
+
+.buscar-pill-wrapper > * {
+  width: auto !important;
+  min-width: 120px;
+  border-radius: 25px !important;
+}
+
+/* Mobile: tampoco se expande */
+@media (max-width: 768px) {
+  .buscar-pill-wrapper { width: auto !important; }
+  .buscar-pill-wrapper > * { width: auto !important; }
+}
+
+.autos-search { padding: 12px 0; width: 100%; }
+
+.traslado-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0 4px;
+  flex-wrap: wrap;
+}
+.traslado-tab {
+  background: none;
+  border: 1px solid #dadce0;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.traslado-tab:hover { border-color: #265073; color: #265073; }
+.traslado-tab.active {
+  border: 2px solid #265073;
+  color: #265073;
+  font-weight: 700;
+  background: #fff;
+}
+
+.autos-extras-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.autos-extra-btn {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: 1px solid #dadce0;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 13px;
+  color: #444;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.autos-extra-btn:hover { border-color: #265073; color: #265073; }
+
+.descuento-popup {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  padding: 20px;
+  width: 300px;
+  z-index: 2000;
+}
+
+@media (max-width: 768px) {
+  .traslado-tabs { gap: 6px; }
+  .traslado-tab { font-size: 12px; padding: 5px 12px; }
+  .autos-extras-row { gap: 8px; }
+}
