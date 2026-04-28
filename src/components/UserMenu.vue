@@ -58,7 +58,7 @@
 
     <div class="divider" />
 
-    <button class="menu-item" type="button">Mi cuenta</button>
+    <button class="menu-item" type="button" @click="irAPerfil">Mi cuenta</button>
     <button class="menu-item" type="button">Lista de favoritos</button>
     <button class="menu-item" type="button">Descubrir One Key</button>
     <button class="menu-item" type="button">Sugerencias</button>
@@ -79,6 +79,9 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watchEffect } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const props = defineProps({
   user: { type: Object, default: null },
@@ -163,6 +166,11 @@ onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
   window.removeEventListener("resize", handleResize);
 });
+
+const irAPerfil = () => {
+  router.push('/perfil');
+  emit("close");
+};
 
 const logout = () => {
   localStorage.clear();

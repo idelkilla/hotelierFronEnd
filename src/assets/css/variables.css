@@ -1,0 +1,50 @@
+:root {
+  /* Primary Brand Colors */
+  --color-brand-primary: #1a2d4a; /* Dark blue, used for main elements, buttons, active states */
+  --color-brand-secondary: #1a5f6e; /* Teal/dark cyan, used for accents, hover states */
+  --color-brand-text: #1a2332; /* Very dark text, almost black */
+
+  /* Neutral Colors */
+  --color-text-dark: #333; /* General dark text */
+  --color-text-medium: #444; /* Slightly lighter dark text */
+  --color-text-light: #666; /* Gray text, labels */
+  --color-text-muted: #7a8899; /* Muted gray text, icons, placeholders */
+  --color-text-placeholder: #b0b8c4; /* Input placeholders */
+
+  --color-bg-white: #ffffff; /* Pure white backgrounds */
+  --color-bg-light: #f4f5f7; /* Lightest gray background, general page bg */
+  --color-bg-medium: #f8f9fb; /* Slightly darker light gray, input backgrounds, sidebar user */
+  --color-bg-dark: #e2e6ec; /* Darker gray background, toggle off, hover states */
+  --color-bg-accent-light: #f0f2f8; /* Specific light blue-gray for active menu item */
+  --color-bg-page: #f4f6f8; /* Page background, e.g., Vuelos.vue */
+
+  /* Border Colors */
+  --color-border-light: #edf0f4; /* Lightest border */
+  --color-border-medium: #d1d5db; /* Medium gray border */
+  --color-border-dark: #ccc; /* Darker gray border */
+  --color-border-input: #ced4da; /* Input border */
+  --color-border-separator: #ebebeb; /* Dividers */
+
+  /* Accent & Status Colors */
+  --color-gold: #c49a28; /* Gold member/tier, highlights */
+  --color-silver: #a0aec0; /* Silver tier */
+  --color-success: #2ecc71; /* Verified, success messages */
+  --color-success-light-bg: #eafaf1; /* Light background for success badges */
+  --color-error: #e74c3c; /* Error messages */
+  --color-error-dark: #dc3545; /* Darker error/danger */
+  --color-error-light-bg: #f8d7da; /* Light background for error alerts */
+  --color-danger: #e31c1c; /* Rating background, delete actions */
+  --color-heart: #ff385c; /* Heart icon */
+  --color-info: #007bff; /* General info, links */
+  --color-info-dark: #0056b3; /* Darker info/links */
+
+  /* Specific UI Colors */
+  --color-promo-blue: #1a1aff; /* Promo card blue */
+  --color-promo-blue-gradient: #4f8eff; /* Promo card gradient end */
+
+  /* Shadows & Overlays */
+  --color-shadow-light: rgba(0,0,0,0.05);
+  --color-shadow-medium: rgba(0,0,0,0.1);
+  --color-shadow-dark: rgba(0,0,0,0.15);
+  --color-overlay-dark: rgba(26, 45, 74, 0.55); /* Modal overlay */
+}

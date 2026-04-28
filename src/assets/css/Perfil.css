@@ -1,0 +1,715 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;500;600;700;800&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --primary-blue: #003580; /* Azul Expedia */
+  --active-blue: #0068ef;
+  --bg-gray: #ffffff;
+  --text-main: #1c1c1c;
+  --text-muted: #6b6b6b;
+  --border-light: #e8e8e8;
+}
+
+.perfil-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #ffffff;
+  font-family: 'Nunito Sans', sans-serif;
+  padding-top: 60px;
+}
+
+.perfil-layout {
+  display: flex;
+  flex: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 32px 20px;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* ─── SIDEBAR ─────────────────────────────────────────────── */
+.sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 20px;
+}
+
+/* Encabezado del perfil (Imagen 2) */
+.sidebar-user {
+  padding: 8px 0 24px 0;
+  background: transparent;
+  border: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-greeting {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+}
+
+.user-email {
+  font-size: 15px;
+  color: #444;
+  margin-top: 4px;
+}
+
+/* Tarjeta de Recompensas / OneKey (Imagen 2) */
+.membership-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+.membership-badge {
+  display: inline-block;
+  background: var(--primary-blue);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.points-label {
+  font-size: 14px;
+  color: var(--text-main);
+}
+
+.points-value {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 4px 0;
+}
+
+.rewards-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #0068ef;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 12px;
+  text-decoration: none;
+}
+
+/* Navegación (Ajustada para que parezcan tarjetas de la Imagen 1) */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Espacio entre tarjetas */
+  background: transparent;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px; /* Más padding para que se vea robusto */
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: 16px; /* Bordes bien redondeados como en la imagen */
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02); /* Sutil sombra */
+}
+
+.nav-item:hover {
+  background: #fcfcfc;
+  border-color: #d0d0d0;
+}
+
+/* El ítem activo según la Imagen 1 tiene un borde azul más grueso */
+.nav-item.active {
+  border: 2px solid var(--active-blue);
+  background: #fff;
+}
+
+/* Iconos circulares o contenedores de iconos */
+.nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1c1c1c;
+  flex-shrink: 0;
+}
+
+.nav-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.nav-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.nav-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* La flecha a la derecha */
+.nav-arrow {
+  color: #1c1c1c;
+  opacity: 0.8;
+  margin-left: 8px;
+}
+
+/* ─── AJUSTES DE CONTENIDO ────────────────────────────────── */
+.main-content {
+  flex: 1;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  padding: 40px;
+}
+
+.signout-btn {
+  margin-top: 24px;
+  color: #d63b3b;
+  font-weight: 700;
+  text-align: center;
+  padding: 14px 20px;
+  background: #fff;
+  border: 1px solid #fcc;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.signout-btn:hover {
+  background: #fff5f5;
+  border-color: #d63b3b;
+}
+
+.section-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.section-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 24px;
+}
+
+/* ─── INFO BLOCKS ─────────────────────────────────────────── */
+.info-block {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e8e8e8;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+}
+
+.info-block-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 20px;
+}
+
+.info-block-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1c1c1c;
+  margin-bottom: 6px;
+}
+
+.info-desc {
+  font-size: 13px;
+  color: #6b6b6b;
+  line-height: 1.5;
+  max-width: 480px;
+}
+
+.btn-edit {
+  background: none;
+  border: none;
+  color: #1c5b8f;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  padding: 4px 0;
+  flex-shrink: 0;
+}
+
+.btn-edit:hover {
+  text-decoration: underline;
+}
+
+.info-grid-4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 40px;
+}
+
+.info-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cell-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #8a8a8a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cell-value {
+  font-size: 14.5px;
+  color: #1c1c1c;
+  font-weight: 500;
+}
+
+.cell-value.muted {
+  color: #aaa;
+}
+
+/* ─── DETAILS GRID ────────────────────────────────────────── */
+.details-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.detail-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: background 0.15s;
+  gap: 16px;
+}
+
+.detail-card:last-child {
+  border-bottom: none;
+}
+.detail-card:hover {
+  background: #f8f8f8;
+}
+
+.detail-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.detail-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #1c1c1c;
+}
+
+.detail-sub {
+  font-size: 12.5px;
+  color: #8a8a8a;
+}
+
+.detail-card svg {
+  color: #bbb;
+  flex-shrink: 0;
+}
+
+/* ─── PERSONAS ADICIONALES ────────────────────────────────── */
+.collapse-icon {
+  color: #8a8a8a;
+  cursor: pointer;
+}
+
+.btn-add-person {
+  background: none;
+  border: 1.5px solid #1c3055;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1c3055;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: fit-content;
+}
+
+.btn-add-person:hover {
+  background: #f0f5ff;
+}
+
+/* ─── EMPTY STATE ─────────────────────────────────────────── */
+.empty-section {
+  justify-content: flex-start;
+}
+
+.empty-text {
+  color: #8a8a8a;
+  font-size: 15px;
+  margin-top: 8px;
+}
+
+/* ─── MODAL ───────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.modal-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 36px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.modal-header h3 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1c1c1c;
+}
+
+.modal-close {
+  background: #f2f2f2;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  color: #6b6b6b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.modal-close:hover {
+  background: #e0e0e0;
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 0;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.form-field label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #8a8a8a;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.form-field input,
+.form-field select {
+  padding: 12px 14px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #1c1c1c;
+  background: #fafafa;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  border-color: #1c3055;
+  background: #fff;
+}
+
+.error {
+  font-size: 12px;
+  color: #d63b3b;
+}
+
+.btn-confirm {
+  width: 100%;
+  padding: 14px;
+  background: #1c3055;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+.btn-confirm:hover {
+  background: #163054;
+}
+
+/* ─── TRANSITIONS ─────────────────────────────────────────── */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.25s;
+}
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+/* ─── RESPONSIVE DESIGN ───────────────────────────────────── */
+@media (max-width: 1024px) {
+  .perfil-layout {
+    width: 260px;
+  }
+}
+
+@media (max-width: 992px) {
+  .perfil-layout {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .sidebar {
+    width: 100%;
+    position: static;
+    margin-bottom: 20px;
+  }
+  }
+
+  /* ─── TRAVEL SIDEBAR SCOPED STYLES ─────────────────────────── */
+  .travel-sidebar-container {
+    width: 340px; /* Ajustado para dar aire */
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    font-family: 'Nunito Sans', sans-serif;
+  }
+
+  /* Header del usuario */
+  .travel-user-header {
+    padding: 12px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .travel-user-avatar {
+    width: 40px;
+    height: 40px;
+    background: #1c3055;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+
+  .travel-user-greeting {
+    font-size: 26px;
+    font-weight: 800;
+    color: #1c1c1c;
+    line-height: 1.1;
+  }
+
+  .travel-user-email {
+    font-size: 14px;
+    color: #6b6b6b;
+    margin-bottom: 8px;
+  }
+
+  /* Tarjeta de Recompensas */
+  .travel-rewards-card {
+    background: #fff;
+    border-radius: 20px;
+    border: 1px solid #e8e8e8;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  }
+
+  .travel-rewards-badge {
+    display: inline-block;
+    background: #003580;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .travel-rewards-value {
+    font-size: 36px;
+    font-weight: 800;
+    color: #1c1c1c;
+    margin: 4px 0;
+  }
+
+  .travel-rewards-btn {
+    color: #0068ef;
+    font-size: 14px;
+    font-weight: 700;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-top: 12px;
+    text-decoration: none;
+  }
+
+  /* Navegación por Tarjetas (Nuevas clases) */
+  .travel-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .travel-nav-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 16px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: all 0.2s ease;
+  }
+
+  .travel-nav-card.is-active {
+    border: 2px solid #0068ef;
+  }
+
+  .travel-nav-card:hover:not(.is-active) {
+    background: #fafafa;
+    border-color: #dcdcdc;
+  }
+
+  .travel-nav-icon {
+    display: flex;
+    align-items: center;
+    color: #1c1c1c;
+  }
+
+  .travel-nav-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .travel-nav-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1c1c1c;
+  }
+
+  .travel-nav-subtitle {
+    font-size: 13px;
+    color: #6b6b6b;
+    margin-top: 2px;
+  }
+
+  .travel-nav-arrow {
+    color: #1c1c1c;
+    opacity: 0.5;
+  }
+@media (max-width: 768px) {
+  .info-grid-4 {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  .info-block {
+    padding: 20px;
+  }
+  .info-block-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .sidebar-nav {
+    grid-template-columns: 1fr;
+  }
+  .nav-item {
+    border-right: none;
+  }
+  .section-title {
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-row-2 {
+    grid-template-columns: 1fr;
+  }
+  .modal-box {
+    padding: 20px;
+  }
+}
