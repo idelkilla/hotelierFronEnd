@@ -301,7 +301,7 @@ import BuscarButton from '../components/ButtonSearch.vue'
 import CalendarSelector from '../components/CalendarSelector.vue'
 import LocationDropdown from '../components/LocationDropdown.vue'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 const router = useRouter()
 
 const props = defineProps({

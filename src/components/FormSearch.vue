@@ -178,7 +178,7 @@ const props = defineProps({
   initialHuespedes: Array,
 });
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 const router  = useRouter()
 
 const originWrapper = ref(null)
@@ -273,7 +273,7 @@ async function fetchUbicaciones() {
   mostrarCalendario.value  = false
   loadingUbicaciones.value = true
   try {
-    const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${busquedaDestino.value}`)
+    const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${encodeURIComponent(busquedaDestino.value)}`)
     sugerencias.value = await res.json()
   } catch {
     sugerencias.value = []
@@ -290,7 +290,7 @@ async function fetchUbicacionesOrigen() {
   mostrarCalendario.value     = false
   loadingUbicacionesOrigen.value = true
   try {
-    const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${origenVuelo.value}`)
+    const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${encodeURIComponent(origenVuelo.value)}`)
     sugerenciasOrigen.value = await res.json()
   } catch {
     sugerenciasOrigen.value = []
@@ -305,7 +305,7 @@ const abrirMenu = () => {
   mostrarHuespedes.value  = false
   mostrarCalendario.value = false
   loadingUbicaciones.value = true
-  fetch(`${API_URL}/api/search/ubicaciones?q=${busquedaDestino.value}`)
+  fetch(`${API_URL}/api/search/ubicaciones?q=${encodeURIComponent(busquedaDestino.value)}`)
     .then(r => r.json())
     .then(d => sugerencias.value = d)
     .catch(() => sugerencias.value = [])

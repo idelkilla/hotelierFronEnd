@@ -89,7 +89,7 @@ const props = defineProps({
   initialSalida:  String,
 })
 
-const API_URL = 'http://localhost:3000'
+const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 const router  = useRouter()
 
 const busquedaDestino    = ref(props.initialDestino || '')
@@ -134,7 +134,7 @@ async function fetchUbicaciones() {
   mostrarCalendario.value  = false
   loadingUbicaciones.value = true
   try {
-    const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${busquedaDestino.value}`)
+    const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${encodeURIComponent(busquedaDestino.value)}`)
     sugerencias.value = await res.json()
   } catch {
     sugerencias.value = []
@@ -148,7 +148,7 @@ const abrirMenu = () => {
   mostrarDropdown.value    = true
   mostrarCalendario.value  = false
   loadingUbicaciones.value = true
-  fetch(`${API_URL}/api/search/ubicaciones?q=${busquedaDestino.value}`)
+  fetch(`${API_URL}/api/search/ubicaciones?q=${encodeURIComponent(busquedaDestino.value)}`)
     .then(r => r.json())
     .then(d => sugerencias.value = d)
     .catch(() => sugerencias.value = [])

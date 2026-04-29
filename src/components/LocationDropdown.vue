@@ -9,7 +9,7 @@
     <div v-for="loc in items" :key="loc.id" class="location-item"
       @mousedown="$emit('select', loc)">
       <span class="material-symbols-outlined icon-gray">
-        {{ loc.id_tipo === 1 ? 'apartment' : (loc.id_tipo === 2 ? 'local_airport' : 'location_on') }}
+        {{ loc.id_tipo === 1 ? 'apartment' : ([2, 3].includes(loc.id_tipo) ? 'local_airport' : 'location_on') }}
       </span>
       <div class="location-text">
         <span class="loc-name">{{ loc.ubicacion }}</span>

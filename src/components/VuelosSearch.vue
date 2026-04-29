@@ -282,7 +282,7 @@ import CalendarSelector from '../components/CalendarSelector.vue'
 import LocationDropdown from '../components/LocationDropdown.vue'
 import PasajerosSelector from '../components/PasajerosSelector.vue'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 const router  = useRouter()
 
 const props = defineProps({
@@ -336,7 +336,7 @@ async function fetchLugares(q, sugerencias, loading, esOrigen = true) {
   loading.value = true
   const endpoint = esOrigen ? 'aeropuertos' : 'ubicaciones'
   try {
-    const res = await fetch(`${API_URL}/api/search/${endpoint}?q=${q}`)
+    const res = await fetch(`${API_URL}/api/search/${endpoint}?q=${encodeURIComponent(q)}`)
     sugerencias.value = await res.json()
   } catch { sugerencias.value = [] }
   finally { loading.value = false }
@@ -490,7 +490,7 @@ async function fetchMultiOrigen(i) {
   const v = vuelos.value[i]
   v.mostrarDropOrigen = true; v.loadingOrigen = true
   try {
-    const res = await fetch(`${API_URL}/api/search/aeropuertos?q=${v.origen}`)
+    const res = await fetch(`${API_URL}/api/search/aeropuertos?q=${encodeURIComponent(v.origen)}`)
     v.sugerenciasOrigen = await res.json()
   } catch { v.sugerenciasOrigen = [] }
   finally { v.loadingOrigen = false }
@@ -499,7 +499,7 @@ async function fetchMultiDestino(i) {
   const v = vuelos.value[i]
   v.mostrarDropDestino = true; v.loadingDestino = true
   try {
-    const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${v.destino}`)
+    const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${encodeURIComponent(v.destino)}`)
     v.sugerenciasDestino = await res.json()
   } catch { v.sugerenciasDestino = [] }
   finally { v.loadingDestino = false }

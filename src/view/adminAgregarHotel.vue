@@ -294,7 +294,7 @@ import { useRouter } from 'vue-router'
 
 // ─── Configuración ───────────────────────────────────────────────
 // Cambia esta URL base a la de tu backend
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+const API_BASE = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api'
 
 const router = useRouter()
 

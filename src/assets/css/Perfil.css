@@ -522,7 +522,7 @@
 /* ─── RESPONSIVE DESIGN ───────────────────────────────────── */
 @media (max-width: 1024px) {
   .perfil-layout {
-    width: 260px;
+    gap: 16px;
   }
 }
 
@@ -531,7 +531,7 @@
     flex-direction: column;
     align-items: stretch;
   }
-  .sidebar {
+  .sidebar, .travel-sidebar-container {
     width: 100%;
     position: static;
     margin-bottom: 20px;

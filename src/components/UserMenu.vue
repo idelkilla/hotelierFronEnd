@@ -3,11 +3,11 @@
   <div class="user-menu" ref="menuRef" role="menu" aria-label="User menu">
     <div class="header">
       <div class="header-info">
-        <p class="greeting">Hola, <strong>{{ userData.nombre }}</strong></p>
+        <p class="greeting">Hola, <strong>{{ userData.nombre_completo || userData.username }}</strong></p>
         <p class="email">{{ userData.email }}</p>
       </div>
-      <span class="badge" :class="`badge-${userData.nivel.toLowerCase()}`">
-        {{ userData.nivel }}
+      <span class="badge" :class="`badge-${(userData.nivel_membresia || 'Blue').toLowerCase()}`">
+        {{ userData.nivel_membresia || 'Blue' }}
       </span>
     </div>
 
@@ -88,16 +88,17 @@ const props = defineProps({
   isMobile: { type: Boolean, default: false } // Nueva prop
 });
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 
 const emit = defineEmits(["close"]);
 const menuRef = ref(null);
 const levelOrder = ["Blue", "Silver", "Gold"];
 
 const defaultState = {
-  nombre: 'Cargando...',
-  email: '',
-  nivel: 'Blue',
+  nombre_completo: localStorage.getItem('user_name') || 'Viajero',
+  username: localStorage.getItem('user_name') || '',
+  email: localStorage.getItem('user_email') || '',
+  nivel_membresia: 'Blue',
   puntos: 0,
   componentes_actuales: 0,
   componentes_requeridos: 5,
@@ -108,13 +109,13 @@ const isMobile = ref(window.innerWidth <= 768);
 const userData = ref({ ...defaultState });
 
 watchEffect(() => {
-  if (props.user && props.user.nombre) {
+  if (props.user && (props.user.nombre_completo || props.user.nombre)) {
     userData.value = { ...defaultState, ...props.user };
   }
 });
 
 const nextLevel = computed(() => {
-  const idx = levelOrder.indexOf(userData.value.nivel);
+  const idx = levelOrder.indexOf(userData.value.nivel_membresia || 'Blue');
   return idx < levelOrder.length - 1 ? levelOrder[idx + 1] : "Gold";
 });
 
@@ -135,16 +136,18 @@ const fetchProfile = async () => {
       headers: { 'Authorization': `Bearer ${token}` },
     });
 
-    if (!response.ok) {
-      console.error('Error al obtener perfil:', response.status);
-      return;
-    }
+    if (!response.ok) return;
 
     const data = await response.json();
-    userData.value = { ...defaultState, ...data };
+    if (data) {
+      userData.value = { ...defaultState, ...data };
+    }
 
   } catch (error) {
-    console.error("Error cargando perfil del backend:", error);
+    // Solo loguear si no es un error de conexión cerrada/cancelada
+    if (error.name !== 'AbortError') {
+      console.warn("Perfil no disponible momentáneamente");
+    }
   }
 };
 

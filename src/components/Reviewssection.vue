@@ -386,13 +386,17 @@ function submitReview() {
   color: #2c4a62;
   margin: 0;
   display: -webkit-box;
+  line-clamp: 3;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   flex: 1;
 }
 
-.review-text.expanded { -webkit-line-clamp: unset; }
+.review-text.expanded {
+  line-clamp: unset;
+  -webkit-line-clamp: unset;
+}
 
 .read-more {
   background: none;

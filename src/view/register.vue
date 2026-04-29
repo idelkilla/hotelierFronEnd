@@ -110,6 +110,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import authService from '../services/authService'
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
+
 const router = useRouter()
 const username = ref('')
 const email = ref('')
@@ -131,21 +133,27 @@ const handleRegister = async () => {
   error.value = null
   isLoading.value = true
   try {
-    // 1. **REQUIERE TOKEN DEL BACKEND.**
-    const res = await authService.register(username.value, email.value, password.value)
-    authService.saveToken(res.data.token)
+    const response = await fetch(`${API_URL}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: username.value, email: email.value, password: password.value })
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw { response: { data: errorData } }
+    }
+
+    const res = await response.json()
+    authService.saveToken(res.token)
 
     const initial = username.value.charAt(0).toUpperCase()
-
-    // 2. Guardar datos manual correctamente.
     localStorage.setItem('user_name', username.value)
     localStorage.setItem('user_email', email.value)
     localStorage.setItem('user_initial', initial)
-    localStorage.setItem('user_photo', `initial:${initial}`) // Formato que activa la inicial en Header.vue
-    localStorage.setItem('user_token', res.data.token)
+    localStorage.setItem('user_photo', `initial:${initial}`)
+    localStorage.setItem('user_token', res.token)
     window.dispatchEvent(new Event('storage'))
-
-    // 3. **LÍNEA PROBLEMÁTICA ELIMINADA:** //    authService.setUserData sobrescribía user_photo a una cadena vacía.
     
     router.replace('/Home')
   } catch (err) {
@@ -191,7 +199,9 @@ onMounted(() => {
   if (window.google?.accounts?.id) {
     window.google.accounts.id.initialize({
       client_id: '128715608979-nffc56ns9uagf29p7j9em6vmm6mrkidv.apps.googleusercontent.com',
-      callback: handleGoogleCredential
+      callback: handleGoogleCredential,
+      ux_mode: 'popup',
+      context: 'signup',
     })
     window.google.accounts.id.renderButton(
       document.getElementById('google-target'),
