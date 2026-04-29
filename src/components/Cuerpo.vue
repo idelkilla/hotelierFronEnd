@@ -59,7 +59,7 @@
 
      <div class="filters-column">
       <div class="filter-card-box map-box">
-    <div id="map" style="width:100%; height:180px; border-radius:8px;"></div>
+    <div ref="mapContainer" style="width:100%; height:180px; border-radius:8px; background-color: #f0f0f0;"></div>
     <p class="map-link" @click="verEnMapa">Ver en el mapa</p>
   </div>
 
@@ -98,6 +98,7 @@
         </div>
       </div>
     </div>
+  </div>
 
   <div class="filter-card-box">
     <p class="filter-card-title">Tipo de alojamiento</p>
@@ -118,7 +119,6 @@
       </div>
     </div>
   </div>
-</div>
 
 
   <div class="filter-card-box">
@@ -290,8 +290,8 @@
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
-import maplibregl from 'maplibre-gl'
-import 'maplibre-gl/dist/maplibre-gl.css'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 const route = useRoute()
 const router = useRouter()
 // Buscador por nombre
@@ -320,6 +320,8 @@ const hoteles = ref([])
 const isLoading = ref(false)
 const errorMsg = ref('')
 let ignorarWatch = false   // ← GUARD para evitar el bucle
+
+const mapContainer = ref(null)
 
 // ── Filtros ───────────────────────────────────────────────────────────────────
 const activeTab = ref('all')
@@ -477,21 +479,34 @@ async function ejecutarBusqueda() {
     isLoading.value = false
   }
 }
-onMounted(async () => {
-  await ejecutarBusqueda()
-  await nextTick()
-  initMap()
-})
-function initMap() {
-  const mapEl = document.getElementById('map')
-  if (!mapEl) return
 
-  new maplibregl.Map({
-    container: 'map',
-    style: 'https://demotiles.maplibre.org/style.json',
-    center: [-70.6, 19.4],
-    zoom: 9
+onMounted(() => {
+  initMap()
+  ejecutarBusqueda()
+})
+
+function initMap() {
+  nextTick(() => {
+    if (!mapContainer.value) return
+
+    // Inicializamos el mapa con Leaflet centrado en Rep. Dominicana
+    const map = L.map(mapContainer.value).setView([18.7357, -70.1627], 7)
+
+    // Usamos el estilo 'Voyager' de CartoDB que se ve mucho mejor para viajes
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
+      subdomains: 'abcd',
+      maxZoom: 20
+    }).addTo(map)
+
+    // Forzamos el ajuste de tamaño para evitar que se vea cortado al cargar
+    setTimeout(() => { map.invalidateSize() }, 200)
   })
+}
+
+function verEnMapa() {
+  // Lógica para abrir mapa pantalla completa
+  console.log("Abriendo mapa...")
 }
 </script>
 

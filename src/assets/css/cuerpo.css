@@ -44,8 +44,7 @@ html {
     display: flex;
     position: relative;
     padding: 4px;
-    margin: 20px 0;
-    margin: 20px 130px 0 auto; /* Ajusta el margen derecho para moverlo un poco a la izquierda */
+    margin: 20px 130px 60px auto; /* 20px arriba, 130px derecha, 60px abajo, auto izquierda */
     width: fit-content;  /* Se ajusta al contenido para no verse apretado */
     align-items: center;
     margin-left: auto;   /* Asegura la posición a la derecha */

@@ -44,6 +44,20 @@
           </svg>Spa
         </div>
       </div>
+
+      <!-- ── SECCIÓN ANFITRIÓN (DEBAJO DE SERVICIOS) ── -->
+      <div class="host-integration-section">
+        <h2 class="subtitulo">Sobre el anfitrión</h2>
+        <div class="host-card-simple">
+          <img :src="host.photo" alt="Host" class="host-img-circle" />
+          <div class="host-text">
+            <p class="host-name-title">{{ host.name }}</p>
+            <p class="host-meta-info">
+              Superanfitrión · {{ host.years }} años recibiendo huéspedes
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ── CARD RESERVA ── -->
@@ -53,31 +67,17 @@
         <span class="etiqueta">/noche</span>
       </div>
 
-      <!-- Fechas — mismo patrón que FormSearch -->
       <div class="inputs-fecha date-field" ref="dateFieldRef">
         <div class="campo" @click="abrirCalendario('inicio')">
           <label>CHECK-IN</label>
-          <input
-            type="text"
-            readonly
-            :value="checkInDisplay"
-            placeholder="Añadir fecha"
-            class="readonly-input"
-          />
+          <input type="text" readonly :value="checkInDisplay" placeholder="Añadir fecha" class="readonly-input" />
         </div>
         <div class="campo" @click="abrirCalendario('fin')">
           <label>CHECK-OUT</label>
-          <input
-            type="text"
-            readonly
-            :value="checkOutDisplay"
-            placeholder="Añadir fecha"
-            class="readonly-input"
-          />
+          <input type="text" readonly :value="checkOutDisplay" placeholder="Añadir fecha" class="readonly-input" />
         </div>
       </div>
 
-      <!-- Dropdown calendario -->
       <CalendarSelector
         v-if="mostrarCalendario"
         :model-value="{ 
@@ -119,16 +119,22 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import CalendarSelector from './CalendarSelector.vue'
 import GuestSelector from './GuestSelector.vue'
 
-const props = defineProps({
-  hotel: Object
-})
+const props = defineProps({ hotel: Object })
 
-// ── Estado de huéspedes (sincronizado con URL como en FormSearch) ──
+// ── Datos del Anfitrión ──
+const host = {
+  name: "Carlos Méndez",
+  photo: "https://randomuser.me/api/portraits/men/32.jpg",
+  rating: "4.98",
+  years: 6,
+}
+
+// ── Huéspedes ──
 const route = useRoute()
 const mostrarHuespedes = ref(false)
 const habitaciones = ref(
@@ -138,51 +144,39 @@ const resumenHuespedes = computed(() => {
   const totalPersonas = habitaciones.value.reduce((acc, h) => acc + h.adultos + h.ninos, 0)
   const textoPersonas = totalPersonas === 1 ? 'persona' : 'personas'
   const textoHabitaciones = habitaciones.value.length === 1 ? 'habitación' : 'habitaciones'
-
   return `${totalPersonas} ${textoPersonas}, ${habitaciones.value.length} ${textoHabitaciones}`
 })
 
-// ── Estado del calendario (igual que FormSearch) ──────────────────
+// ── Calendario ──
 const mostrarCalendario = ref(false)
-const fechaInicio       = ref('')
-const fechaFin          = ref('')
-const campoEditando     = ref('inicio') // 'inicio' o 'fin'
-const dateFieldRef      = ref(null)
+const fechaInicio = ref('')
+const fechaFin = ref('')
+const campoEditando = ref('inicio')
+const dateFieldRef = ref(null)
 
 function abrirCalendario(campo) {
   campoEditando.value = campo
   mostrarCalendario.value = true
-  mostrarHuespedes.value = false // Cierra huéspedes al abrir calendario
+  mostrarHuespedes.value = false
 }
 
 function toggleHuespedes() {
   mostrarHuespedes.value = !mostrarHuespedes.value
-  if (mostrarHuespedes.value) mostrarCalendario.value = false // Cierra calendario al abrir huéspedes
+  if (mostrarHuespedes.value) mostrarCalendario.value = false
 }
 
-// Recibe las fechas desde CalendarSelector — mismo handler que FormSearch
 function onDatesSelected(dates) {
-  const seleccion = dates.start // En modo range=false, la fecha elegida viene en .start
-
+  const seleccion = dates.start
   if (campoEditando.value === 'inicio') {
     fechaInicio.value = seleccion
-    // Si la nueva fecha de entrada es posterior o igual a la salida, reseteamos la salida
-    if (fechaFin.value && seleccion >= fechaFin.value) {
-      fechaFin.value = ''
-    }
+    if (fechaFin.value && seleccion >= fechaFin.value) fechaFin.value = ''
   } else {
-    // Estamos editando el Check-out
-    if (fechaInicio.value && seleccion <= fechaInicio.value) {
-      // Evitamos que seleccionen una fecha de salida anterior o igual a la de entrada
-      return
-    }
+    if (fechaInicio.value && seleccion <= fechaInicio.value) return
     fechaFin.value = seleccion
   }
-  
   mostrarCalendario.value = false
 }
 
-// ── Display formateado (DD/MM/YYYY) ───────────────────────────────
 function fmt(str) {
   if (!str) return ''
   const [y, m, d] = str.split('-').map(Number)
@@ -192,7 +186,6 @@ function fmt(str) {
 const checkInDisplay  = computed(() => fmt(fechaInicio.value))
 const checkOutDisplay = computed(() => fmt(fechaFin.value))
 
-// ── Cálculo de noches y precio ────────────────────────────────────
 const noches = computed(() => {
   if (!fechaInicio.value || !fechaFin.value) return 0
   const [y1,m1,d1] = fechaInicio.value.split('-').map(Number)
@@ -203,14 +196,9 @@ const noches = computed(() => {
 
 const totalPrecio = computed(() => noches.value > 0 ? 890 * noches.value : 0)
 
-// ── Cerrar al hacer clic fuera (igual que FormSearch) ─────────────
 function handleOutsideClick(e) {
-  if (!e.target.closest('.date-field') && !e.target.closest('.calendar-modal')) {
-    mostrarCalendario.value = false
-  }
-  if (!e.target.closest('#guest-field')) {
-    mostrarHuespedes.value = false
-  }
+  if (!e.target.closest('.date-field') && !e.target.closest('.calendar-modal')) mostrarCalendario.value = false
+  if (!e.target.closest('#guest-field')) mostrarHuespedes.value = false
 }
 
 onMounted(()       => window.addEventListener('mousedown', handleOutsideClick))
@@ -223,7 +211,7 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', handleOutsideClick
   justify-content: space-between;
   gap: 40px;
   width: 100%;
-  margin: 10px 0 60px 0;
+  margin: 10px 0 0 0;
   font-family: sans-serif;
   color: #113956;
 }
@@ -231,11 +219,40 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', handleOutsideClick
 .info-hotel      { flex: 1; min-width: 0; }
 .nombre-hotel    { font-size: 32px; margin-bottom: 5px; font-weight: bold; }
 .rating-ubicacion{ margin-bottom: 25px; }
-.subtitulo       { font-size: 24px; margin: 20px 0 10px 0; font-weight: bold; color: #111e37;margin-top: 12px; }
+.subtitulo       { font-size: 24px; margin: 12px 0 10px 0; font-weight: bold; color: #111e37; }
 .descripcion     { line-height: 1.6; color: #444; text-align: justify; }
 .servicios-grid  { display: flex; gap: 20px; margin-top: 15px; }
 .servicio        { display: flex; align-items: center; gap: 8px; font-size: 14px; }
 .servicio svg    { color: #2c537a; }
+
+/* ── Nueva Integración Anfitrión ── */
+.host-integration-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.host-card-simple {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.host-img-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.host-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.host-name-title { font-size: 18px; font-weight: 700; margin: 0; color: #111e37; }
+.host-meta-info { font-size: 14px; color: #666; margin: 2px 0 0 0; }
 
 /* ── Card reserva ── */
 .card-reserva {
@@ -246,17 +263,16 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', handleOutsideClick
   box-shadow: 0 4px 15px rgba(0,0,0,0.05);
   height: fit-content;
   background-color: white;
-  position: relative; /* ancla el calendario debajo */
+  position: relative;
 }
 
 .precio-noche .monto { font-size: 28px; font-weight: bold; }
 .etiqueta            { font-size: 14px; color: #666; }
 
-/* Inputs fecha */
 .inputs-fecha {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0;                        /* sin gap para que luzca como un bloque */
+  gap: 0;
   margin-top: 20px;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -264,13 +280,8 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', handleOutsideClick
   cursor: pointer;
 }
 
-.campo {
-  padding: 10px 12px;
-}
-
-.campo:first-child {
-  border-right: 1px solid #ccc;  /* separador vertical entre los dos campos */
-}
+.campo { padding: 10px 12px; }
+.campo:first-child { border-right: 1px solid #ccc; }
 
 .campo label {
   display: block;
@@ -289,16 +300,14 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', handleOutsideClick
   background: transparent;
   cursor: pointer;
 }
-
 .readonly-input::placeholder { color: #aaa; }
 
-/* Calendario flota debajo de la card */
 :deep(.calendar-modal) {
   position: absolute;
-  top: 0;               /* Alineado a la parte superior de la tarjeta */
+  top: 0;
   left: auto;
-  right: calc(100% + 20px); /* Se desplaza a la izquierda de la tarjeta con un margen */
-  transform: none;  
+  right: calc(100% + 20px);
+  transform: none;
   z-index: 999;
   background: white;
   border-radius: 16px;
@@ -308,9 +317,9 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', handleOutsideClick
   max-width: 95vw;
 }
 
-.campo-personas { 
-  margin-top: 15px; 
-  position: relative; 
+.campo-personas {
+  margin-top: 15px;
+  position: relative;
 }
 .campo-personas label {
   display: block;
@@ -331,11 +340,7 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', handleOutsideClick
   background: white;
 }
 
-.personas-icon {
-  font-size: 20px;
-  color: #113956;
-}
-
+.personas-icon   { font-size: 20px; color: #113956; }
 .readonly-input-personas {
   flex: 1;
   border: none;
@@ -345,18 +350,13 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', handleOutsideClick
   background: transparent;
   cursor: pointer;
 }
+.dropdown-icon { font-size: 20px; color: #666; }
 
-.dropdown-icon {
-  font-size: 20px;
-  color: #666;
-}
-
-/* Estilos para el modal de huéspedes */
 :deep(.guests-dropdown) {
   position: absolute;
-  top: 0;               /* Alineado arriba de la tarjeta */
+  top: 0;
   left: auto;
-  right: calc(100% + 20px); /* Desplazado a la izquierda */
+  right: calc(100% + 20px);
   margin-top: 0;
   z-index: 1000;
 }
@@ -381,24 +381,11 @@ hr        { border: 0; border-top: 1px solid #eee; margin: 15px 0; }
 }
 .btn-reservar:hover { background-color: #1e3a56; }
 
-/* Responsividad */
 @media (max-width: 1024px) {
-  .contenedor-detalles {
-    flex-direction: column;
-    gap: 30px;
-  }
-  
-  .info-hotel {
-    max-width: 100%;
-  }
+  .contenedor-detalles { flex-direction: column; gap: 30px; }
+  .info-hotel          { max-width: 100%; }
+  .card-reserva        { flex: 1; width: 100%; box-sizing: border-box; }
 
-  .card-reserva {
-    flex: 1;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  /* En móviles el calendario se vuelve un modal centrado */
   :deep(.calendar-modal) {
     position: fixed !important;
     top: 50% !important;
@@ -420,8 +407,6 @@ hr        { border: 0; border-top: 1px solid #eee; margin: 15px 0; }
 }
 
 @media (max-width: 480px) {
-  .servicios-grid {
-    flex-wrap: wrap;
-  }
+  .servicios-grid { flex-wrap: wrap; }
 }
 </style>

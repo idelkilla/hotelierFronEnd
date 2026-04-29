@@ -6,9 +6,10 @@
     <div class="layout-detalle">
       <GaleriaCollage :imagenesBd="imagenesHotel" />
     </div>
-    <div class="layout-detalle">
-      <DetallesHotel />
-    </div>
+    <div class="layout-detalle" style="gap: 0">
+  <DetallesHotel />
+</div>
+
     <div class="layout-detalle">
       <Reviewssection />   <!-- ← aquí -->
     </div>
