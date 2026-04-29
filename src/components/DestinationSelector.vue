@@ -9,6 +9,7 @@
           :value="modelValue" 
           @input="onInput"
           @focus="abrirMenu"
+          @blur="cerrarConRetraso"
           placeholder="Destino" 
           autocomplete="off"
         >
@@ -19,7 +20,7 @@
       <div v-if="loading" class="location-item">
         <span class="loc-details">Cargando ubicaciones...</span>
       </div>
-      <div v-else-if="sugerencias.length === 0" class="location-item">
+      <div v-else-if="busquedaRealizada && sugerencias.length === 0" class="location-item">
         <span class="loc-details">No se encontraron ubicaciones</span>
       </div>
       
@@ -30,7 +31,7 @@
         @mousedown="seleccionarUbicacion(loc)"
       >
         <span class="material-symbols-outlined icon-gray">
-          {{ loc.id_tipo === 1 ? 'apartment' : 'location_on' }}
+          {{ loc.id_tipo === 1 ? 'apartment' : ([2, 3].includes(loc.id_tipo) ? 'local_airport' : 'location_on') }}
         </span>
         <div class="location-text">
           <span class="loc-name">{{ loc.ubicacion }}</span>
@@ -47,14 +48,27 @@ import { ref } from 'vue'
 const props = defineProps(['modelValue'])
 const emit = defineEmits(['update:modelValue', 'focus'])
 
-const API_URL = "http://localhost:3000"
+const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 const sugerencias = ref([])
 const mostrarDropdown = ref(false)
 const loading = ref(false)
+const busquedaRealizada = ref(false)
+
+// Añade un timeout para evitar llamadas excesivas (Debounce)
+let timeout = null
 
 const onInput = (e) => {
-  emit('update:modelValue', e.target.value)
-  fetchUbicaciones(e.target.value)
+  const value = e.target.value
+  emit('update:modelValue', value)
+  clearTimeout(timeout)
+  timeout = setTimeout(() => {
+    fetchUbicaciones(value)
+  }, 300) // Espera 300ms después de que el usuario deje de escribir
+}
+
+const cerrarConRetraso = () => {
+  // El retraso permite que el evento @mousedown de la sugerencia se ejecute antes de que desaparezca el div
+  setTimeout(() => { mostrarDropdown.value = false }, 200)
 }
 
 const abrirMenu = () => {
@@ -68,11 +82,17 @@ async function fetchUbicaciones(query) {
     sugerencias.value = []
     return
   }
+  busquedaRealizada.value = true
   loading.value = true
   try {
-    const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${query}`)
-    sugerencias.value = await res.json()
+    console.log(`📡 Llamando a: ${API_URL}/api/search/ubicaciones?q=${query}`)
+    const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${encodeURIComponent(query)}`)
+    if (!res.ok) throw new Error(`HTTP Error: ${res.status}`)
+    const data = await res.json()
+    sugerencias.value = data
   } catch (error) {
+    // Si ves este error en la consola, el problema es la conexión con Render o CORS
+    console.error("🚨 Error de conexión o CORS en la búsqueda:", error.message)
     sugerencias.value = []
   } finally {
     loading.value = false

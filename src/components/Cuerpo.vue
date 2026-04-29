@@ -272,7 +272,7 @@ import { useRoute, useRouter } from 'vue-router'
 const route = useRoute()
 const router = useRouter()
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 
 // ── Parámetros de la URL ──────────────────────────────────────────────────────
 const searchDestino = ref(route.query.destino || '')

@@ -6,13 +6,23 @@
       <!-- SIDEBAR -->
       <aside class="travel-sidebar-container">
         <div class="travel-user-header">
-          <div class="travel-user-avatar">{{ (perfil.nombre_completo || perfil.nombre || '').charAt(0) }}</div>
-          <h2 class="travel-user-greeting">Hola, <br><strong>{{ perfil.nombre_completo?.split(' ')[0] || perfil.nombre }}</strong></h2>
+          <div :class="['travel-user-avatar', (perfil.photo && perfil.photo.startsWith('initial:')) || !perfil.photo ? 'initial' : '']">
+            <template v-if="perfil.photo && perfil.photo.startsWith('http')">
+              <img :src="fixPhoto(perfil.photo)" alt="User photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
+            </template>
+            <template v-else-if="perfil.photo && perfil.photo.startsWith('initial:')">
+              {{ perfil.photo.split(':')[1] }}
+            </template>
+            <template v-else>
+              {{ perfil.initial || '?' }}
+            </template>
+          </div>
+          <h2 class="travel-user-greeting">Hola, <br><strong>{{ perfil.nombre_completo?.split(' ')[0] || 'Viajero' }}</strong></h2>
           <span class="travel-user-email">{{ perfil.email }}</span>
         </div>
 
         <div class="travel-rewards-card">
-          <span class="travel-rewards-badge">{{ perfil.nivel_nombre || 'Blue' }}</span>
+          <span class="travel-rewards-badge">{{ perfil.nivel_membresia || 'Blue' }}</span>
           <div class="travel-rewards-label">OneKeyCash</div>
           <div class="travel-rewards-value">${{ (perfil.puntos || 0).toFixed(2) }}</div>
           <button class="travel-rewards-btn">Ver actividad de recompensas →</button>
@@ -344,7 +354,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import Header from '../components/Header.vue'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 const activeSection = ref('perfil')
 const mostrarModal   = ref(false)
 const tipoModal      = ref('')
@@ -428,8 +438,10 @@ const perfil = reactive({
   genero: '',
   descripcion_personal: '',
   puntos: 0,
-  nivel_nombre: 'Blue',
+  nivel_membresia: 'Blue',
   numero_miembro: '',
+  photo: null,
+  initial: '?',
   SANGRE: '',
   ESTATURA: '',
   PESO: '',
@@ -472,6 +484,26 @@ const formTemp = reactive({
 const errores = reactive({})
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+const fixEncoding = (str) => {
+  if (!str) return str
+  try { return decodeURIComponent(escape(str)) } catch { return str }
+}
+
+const fixPhoto = (url) => {
+  if (!url) return ''
+  if (url.includes('googleusercontent'))
+    return /=s\d+/.test(url) ? url.replace(/=s\d+(-c)?/, '=s80-c') : url
+  return url
+}
+
+const loadLocalData = () => {
+  const photo = localStorage.getItem('user_photo')
+  const name = fixEncoding(localStorage.getItem('user_name'))
+  const initialStored = fixEncoding(localStorage.getItem('user_initial'))
+  perfil.photo = photo || null
+  perfil.initial = initialStored || (name ? name.charAt(0).toUpperCase() : '?')
+}
+
 function generoLabel(g) {
   return { M: 'Masculino', F: 'Femenino', O: 'Otro' }[g] || 'Sin información'
 }
@@ -645,9 +677,10 @@ async function fetchUserData() {
     })
     if (response.ok) {
       const data = await response.json()
-      // Deep-merge to preserve DOCUMENTACION nested object
       const { DOCUMENTACION, ...rest } = data
+      // Mapeo manual por si el backend devuelve nombres distintos
       Object.assign(perfil, rest)
+      if (data.nombre) perfil.nombre_completo = data.nombre // fallback
       if (DOCUMENTACION) Object.assign(perfil.DOCUMENTACION, DOCUMENTACION)
     }
   } catch (error) {
@@ -655,7 +688,10 @@ async function fetchUserData() {
   }
 }
 
-onMounted(fetchUserData)
+onMounted(() => {
+  loadLocalData()
+  fetchUserData()
+})
 
 function confirmarCerrarSesion() {
   if (confirm('¿Seguro que deseas cerrar sesión?')) {

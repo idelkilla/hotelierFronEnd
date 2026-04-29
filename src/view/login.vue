@@ -102,6 +102,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import authService from '../services/authService'
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
+
 const router = useRouter()
 
 const email = ref('')
@@ -145,7 +147,17 @@ const handleLogin = async () => {
   isGoogleAccount.value = false
   isLoading.value = true
   try {
-    const res = await authService.login(email.value, password.value)
+    // Se utiliza la URL base configurada
+    const response = await fetch(`${API_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.value, password: password.value })
+    })
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw { response: { data: errorData } }
+    }
+    const res = { data: await response.json() }
     if (res.data && res.data.user) {
       finalizeLogin(res.data.user, res.data.token)
     } else {
@@ -184,6 +196,8 @@ onMounted(() => {
       window.google.accounts.id.initialize({
         client_id: '128715608979-nffc56ns9uagf29p7j9em6vmm6mrkidv.apps.googleusercontent.com',
         callback: handleGoogleCredential,
+        ux_mode: 'popup',
+        context: 'signin',
       })
       const target = document.getElementById('google-button-target')
       if (target) {
