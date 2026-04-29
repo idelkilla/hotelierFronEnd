@@ -58,8 +58,29 @@
     <div class="main-content-layout">
 
      <div class="filters-column">
+      <div class="filter-card-box map-box">
+    <div id="map" style="width:100%; height:180px; border-radius:8px;"></div>
+    <p class="map-link" @click="verEnMapa">Ver en el mapa</p>
+  </div>
 
+  <!-- BUSCAR POR NOMBRE -->
   <div class="filter-card-box">
+    <p class="filter-card-title">Busca por nombre</p>
+    <div class="name-search-wrapper">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" 
+        fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+      </svg>
+      <input
+        type="text"
+        v-model="searchByName"
+        placeholder="ej., Marriott"
+        class="name-search-input"
+      />
+    </div> 
+  </div>
+
+ <div class="filter-card-box">
     <p class="filter-card-title">Rango de Precio</p>
     <div class="price-inputs-container">
       <div class="price-card">
@@ -77,7 +98,6 @@
         </div>
       </div>
     </div>
-  </div>
 
   <div class="filter-card-box">
     <p class="filter-card-title">Tipo de alojamiento</p>
@@ -98,6 +118,8 @@
       </div>
     </div>
   </div>
+</div>
+
 
   <div class="filter-card-box">
     <p class="filter-card-title">Servicios</p>
@@ -266,11 +288,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
-
+import maplibregl from 'maplibre-gl'
+import 'maplibre-gl/dist/maplibre-gl.css'
 const route = useRoute()
 const router = useRouter()
+// Buscador por nombre
+const searchByName = ref('')
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 
@@ -330,7 +355,13 @@ const serviciosDisponibles = computed(() => {
 
 const filteredHoteles = computed(() => {
   let lista = hoteles.value
+  // ← AGREGA ESTO
+  if (searchByName.value.trim()) {
+    const term = searchByName.value.toLowerCase()
+    lista = lista.filter(h => h.hotel.toLowerCase().includes(term))
+  }
 
+  // ...resto de filtros existentes
   if (activeTab.value !== 'all')
     lista = lista.filter(h => h.tipo_hospedaje === activeTab.value)
 
@@ -446,9 +477,22 @@ async function ejecutarBusqueda() {
     isLoading.value = false
   }
 }
-onMounted(ejecutarBusqueda)
+onMounted(async () => {
+  await ejecutarBusqueda()
+  await nextTick()
+  initMap()
+})
+function initMap() {
+  const mapEl = document.getElementById('map')
+  if (!mapEl) return
 
-
+  new maplibregl.Map({
+    container: 'map',
+    style: 'https://demotiles.maplibre.org/style.json',
+    center: [-70.6, 19.4],
+    zoom: 9
+  })
+}
 </script>
 
 <style scoped src="../assets/css/cuerpo.css"></style>

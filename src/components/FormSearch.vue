@@ -404,16 +404,19 @@ onUnmounted(() => window.removeEventListener('mousedown', handleOutsideClick))
 .search-container.compact-mode {
   background: transparent !important;
   padding: 0 !important;
-  margin: 0 !important;
+  margin: 0 0 0 auto !important; /* Alinea el componente a la derecha */
   min-height: auto !important;
   box-shadow: none !important;
+  width: 100% !important;
+  max-width: 896px !important; /* Coincide con el ancho de la columna de resultados */
 }
 
 .compact-form-box {
   background: white !important;
-  margin: 0 auto !important;
+  margin: 0 !important; /* Quitamos el auto para que mande el contenedor padre */
   padding: 10px !important;
   border-radius: 12px !important;
   box-shadow: none !important;
+  width: 100%;
 }
 </style>

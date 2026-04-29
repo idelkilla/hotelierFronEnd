@@ -16,7 +16,7 @@
         para brindar experiencias de descanso y conexión con la naturaleza.
       </p>
 
-      <h2 class="subtitulo">Servicios populares</h2>
+      <h2 class="subtitulo">Servicios</h2>
       <div class="servicios-grid">
         <div class="servicio">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -136,7 +136,10 @@ const habitaciones = ref(
 )
 const resumenHuespedes = computed(() => {
   const totalPersonas = habitaciones.value.reduce((acc, h) => acc + h.adultos + h.ninos, 0)
-  return `${totalPersonas} personas, ${habitaciones.value.length} habitación`
+  const textoPersonas = totalPersonas === 1 ? 'persona' : 'personas'
+  const textoHabitaciones = habitaciones.value.length === 1 ? 'habitación' : 'habitaciones'
+
+  return `${totalPersonas} ${textoPersonas}, ${habitaciones.value.length} ${textoHabitaciones}`
 })
 
 // ── Estado del calendario (igual que FormSearch) ──────────────────
@@ -228,7 +231,7 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', handleOutsideClick
 .info-hotel      { flex: 1; min-width: 0; }
 .nombre-hotel    { font-size: 32px; margin-bottom: 5px; font-weight: bold; }
 .rating-ubicacion{ margin-bottom: 25px; }
-.subtitulo       { font-size: 24px; margin: 20px 0 10px 0; font-weight: bold; color: #111e37; }
+.subtitulo       { font-size: 24px; margin: 20px 0 10px 0; font-weight: bold; color: #111e37;margin-top: 12px; }
 .descripcion     { line-height: 1.6; color: #444; text-align: justify; }
 .servicios-grid  { display: flex; gap: 20px; margin-top: 15px; }
 .servicio        { display: flex; align-items: center; gap: 8px; font-size: 14px; }
