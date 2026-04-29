@@ -293,3 +293,207 @@
 .reserve-btn:hover {
     background: #113955;
 }
+
+.contenedor-detalles {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  width: 100%;
+  margin: 10px 0 0 0;
+  font-family: sans-serif;
+  color: #113956;
+}
+
+.info-hotel      { flex: 1; min-width: 0; }
+.nombre-hotel    { font-size: 32px; margin-bottom: 5px; font-weight: bold; }
+.rating-ubicacion{ margin-bottom: 25px; }
+.subtitulo       { font-size: 24px; margin: 12px 0 10px 0; font-weight: bold; color: #111e37; }
+.descripcion     { line-height: 1.6; color: #444; text-align: justify; }
+.servicios-grid  { display: flex; gap: 20px; margin-top: 15px; }
+.servicio        { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.servicio svg    { color: #2c537a; }
+
+/* ── Nueva Integración Anfitrión ── */
+.host-integration-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.host-card-simple {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.host-img-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.host-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.host-name-title { font-size: 18px; font-weight: 700; margin: 0; color: #111e37; }
+.host-meta-info { font-size: 14px; color: #666; margin: 2px 0 0 0; }
+
+/* ── Card reserva ── */
+.card-reserva {
+  flex: 0 0 350px;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  height: fit-content;
+  background-color: white;
+  position: relative;
+}
+
+.precio-noche .monto { font-size: 28px; font-weight: bold; }
+.etiqueta            { font-size: 14px; color: #666; }
+
+.inputs-fecha {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.campo { padding: 10px 12px; }
+.campo:first-child { border-right: 1px solid #ccc; }
+
+.campo label {
+  display: block;
+  font-size: 11px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #666;
+}
+
+.readonly-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: #113956;
+  background: transparent;
+  cursor: pointer;
+}
+.readonly-input::placeholder { color: #aaa; }
+
+:deep(.calendar-modal) {
+  position: absolute;
+  top: 0;
+  left: auto;
+  right: calc(100% + 20px);
+  transform: none;
+  z-index: 999;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  padding: 16px;
+  width: max-content;
+  max-width: 95vw;
+}
+
+.campo-personas {
+  margin-top: 15px;
+  position: relative;
+}
+.campo-personas label {
+  display: block;
+  font-size: 11px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #666;
+}
+
+.personas-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  background: white;
+}
+
+.personas-icon   { font-size: 20px; color: #113956; }
+.readonly-input-personas {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: #113956;
+  background: transparent;
+  cursor: pointer;
+}
+.dropdown-icon { font-size: 20px; color: #666; }
+
+:deep(.guests-dropdown) {
+  position: absolute;
+  top: 0;
+  left: auto;
+  right: calc(100% + 20px);
+  margin-top: 0;
+  z-index: 1000;
+}
+
+.desglose { margin-top: 25px; }
+.linea    { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #666; }
+hr        { border: 0; border-top: 1px solid #eee; margin: 15px 0; }
+.total    { font-weight: bold; font-size: 18px; color: #113956; }
+
+.btn-reservar {
+  width: 100%;
+  background-color: #113956;
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background 0.3s;
+}
+.btn-reservar:hover { background-color: #1e3a56; }
+
+@media (max-width: 1024px) {
+  .contenedor-detalles { flex-direction: column; gap: 30px; }
+  .info-hotel          { max-width: 100%; }
+  .card-reserva        { flex: 1; width: 100%; box-sizing: border-box; }
+
+  :deep(.calendar-modal) {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90vw !important;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  :deep(.guests-dropdown) {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90vw !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .servicios-grid { flex-wrap: wrap; }
+}

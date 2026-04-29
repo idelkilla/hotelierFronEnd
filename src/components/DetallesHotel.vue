@@ -1,90 +1,66 @@
 <template>
-  <div class="contenedor-detalles">
+  <div class="contenedor-detalles" v-if="!loading">
     <div class="info-hotel">
-      <h1 class="nombre-hotel">Paradisus Palma Real</h1>
+      <h1 class="nombre-hotel">{{ hospedaje.nombre }}</h1>
       <div class="rating-ubicacion">
-        <span class="ubicacion">Puerto Plata, Rep. Dom</span>
+        <span class="ubicacion">{{ hospedaje.ciudad }}, {{ hospedaje.pais }}</span>
       </div>
 
-      <h2 class="subtitulo">Sobre Paradisus Palma Real</h2>
-      <p class="descripcion">
-        Paradisus Palma Real es un exclusivo resort boutique ubicado frente a
-        una de las playas más tranquilas y privadas de Punta Cana. Este hotel
-        combina elegancia contemporánea con detalles caribeños, ofreciendo un
-        ambiente sofisticado y relajado al mismo tiempo. Sus instalaciones están
-        rodeadas de jardines tropicales, senderos iluminados y áreas diseñadas
-        para brindar experiencias de descanso y conexión con la naturaleza.
-      </p>
+      <h2 class="subtitulo">Sobre {{ hospedaje.nombre }}</h2>
+      <p class="descripcion">{{ hospedaje.descripcion }}</p>
 
       <h2 class="subtitulo">Servicios</h2>
       <div class="servicios-grid">
-        <div class="servicio">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 9a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M6 11l4 -2l3.5 3l-1.5 2"/><path d="M3 16.75a2.4 2.4 0 0 0 1 .25a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 1 -.25"/>
-          </svg>Piscina
+        <div class="servicio" v-for="s in servicios" :key="s.nombre">
+          <span class="material-symbols-outlined">check_circle</span>
+          {{ s.nombre }}
         </div>
-        <div class="servicio">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M2 12h1"/><path d="M6 8h-2a1 1 0 0 0 -1 1v6a1 1 0 0 0 1 1h2"/><path d="M6 7v10a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-10a1 1 0 0 0 -1 -1h-1a1 1 0 0 0 -1 1"/><path d="M9 12h6"/><path d="M15 7v10a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-10a1 1 0 0 0 -1 -1h-1a1 1 0 0 0 -1 1"/><path d="M18 8h2a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-2"/><path d="M22 12h-1"/>
-          </svg>GYM
-        </div>
-        <div class="servicio">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 18l.01 0"/><path d="M9.172 15.172a4 4 0 0 1 5.656 0"/><path d="M6.343 12.343a8 8 0 0 1 11.314 0"/><path d="M3.515 9.515c4.686 -4.687 12.284 -4.687 17 0"/>
-          </svg>WIFI
-        </div>
-        <div class="servicio">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3c1.918 0 3.52 1.35 3.91 3.151a4 4 0 0 1 2.09 7.723l0 7.126h-12v-7.126a4 4 0 1 1 2.092 -7.723a4 4 0 0 1 3.908 -3.151"/><path d="M6.161 17.009l11.839 -.009"/>
-          </svg>Chef
-        </div>
-        <div class="servicio">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M2 9a10 10 0 1 0 20 0"/><path d="M12 19a10 10 0 0 1 10 -10"/><path d="M2 9a10 10 0 0 1 10 10"/><path d="M12 4a9.7 9.7 0 0 1 2.99 7.5"/><path d="M9.01 11.5a9.7 9.7 0 0 1 2.99 -7.5"/>
-          </svg>Spa
-        </div>
+        <!-- fallback si no hay servicios en BD -->
+        <p v-if="!servicios.length" class="sin-datos">Sin servicios registrados</p>
       </div>
 
-      <!-- ── SECCIÓN ANFITRIÓN (DEBAJO DE SERVICIOS) ── -->
-      <div class="host-integration-section">
+      <!-- Anfitrión -->
+      <div class="host-integration-section" v-if="host.name">
         <h2 class="subtitulo">Sobre el anfitrión</h2>
         <div class="host-card-simple">
           <img :src="host.photo" alt="Host" class="host-img-circle" />
           <div class="host-text">
             <p class="host-name-title">{{ host.name }}</p>
             <p class="host-meta-info">
-              Superanfitrión · {{ host.years }} años recibiendo huéspedes
+              {{ host.cargo }} · {{ host.years }} años recibiendo huéspedes
             </p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ── CARD RESERVA ── -->
+    <!-- Card reserva -->
     <div class="card-reserva">
       <div class="precio-noche">
-        <span class="monto">$890</span>
+        <span class="monto">${{ precioBase }}</span>
         <span class="etiqueta">/noche</span>
       </div>
 
       <div class="inputs-fecha date-field" ref="dateFieldRef">
         <div class="campo" @click="abrirCalendario('inicio')">
           <label>CHECK-IN</label>
-          <input type="text" readonly :value="checkInDisplay" placeholder="Añadir fecha" class="readonly-input" />
+          <input type="text" readonly :value="checkInDisplay"
+                 placeholder="Añadir fecha" class="readonly-input" />
         </div>
         <div class="campo" @click="abrirCalendario('fin')">
           <label>CHECK-OUT</label>
-          <input type="text" readonly :value="checkOutDisplay" placeholder="Añadir fecha" class="readonly-input" />
+          <input type="text" readonly :value="checkOutDisplay"
+                 placeholder="Añadir fecha" class="readonly-input" />
         </div>
       </div>
 
       <CalendarSelector
         v-if="mostrarCalendario"
-        :model-value="{ 
-          start: (campoEditando === 'inicio' ? fechaInicio : fechaFin) 
-                 ? new Date((campoEditando === 'inicio' ? fechaInicio : fechaFin) + 'T00:00:00') 
-                 : null, 
-          end: null 
+        :model-value="{
+          start: (campoEditando === 'inicio' ? fechaInicio : fechaFin)
+                 ? new Date((campoEditando === 'inicio' ? fechaInicio : fechaFin) + 'T00:00:00')
+                 : null,
+          end: null
         }"
         :range="false"
         @update:dates="onDatesSelected"
@@ -95,15 +71,18 @@
         <label>HUÉSPEDES</label>
         <div class="personas-input-wrapper" @click="toggleHuespedes">
           <span class="material-symbols-outlined personas-icon">person</span>
-          <input type="text" readonly :value="resumenHuespedes" class="readonly-input-personas" />
+          <input type="text" readonly :value="resumenHuespedes"
+                 class="readonly-input-personas" />
           <span class="material-symbols-outlined dropdown-icon">expand_more</span>
         </div>
-        <GuestSelector v-if="mostrarHuespedes" v-model="habitaciones" @close="mostrarHuespedes = false" />
+        <GuestSelector v-if="mostrarHuespedes"
+                       v-model="habitacionesGuest"
+                       @close="mostrarHuespedes = false" />
       </div>
 
       <div class="desglose">
         <div class="linea">
-          <span>$890 x {{ noches }} noche{{ noches !== 1 ? 's' : '' }}</span>
+          <span>${{ precioBase }} x {{ noches }} noche{{ noches !== 1 ? 's' : '' }}</span>
           <span>${{ totalPrecio }}</span>
         </div>
         <hr />
@@ -116,297 +95,186 @@
       <button class="btn-reservar">Reservar</button>
     </div>
   </div>
+
+  <!-- Loading -->
+  <div v-else class="loading-state">
+    <p>Cargando...</p>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import CalendarSelector from './CalendarSelector.vue'
 import GuestSelector from './GuestSelector.vue'
 
 const props = defineProps({ hotel: Object })
-
-// ── Datos del Anfitrión ──
-const host = {
-  name: "Carlos Méndez",
-  photo: "https://randomuser.me/api/portraits/men/32.jpg",
-  rating: "4.98",
-  years: 6,
-}
-
-// ── Huéspedes ──
 const route = useRoute()
-const mostrarHuespedes = ref(false)
-const habitaciones = ref(
-  route.query.huespedes ? JSON.parse(route.query.huespedes) : [{ adultos: 2, ninos: 0, edadesNinos: [] }]
+const BASE = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api'
+
+// ── Estado global ─────────────────────────────────────────────
+const loading    = ref(true)
+const hospedaje  = ref({})
+const servicios  = ref([])
+const host       = ref({ name: '', photo: '', cargo: '', years: 0 })
+const precioBase = ref(0)
+
+// ── Huéspedes ─────────────────────────────────────────────────
+const mostrarHuespedes  = ref(false)
+const habitacionesGuest = ref(
+  route.query.huespedes
+    ? JSON.parse(route.query.huespedes)
+    : [{ adultos: 2, ninos: 0, edadesNinos: [] }]
 )
 const resumenHuespedes = computed(() => {
-  const totalPersonas = habitaciones.value.reduce((acc, h) => acc + h.adultos + h.ninos, 0)
-  const textoPersonas = totalPersonas === 1 ? 'persona' : 'personas'
-  const textoHabitaciones = habitaciones.value.length === 1 ? 'habitación' : 'habitaciones'
-  return `${totalPersonas} ${textoPersonas}, ${habitaciones.value.length} ${textoHabitaciones}`
+  const total = habitacionesGuest.value.reduce((a, h) => a + h.adultos + h.ninos, 0)
+  const txtP  = total === 1 ? 'persona' : 'personas'
+  const txtH  = habitacionesGuest.value.length === 1 ? 'habitación' : 'habitaciones'
+  return `${total} ${txtP}, ${habitacionesGuest.value.length} ${txtH}`
 })
 
-// ── Calendario ──
+// ── Calendario ────────────────────────────────────────────────
 const mostrarCalendario = ref(false)
-const fechaInicio = ref('')
-const fechaFin = ref('')
-const campoEditando = ref('inicio')
-const dateFieldRef = ref(null)
+const fechaInicio       = ref('')
+const fechaFin          = ref('')
+const campoEditando     = ref('inicio')
+const dateFieldRef      = ref(null)
 
 function abrirCalendario(campo) {
-  campoEditando.value = campo
+  campoEditando.value    = campo
   mostrarCalendario.value = true
-  mostrarHuespedes.value = false
+  mostrarHuespedes.value  = false
 }
-
 function toggleHuespedes() {
-  mostrarHuespedes.value = !mostrarHuespedes.value
+  mostrarHuespedes.value  = !mostrarHuespedes.value
   if (mostrarHuespedes.value) mostrarCalendario.value = false
 }
-
 function onDatesSelected(dates) {
-  const seleccion = dates.start
+  const sel = dates.start
   if (campoEditando.value === 'inicio') {
-    fechaInicio.value = seleccion
-    if (fechaFin.value && seleccion >= fechaFin.value) fechaFin.value = ''
+    fechaInicio.value = sel
+    if (fechaFin.value && sel >= fechaFin.value) fechaFin.value = ''
   } else {
-    if (fechaInicio.value && seleccion <= fechaInicio.value) return
-    fechaFin.value = seleccion
+    if (fechaInicio.value && sel <= fechaInicio.value) return
+    fechaFin.value = sel
   }
   mostrarCalendario.value = false
 }
-
 function fmt(str) {
   if (!str) return ''
   const [y, m, d] = str.split('-').map(Number)
   return `${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`
 }
-
 const checkInDisplay  = computed(() => fmt(fechaInicio.value))
 const checkOutDisplay = computed(() => fmt(fechaFin.value))
-
 const noches = computed(() => {
   if (!fechaInicio.value || !fechaFin.value) return 0
   const [y1,m1,d1] = fechaInicio.value.split('-').map(Number)
   const [y2,m2,d2] = fechaFin.value.split('-').map(Number)
-  const diff = new Date(y2,m2-1,d2) - new Date(y1,m1-1,d1)
-  return Math.max(1, Math.round(diff / 86400000))
+  return Math.max(1, Math.round(
+    (new Date(y2,m2-1,d2) - new Date(y1,m1-1,d1)) / 86400000
+  ))
 })
+const totalPrecio = computed(() =>
+  noches.value > 0 ? precioBase.value * noches.value : 0
+)
 
-const totalPrecio = computed(() => noches.value > 0 ? 890 * noches.value : 0)
+// ── Fetch desde la BD ─────────────────────────────────────────
+async function cargarTodo() {
+  const id = route.params.id
+  try {
+    const [infoRes, serviciosRes, anfitrionRes] = await Promise.all([
+      fetch(`${BASE}/hospedaje/${id}`),
+      fetch(`${BASE}/hospedaje/${id}/servicios`),
+      fetch(`${BASE}/hospedaje/${id}/anfitrion`),
+    ])
 
-function handleOutsideClick(e) {
-  if (!e.target.closest('.date-field') && !e.target.closest('.calendar-modal')) mostrarCalendario.value = false
-  if (!e.target.closest('#guest-field')) mostrarHuespedes.value = false
+    // Info principal
+    if (infoRes.ok) {
+      hospedaje.value = await infoRes.json()
+    }
+
+    // Servicios
+    if (serviciosRes.ok) {
+      servicios.value = await serviciosRes.json()
+    }
+
+    // Anfitrión (puede no existir, no rompemos el render)
+    if (anfitrionRes.ok) {
+      const a = await anfitrionRes.json()
+      host.value = {
+        name:  `${a.nombre} ${a.apellidos ?? ''}`.trim(),
+        cargo: a.cargo ?? 'Anfitrión',
+        years: a.anios_en_plataforma ?? 1,
+        photo: `https://ui-avatars.com/api/?name=${encodeURIComponent(a.nombre)}&background=2c537a&color=fff&size=128`,
+      }
+    }
+
+    // Precio base: primera habitación disponible como referencia
+    await cargarPrecioBase(id)
+
+  } catch (e) {
+    console.error('Error cargando hospedaje:', e)
+  } finally {
+    loading.value = false
+  }
 }
 
-onMounted(()       => window.addEventListener('mousedown', handleOutsideClick))
+async function cargarPrecioBase(id) {
+  try {
+    // Trae el precio mínimo de las habitaciones del hospedaje
+    const res = await fetch(
+      `${BASE}/hospedaje/${id}/disponibilidad` +
+      `?desde=${hoy()}&hasta=${manana()}`
+    )
+    if (res.ok) {
+      const rows = await res.json()
+      if (rows.length) {
+        precioBase.value = Number(rows[0].precio_efectivo)
+      }
+    }
+  } catch { /* sin disponibilidad hoy, precio queda en 0 */ }
+}
+
+// Recarga precio cuando el usuario elige fechas
+watch([fechaInicio, fechaFin], async ([ini, fin]) => {
+  if (!ini || !fin) return
+  const id = route.params.id
+  try {
+    const res = await fetch(
+      `${BASE}/hospedaje/${id}/disponibilidad?desde=${ini}&hasta=${fin}`
+    )
+    if (res.ok) {
+      const rows = await res.json()
+      if (rows.length) precioBase.value = Number(rows[0].precio_efectivo)
+    }
+  } catch (e) {
+    console.error('Error disponibilidad:', e)
+  }
+})
+
+// ── Helpers de fecha ──────────────────────────────────────────
+function hoy() {
+  return new Date().toISOString().split('T')[0]
+}
+function manana() {
+  const d = new Date(); d.setDate(d.getDate() + 1)
+  return d.toISOString().split('T')[0]
+}
+
+// ── Click fuera ───────────────────────────────────────────────
+function handleOutsideClick(e) {
+  if (!e.target.closest('.date-field') && !e.target.closest('.calendar-modal'))
+    mostrarCalendario.value = false
+  if (!e.target.closest('#guest-field'))
+    mostrarHuespedes.value = false
+}
+
+onMounted(() => {
+  cargarTodo()
+  window.addEventListener('mousedown', handleOutsideClick)
+})
 onBeforeUnmount(() => window.removeEventListener('mousedown', handleOutsideClick))
 </script>
 
-<style scoped>
-.contenedor-detalles {
-  display: flex;
-  justify-content: space-between;
-  gap: 40px;
-  width: 100%;
-  margin: 10px 0 0 0;
-  font-family: sans-serif;
-  color: #113956;
-}
-
-.info-hotel      { flex: 1; min-width: 0; }
-.nombre-hotel    { font-size: 32px; margin-bottom: 5px; font-weight: bold; }
-.rating-ubicacion{ margin-bottom: 25px; }
-.subtitulo       { font-size: 24px; margin: 12px 0 10px 0; font-weight: bold; color: #111e37; }
-.descripcion     { line-height: 1.6; color: #444; text-align: justify; }
-.servicios-grid  { display: flex; gap: 20px; margin-top: 15px; }
-.servicio        { display: flex; align-items: center; gap: 8px; font-size: 14px; }
-.servicio svg    { color: #2c537a; }
-
-/* ── Nueva Integración Anfitrión ── */
-.host-integration-section {
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid #eee;
-}
-
-.host-card-simple {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-top: 10px;
-}
-
-.host-img-circle {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.host-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.host-name-title { font-size: 18px; font-weight: 700; margin: 0; color: #111e37; }
-.host-meta-info { font-size: 14px; color: #666; margin: 2px 0 0 0; }
-
-/* ── Card reserva ── */
-.card-reserva {
-  flex: 0 0 350px;
-  border: 1px solid #ddd;
-  border-radius: 15px;
-  padding: 25px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  height: fit-content;
-  background-color: white;
-  position: relative;
-}
-
-.precio-noche .monto { font-size: 28px; font-weight: bold; }
-.etiqueta            { font-size: 14px; color: #666; }
-
-.inputs-fecha {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-  margin-top: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.campo { padding: 10px 12px; }
-.campo:first-child { border-right: 1px solid #ccc; }
-
-.campo label {
-  display: block;
-  font-size: 11px;
-  font-weight: bold;
-  margin-bottom: 4px;
-  color: #666;
-}
-
-.readonly-input {
-  width: 100%;
-  border: none;
-  outline: none;
-  font-size: 13px;
-  color: #113956;
-  background: transparent;
-  cursor: pointer;
-}
-.readonly-input::placeholder { color: #aaa; }
-
-:deep(.calendar-modal) {
-  position: absolute;
-  top: 0;
-  left: auto;
-  right: calc(100% + 20px);
-  transform: none;
-  z-index: 999;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-  padding: 16px;
-  width: max-content;
-  max-width: 95vw;
-}
-
-.campo-personas {
-  margin-top: 15px;
-  position: relative;
-}
-.campo-personas label {
-  display: block;
-  font-size: 11px;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #666;
-}
-
-.personas-input-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  cursor: pointer;
-  background: white;
-}
-
-.personas-icon   { font-size: 20px; color: #113956; }
-.readonly-input-personas {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: 13px;
-  color: #113956;
-  background: transparent;
-  cursor: pointer;
-}
-.dropdown-icon { font-size: 20px; color: #666; }
-
-:deep(.guests-dropdown) {
-  position: absolute;
-  top: 0;
-  left: auto;
-  right: calc(100% + 20px);
-  margin-top: 0;
-  z-index: 1000;
-}
-
-.desglose { margin-top: 25px; }
-.linea    { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #666; }
-hr        { border: 0; border-top: 1px solid #eee; margin: 15px 0; }
-.total    { font-weight: bold; font-size: 18px; color: #113956; }
-
-.btn-reservar {
-  width: 100%;
-  background-color: #113956;
-  color: white;
-  border: none;
-  padding: 15px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 15px;
-  transition: background 0.3s;
-}
-.btn-reservar:hover { background-color: #1e3a56; }
-
-@media (max-width: 1024px) {
-  .contenedor-detalles { flex-direction: column; gap: 30px; }
-  .info-hotel          { max-width: 100%; }
-  .card-reserva        { flex: 1; width: 100%; box-sizing: border-box; }
-
-  :deep(.calendar-modal) {
-    position: fixed !important;
-    top: 50% !important;
-    left: 50% !important;
-    right: auto !important;
-    transform: translate(-50%, -50%) !important;
-    width: 90vw !important;
-    max-height: 85vh;
-    overflow-y: auto;
-  }
-
-  :deep(.guests-dropdown) {
-    position: fixed !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    width: 90vw !important;
-  }
-}
-
-@media (max-width: 480px) {
-  .servicios-grid { flex-wrap: wrap; }
-}
-</style>
+<style scoped src="../assets/css/DetalleHotel.css"></style>
