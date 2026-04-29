@@ -9,4 +9,3 @@
 <script setup>
 </script>
 <style src="./assets/css/Global.css"></style>
-
