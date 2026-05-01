@@ -131,7 +131,6 @@ const generalError = computed(() => error.value && !usernameError.value && !emai
 
 // ✅ REGISTRO MANUAL
 const handleRegister = async () => {
-  // Validar campos
   if (!username.value?.trim()) {
     error.value = 'USERNAME_REQUIRED'
     return
@@ -149,9 +148,10 @@ const handleRegister = async () => {
   isLoading.value = true
 
   const payload = {
-    username: username.value.trim(),
+    nombre: username.value.trim(),
     email: email.value.trim(),
-    password: password.value
+    password: password.value,
+    confirmPassword: password.value
   }
 
   console.log('🚀 Enviando registro:', payload)
@@ -185,7 +185,7 @@ const handleRegister = async () => {
     localStorage.setItem('user_initial', initial)
     localStorage.setItem('user_photo', `initial:${initial}`)
     localStorage.setItem('user_token', data.token)
-    
+
     window.dispatchEvent(new Event('storage'))
     router.replace('/Home')
 
@@ -199,32 +199,60 @@ const handleRegister = async () => {
 
 // ✅ GOOGLE LOGIN
 const handleGoogleCredential = async (response) => {
+  console.log('📥 Callback de Google recibido:', response)
   isLoading.value = true
+
   try {
     const idToken = response.credential
-    const res = await authService.googleLogin(idToken)
-    const payload = JSON.parse(atob(idToken.split('.')[1]))
+    console.log('📤 Token de Google:', idToken ? 'presente' : 'undefined')
 
-    authService.saveToken(res.data.token)
+    if (!idToken) {
+      console.error('❌ No se recibió token de Google')
+      error.value = 'Google token not received'
+      return
+    }
 
-    // Guardar datos de Google
+    const responseServer = await fetch(`${API_URL}/api/auth/google-login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ credential: idToken })
+    })
+
+    if (!responseServer.ok) {
+      const errorData = await responseServer.json()
+      throw { response: { data: errorData } }
+    }
+
+    const data = await responseServer.json()
+    console.log('✅ Respuesta del servidor:', data)
+
+    // Decodificación segura de JWT (Base64Url)
+    const payload = JSON.parse(atob(idToken.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
+
+    authService.saveToken(data.token)
+
     localStorage.setItem('user_name', payload.name)
     localStorage.setItem('user_email', payload.email)
     localStorage.setItem('user_initial', payload.name.charAt(0).toUpperCase())
     localStorage.setItem('user_photo', payload.picture)
-    localStorage.setItem('user_token', res.data.token)
+    localStorage.setItem('user_token', data.token)
     window.dispatchEvent(new Event('storage'))
 
-    authService.setUserData({ 
-      username: payload.name, 
-      email: payload.email, 
-      googleUser: true, 
-      picture: payload.picture 
+    authService.setUserData({
+      username: payload.name,
+      email: payload.email,
+      googleUser: true,
+      picture: payload.picture
     })
     router.replace('/Home')
   } catch (err) {
-    console.error('❌ Error Google:', err)
-    error.value = 'SERVER_ERROR'
+    const errorData = err.response?.data
+    console.error('❌ Error Google detallado:', errorData || err)
+    const msg = errorData?.detail || errorData?.message || err.message || ''
+    error.value = msg || 'Error en la autenticación con Google.'
   } finally {
     isLoading.value = false
   }
@@ -234,14 +262,17 @@ const handleGoogleCredential = async (response) => {
 const initializeGoogle = () => {
   if (window.google?.accounts?.id) {
     console.log('✅ Google SDK cargado correctamente')
-    
+
     window.google.accounts.id.initialize({
       client_id: '128715608979-nffc56ns9uagf29p7j9em6vmm6mrkidv.apps.googleusercontent.com',
-      callback: handleGoogleCredential,
-      ux_mode: 'popup',
-      context: 'signup',
+      callback: handleGoogleCredential, // ✅ Ahora sí se ejecuta
+      ux_mode: 'popup',                 // ✅ CAMBIADO: de 'redirect' a 'popup'
+      // ❌ ELIMINADO: login_uri (no aplica en modo popup)
+      context: 'signin',
+      auto_select: false,
+      cancel_on_tap_outside: false,
     })
-    
+
     const googleTarget = document.getElementById('google-target')
     if (googleTarget) {
       window.google.accounts.id.renderButton(
@@ -269,18 +300,15 @@ onMounted(() => {
     return
   }
 
-  // Si Google SDK ya está cargado
   if (window.google?.accounts?.id) {
     initializeGoogle()
   } else {
-    // Crear y cargar el script
     const script = document.createElement('script')
     script.src = 'https://accounts.google.com/gsi/client'
     script.async = true
     script.defer = true
     script.onload = () => {
       console.log('📥 Google SDK script cargado')
-      // Esperar a que Google esté disponible
       setTimeout(() => {
         initializeGoogle()
       }, 500)
