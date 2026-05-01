@@ -207,22 +207,25 @@ const handleGoogleCredential = async (response) => {
 onMounted(() => {
   const initGoogle = () => {
     if (window.google?.accounts?.id) {
-      window.google.accounts.id.initialize({
-        client_id: '128715608979-nffc56ns9uagf29p7j9em6vmm6mrkidv.apps.googleusercontent.com',
-        callback: handleGoogleCredential, // ✅ Ahora sí se ejecuta
-        ux_mode: 'popup',                 // ✅ CAMBIADO: de 'redirect' a 'popup'
-        // ❌ ELIMINADO: login_uri (no aplica en modo popup)
-        context: 'signin',
-        auto_select: false,
-        cancel_on_tap_outside: false,
-      })
-      const target = document.getElementById('google-button-target')
-      if (target) {
-        window.google.accounts.id.renderButton(target, {
-          theme: 'outline',
-          size: 'large',
-          width: 302,
+      try {
+        window.google.accounts.id.initialize({
+          client_id: '128715608979-nffc56ns9uagf29p7j9em6vmm6mrkidv.apps.googleusercontent.com',
+          callback: (r) => { console.log(r); handleGoogleCredential(r); },
+          ux_mode: 'popup',
         })
+
+        // Forzar render manual y ver si tira error
+        const target = document.getElementById('google-button-target') || document.getElementById('google-target')
+        if (target) {
+          window.google.accounts.id.renderButton(target, {
+            theme: 'outline',
+            size: 'large',
+            width: 302,
+          })
+          console.log('✅ Botón renderizado OK')
+        }
+      } catch (e) {
+        console.error('❌ Error:', e.message)
       }
     } else {
       setTimeout(initGoogle, 200)

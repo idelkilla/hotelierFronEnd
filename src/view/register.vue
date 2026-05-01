@@ -262,31 +262,22 @@ const handleGoogleCredential = async (response) => {
 const initializeGoogle = () => {
   if (window.google?.accounts?.id) {
     console.log('✅ Google SDK cargado correctamente')
-
-    window.google.accounts.id.initialize({
-      client_id: '128715608979-nffc56ns9uagf29p7j9em6vmm6mrkidv.apps.googleusercontent.com',
-      callback: handleGoogleCredential, // ✅ Ahora sí se ejecuta
-      ux_mode: 'popup',                 // ✅ CAMBIADO: de 'redirect' a 'popup'
-      // ❌ ELIMINADO: login_uri (no aplica en modo popup)
-      context: 'signin',
-      auto_select: false,
-      cancel_on_tap_outside: false,
-    })
-
-    const googleTarget = document.getElementById('google-target')
-    if (googleTarget) {
+    try {
+      window.google.accounts.id.initialize({
+        client_id: '128715608979-nffc56ns9uagf29p7j9em6vmm6mrkidv.apps.googleusercontent.com',
+        callback: handleGoogleCredential,
+        ux_mode: 'popup',
+        context: 'signin',
+        auto_select: false,
+        cancel_on_tap_outside: false,
+      })
       window.google.accounts.id.renderButton(
-        googleTarget,
-        {
-          type: 'standard',
-          theme: 'outline',
-          size: 'large',
-          width: '302'
-        }
+        document.getElementById('google-target'),
+        { theme: 'outline', size: 'large', width: 302 }
       )
-      console.log('✅ Botón de Google renderizado')
-    } else {
-      console.warn('⚠️ #google-target no encontrado')
+      console.log('✅ Botón renderizado OK')
+    } catch (e) {
+      console.error('❌ Error:', e.message)
     }
   } else {
     console.warn('⚠️ Google SDK no disponible')
