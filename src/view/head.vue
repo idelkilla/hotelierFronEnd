@@ -1,9 +1,8 @@
 <template>
   <div class="page-container">
     <Header />
-    <div class="content-wrapper">
-      <Cuerpo />
-    </div>
+    <Cuerpo />
+   
   </div>
 </template>
 

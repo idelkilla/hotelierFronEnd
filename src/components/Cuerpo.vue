@@ -74,7 +74,7 @@
       <input
         type="text"
         v-model="searchByName"
-        placeholder="ej., Marriott"
+        placeholder=""
         class="name-search-input"
       />
     </div> 

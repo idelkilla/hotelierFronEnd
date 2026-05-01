@@ -1,11 +1,7 @@
 <template>
   <div class="cruceros-search">
     <!-- Aviso teléfono expertos -->
-    <div class="info-banner">
-      <span class="material-symbols-outlined banner-icon">phone</span>
-      <p>Asesoría de expertos en cruceros: <strong>1-866-403-9848</strong></p>
-    </div>
-
+    
     <div class="search-fields-dynamic">
 
       <!-- Destino -->
