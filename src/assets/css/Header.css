@@ -14,7 +14,7 @@ header.header {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 100;
+  z-index: 2000; /* Aumentado para que siempre esté por encima del buscador (1000) */
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
