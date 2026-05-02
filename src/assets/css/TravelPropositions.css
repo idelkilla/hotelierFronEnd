@@ -17,7 +17,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #191e3b;
+  background-color: hsl(0, 0%, 100%); /* Ahora el fondo principal es claro */
   transition: background-color 0.3s ease;
   padding: 2rem;
 }
@@ -36,7 +36,7 @@ body {
 .pricing-card {
   display: flex;
   flex-direction: column;
-  background-color: rgb(255, 255, 255);
+  background-color: #191e3b; /* Las tarjetas ahora son oscuras */
   border-radius: 20px;
   overflow: hidden;
   transition: transform 0.2s ease, background-color 0.3s ease;
@@ -61,13 +61,13 @@ body {
   font-size: 1.5rem;
   font-weight: 500;
   letter-spacing: -0.025em;
-  color: #000000;
+  color: #ffffff;
 }
 
 .plan-description {
   margin-top: 0.5rem;
   font-size: 0.875rem;
-  color: #000000;
+  color: #ffffff;
 }
 
 .price-section {
@@ -79,7 +79,7 @@ body {
   flex-direction: column;
   align-items: center; /* Centra todo el contenido */
   text-align: center;
-  background-color: #ffffff;
+  background-color: #191e3b;
   border-radius: 15px;
   padding: 0rem 1.5rem;
   height: 300px;;
@@ -94,7 +94,7 @@ body {
 
 .main-icon {
   font-size: 4rem !important;
-  color: #191e3b; 
+  color: #ffffff; /* Color menta para que resalte en el fondo oscuro */
 }
 
 .badge-coin {
@@ -157,7 +157,7 @@ body {
   font-family: 'Inter', sans-serif; 
   font-size: 28px;
   font-weight: 600;
-  color: white; 
+  color: #191e3b; /* Título principal oscuro sobre fondo crema */
   letter-spacing: -0.02em;
   margin-bottom: 0.4rem;
 }
@@ -165,7 +165,7 @@ body {
 .subtitle {
   font-family: 'Inter', sans-serif;
   font-size: 15px;
-  color: white; 
+  color: #444444; 
   font-weight: 450;
 }
 

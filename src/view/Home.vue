@@ -16,6 +16,7 @@
     </main>
 
     <LoginPromoPopup />
+    <FooterComponent />
   </div>
 </template>
 
@@ -25,6 +26,7 @@ import FormSearch from '../components/FormSearch.vue'
 import AnotaLaFecha from '../components/AnotaLaFecha.vue'
 import TravelPropositions from '../components/TravelPropositions.vue'
 import LoginPromoPopup from '../components/LoginPromoPopup.vue'
+import FooterComponent from '../components/footer.vue'
 
 export default {
   name: 'Home',
@@ -33,7 +35,8 @@ export default {
     FormSearch,
     AnotaLaFecha,
     TravelPropositions,
-    LoginPromoPopup
+    LoginPromoPopup,
+    FooterComponent
   },
   methods: {
     handleSearch(formData) {

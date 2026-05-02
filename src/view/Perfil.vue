@@ -345,14 +345,16 @@
           <p class="empty-text">Próximamente. Estamos trabajando en esta sección para ofrecerte la mejor experiencia.</p>
         </div>
 
-      </main>
+</main>
     </div>
+    <footer />
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import Header from '../components/Header.vue'
+import footer from '../components/footer.vue'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 const activeSection = ref('perfil')

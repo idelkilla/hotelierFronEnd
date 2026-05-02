@@ -35,8 +35,10 @@
         <div class="flight-results">
           <p>Los resultados aparecerán aquí...</p>
         </div>
-      </section>
+
+</section>
     </main>
+    <footer />
   </div>
 </template>
 
@@ -44,18 +46,19 @@
 import Header from "../components/Header.vue";
 import FlightsSearchEngine from '../components/FlightsSearchEngine.vue';
 import PopularAirlines from '../components/PopularAirlines.vue';
+import footer from '../components/footer.vue';
 
 export default {
   name: 'VuelosView',
   components: {
     Header,
     FlightsSearchEngine,
-    PopularAirlines
+    PopularAirlines,
+    footer
   }
 }
 </script>
 
-<style scoped>
 <style scoped>
 /* ESTO ES LO QUE ARREGLA EL DESBORDAMIENTO */
 * {
