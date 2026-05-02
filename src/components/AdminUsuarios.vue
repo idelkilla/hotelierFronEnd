@@ -245,8 +245,8 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import AgregarEmpleadoForm from './adminAgregarEmpleado.vue'
-import AgregarClienteForm from './adminAgregarCliente.vue'
+import AgregarEmpleadoForm from './AdminAgregarEmpleado.vue'
+import AgregarClienteForm from './AdminAgregarCliente.vue'
 import AgregarMiembroForm from './AdminAgregarMiembro.vue'
 import EditarUsuarioPanel from './adminEditarUsuario.vue'
 
