@@ -17,6 +17,8 @@ import Carros            from '../view/Carros.vue';
 import DetalleCarros     from '../view/DetalleCarros.vue';
 import DetalleCrucero from '../view/DetalleCrucero.vue';
 import Actividades from '../view/Actividades.vue';
+import DetalleActividad from '../view/DetalleActividad.vue';
+
 const ADMIN_EMAIL = 'admin@gmail.com';
 
 const routes = [
@@ -34,6 +36,9 @@ const routes = [
   { path: '/Cruceros',         name: 'Cruceros',         component: Cruceros },
   { path: '/perfil',           name: 'Perfil',           component: Perfil, meta: { requiresAuth: true } },
   { path: '/Actividades',      name: 'Actividades',      component: Actividades },
+  
+// dentro de routes:
+{ path: '/actividades/:id', name: 'DetalleActividad', component: DetalleActividad },
   {
     path: '/admin',
     component: AdminLayout,

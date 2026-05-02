@@ -124,9 +124,6 @@ defineEmits(['cambio'])
   display: flex;
   flex-direction: column;
   gap: 12px;
-  position: sticky;
-  top: 100px;
-  height: fit-content;
 }
 
 /* Cada sección es una tarjeta separada */
