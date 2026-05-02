@@ -45,7 +45,7 @@ const routes = [
     children: [
       { path: '', name: 'AdminDashboard', component: AdminDashboard, meta: { requiresAdmin: true } },
       { path: 'hospedajes/:vista?', name: 'AdminHospedajes', component: AdminHospedajes, meta: { requiresAdmin: true } },
-      { path: 'user/:pathMatch(.*)*', name: 'AdminUsuarios', component: AdminUsuarios, meta: { requiresAdmin: true } },
+      { path: 'usuarios/:pathMatch(.*)*', name: 'AdminUsuarios', component: AdminUsuarios, meta: { requiresAdmin: true } },
     ]
   },
   { path: '/cruceros/:id', name: 'DetalleCrucero', component: DetalleCrucero },

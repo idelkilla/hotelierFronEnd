@@ -613,7 +613,7 @@ async function guardarCambios() {
   const payload = payloadMap[tipoModal.value]?.() ?? {}
 
   try {
-    const res = await fetch(`${API_URL}/api/user/profile/update`, {
+    const res = await fetch(`${API_URL}/api/usuarios/profile/update`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -674,7 +674,7 @@ async function fetchUserData() {
   const token = localStorage.getItem('user_token')
   if (!token) return
   try {
-    const response = await fetch(`${API_URL}/api/user/profile`, {
+    const response = await fetch(`${API_URL}/api/usuarios/profile`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     if (response.ok) {
