@@ -13,8 +13,21 @@ export default defineConfig({
   },
   server: {
     headers: {
-      'Cross-Origin-Opener-Policy': 'unsafe-none',
+      // 'same-origin-allow-popups' permite que el popup de Google Auth se comunique con tu app
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
       'Cross-Origin-Embedder-Policy': 'unsafe-none',
     },
+  },
+  preview: {
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+      'Cross-Origin-Embedder-Policy': 'unsafe-none',
+    },
+  },
+  build: {
+    // Aseguramos que la carpeta de salida sea 'dist'
+    outDir: 'dist',
+    emptyOutDir: true,
+    assetsDir: 'assets'
   }
 })

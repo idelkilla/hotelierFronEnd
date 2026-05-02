@@ -3,6 +3,14 @@
   max-width: 1200px;
 }
 
+.adm-tabs-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #e8ecf4;
+  margin-bottom: 28px;
+}
+
 .ah-header {
   display: flex;
   justify-content: space-between;
@@ -22,6 +30,8 @@
 .ah-header-actions {
   display: flex;
   gap: 10px;
+  margin-left: auto;
+  width: fit-content;
 }
 
 .ah-grid {
@@ -97,7 +107,7 @@
 
 .ah-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
 }
 
@@ -417,4 +427,9 @@
   margin-top: 28px;
   padding-top: 20px;
   border-top: 1px solid #e8ecf4;
+}
+
+/* Arreglo: fila de ciudad ocupa columna completa */
+.ah-col-right .ah-card:nth-child(2) .ah-row {
+  grid-template-columns: 1fr;
 }

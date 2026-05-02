@@ -17,9 +17,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #191e3b;
+  background-color: #ffffff; /* Fondo blanco coincidente con el Header */
   transition: background-color 0.3s ease;
   padding: 2rem;
+  border-top: 1px solid #e2e2e2;
+  border-bottom: 1px solid #e2e2e2;
 }
 
 .container {
@@ -36,54 +38,40 @@ body {
 .pricing-card {
   display: flex;
   flex-direction: column;
-  background-color: rgb(255, 255, 255);
+  align-items: center; 
+  text-align: center;
+  background-color: #191e3b; /* Azul oscuro institucional */
   border-radius: 20px;
-  overflow: hidden;
-  transition: transform 0.2s ease, background-color 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem 1.5rem;
+  height: 100%; /* Asegura que todas las tarjetas de una fila midan lo mismo */
+  min-height: 320px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pricing-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
 }
 
 .card-content {
   padding: 2.5rem 2.5rem 1.5rem 2.5rem;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
 }
 
 .header-section {
-  text-align: left;
   text-align: center;
+  min-height: 110px; /* Mantiene los iconos y títulos alineados, ajusta según necesites */
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
 }
 
 .plan-title {
-  font-size: 1.5rem;
-  font-weight: 500;
-  letter-spacing: -0.025em;
-  color: #000000;
-}
-
-.plan-description {
-  margin-top: 0.5rem;
-  font-size: 0.875rem;
-  color: #000000;
-}
-
-.price-section {
-  margin-top: 1.5rem;
-}
-
-.pricing-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Centra todo el contenido */
-  text-align: center;
-  background-color: #ffffff;
-  border-radius: 15px;
-  padding: 0rem 1.5rem;
-  height: 300px;;
-  box-shadow: 2px 4px 9px rgba(0, 0, 0, 0.9);
+  font-family: "Playfair Display", serif;
+  font-size: 1.75rem;
+  color: #ffffff; /* Blanco para máxima legibilidad en fondo oscuro */
+  margin-bottom: 0.5rem;
+  font-weight: 600;
 }
 
 .icon-wrapper {
@@ -94,7 +82,7 @@ body {
 
 .main-icon {
   font-size: 4rem !important;
-  color: #191e3b; 
+  color: #ffffff; /* Color Menta para resaltar */
 }
 
 .badge-coin {
@@ -108,7 +96,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--bg-card);
+  border: 2px solid #191e3b;
 }
 
 .badge-coin span {
@@ -117,34 +105,28 @@ body {
   color: #191e3b;
 }
 
-.plan-title {
-  font-family: "Playfair Display", serif;
-  font-size: 1.75rem;
-  color: #191e3b;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-
 .plan-description {
   font-size: 1rem;
-  color: #475569;
+  color: #cbd5e1; /* Gris claro para legibilidad sobre el fondo oscuro */
   line-height: 1.4;
-  margin-bottom: 0.5rem;
+  margin-bottom: 2rem;
+  flex-grow: 1; /* Este es el truco: hace que la descripción ocupe el espacio sobrante */
 }
 
 .action-button {
+  margin-top: auto; /* Empuja el botón al final de la tarjeta */
   padding: 0.6rem 2rem;
-  border: 1px solid #191e3b;
+  border: 1.5px solid #ffffff; /* Borde menta como el borde del Header */
   border-radius: 9999px;
-  color: #191e3b;
+  color: #ffffff;
   text-decoration: none;
-  font-weight: 500;
-  transition: all 0.2s;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
 .action-button:hover {
-  background-color: #191e3b;
-  color: white;
+  background-color: #ffffff;
+  color: #191e3b;
 }
 
 
@@ -157,7 +139,7 @@ body {
   font-family: 'Inter', sans-serif; 
   font-size: 28px;
   font-weight: 600;
-  color: white; 
+  color: #191e3b; /* Título principal oscuro sobre fondo crema */
   letter-spacing: -0.02em;
   margin-bottom: 0.4rem;
 }
@@ -165,7 +147,7 @@ body {
 .subtitle {
   font-family: 'Inter', sans-serif;
   font-size: 15px;
-  color: white; 
+  color: #444444; 
   font-weight: 450;
 }
 

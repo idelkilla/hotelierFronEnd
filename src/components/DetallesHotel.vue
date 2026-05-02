@@ -239,6 +239,11 @@ async function cargarPrecioBase(id) {
 // Recarga precio cuando el usuario elige fechas
 watch([fechaInicio, fechaFin], async ([ini, fin]) => {
   if (!ini || !fin) return
+
+  const dIni = new Date(ini)
+  const dFin = new Date(fin)
+  if (isNaN(dIni.getTime()) || isNaN(dFin.getTime()) || dFin <= dIni) return
+
   const id = route.params.id
   try {
     const res = await fetch(

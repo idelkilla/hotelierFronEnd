@@ -74,7 +74,7 @@
       <input
         type="text"
         v-model="searchByName"
-        placeholder=""
+        placeholder="ej., Marriott"
         class="name-search-input"
       />
     </div> 
@@ -266,7 +266,7 @@
                 </span>
                 <div class="rating-text-stack">
                   <span class="rating-status">{{ textoCalificacion(hotel.calificacion_promedio) }}</span>
-                  <span class="reviews">{{ hotel.total_resenas }} opiniones</span>
+                  <span class="reviews">{{ hotel.total_resenas ?? 0 }} opiniones</span>
                 </div>
               </div>
             </div>
@@ -452,6 +452,22 @@ async function ejecutarBusqueda() {
   searchSalida.value = fechaFin
   habitaciones.value = habs
 
+  if (fechaInicio && fechaFin && fechaFin !== 'FLEXIBLE') {
+    const dIni = new Date(fechaInicio)
+    const dFin = new Date(fechaFin)
+
+    if (isNaN(dIni.getTime()) || isNaN(dFin.getTime())) {
+      errorMsg.value = 'Formato de fecha inválido'
+      isLoading.value = false
+      return
+    }
+    if (dFin <= dIni) {
+      errorMsg.value = 'La fecha de salida debe ser posterior a la de entrada'
+      isLoading.value = false
+      return
+    }
+  }
+
   console.log('EJECUTANDO BÚSQUEDA CON:', { destino, fechaInicio, fechaFin, habs })
 
   try {
@@ -460,13 +476,16 @@ async function ejecutarBusqueda() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         destino: destino,
-        fecha_inicio: fechaInicio,
-        fecha_fin: fechaFin,
+        fecha_inicio: fechaInicio || null,
+        fecha_fin: (fechaFin && fechaFin !== 'FLEXIBLE') ? fechaFin : null,
         habitaciones: habs,
       }),
     })
 
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}))
+      throw new Error(`HTTP ${res.status} - ${errBody.error || 'sin detalle'}`)
+    }
 
     const data = await res.json()
     console.log('HOTELES RECIBIDOS:', data.length, data)

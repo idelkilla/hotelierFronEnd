@@ -42,13 +42,15 @@ const routes = [
   {
     path: '/admin',
     component: AdminLayout,
-    meta: { soloAdmin: true },
+    meta: { requiresAuth: true },
     children: [
-      { path: '', name: 'AdminDashboard', component: AdminDashboard },
-      { path: 'agregar-hotel', name: 'AdminAgregarHotel', component: AdminAgregarHotel }
+      { path: '', name: 'AdminDashboard', component: AdminDashboard, meta: { requiresAdmin: true } },
+      { path: 'hospedajes/:vista?', name: 'AdminHospedajes', component: AdminHospedajes, meta: { requiresAdmin: true } },
+      { path: 'usuarios/:pathMatch(.*)*', name: 'AdminUsuarios', component: AdminUsuarios, meta: { requiresAdmin: true } },
     ]
   },
   { path: '/cruceros/:id', name: 'DetalleCrucero', component: DetalleCrucero },
+  { path: '/:pathMatch(.*)*', redirect: '/home' }
 ]
 
 const router = createRouter({
@@ -59,32 +61,41 @@ const router = createRouter({
   }
 })
 
-router.beforeEach((to, from, next) => {
-  const isAuthenticated = authService.isAuthenticated()
-  const emailGuardado = localStorage.getItem('user_email')
-  const isAdmin = emailGuardado === ADMIN_EMAIL
+router.beforeEach(async (to, from, next) => {
+  try {
+    const isAuthenticated = authService.isAuthenticated()
+    const userRole = localStorage.getItem('user_role')
 
-  if (to.meta.soloAdmin) {
-    if (!isAuthenticated || !isAdmin) {
-      console.warn('Acceso denegado: Se requiere rol de administrador.')
+    if (to.meta.requiresAdmin) {
+      if (!isAuthenticated || userRole !== 'admin') {
+        console.warn('Acceso denegado: Se requiere rol de administrador.')
+        return next({ name: 'Home' })
+      }
+    }
+
+    if (to.meta.requiresAuth && !isAuthenticated) {
+      return next({ name: 'Login' })
+    }
+
+    if ((to.name === 'Login' || to.name === 'Register') && isAuthenticated) {
+      if (userRole === 'admin') return next({ name: 'AdminDashboard' })
       return next({ name: 'Home' })
     }
-  }
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    return next({ name: 'Login' })
-  }
+    // Bloqueo de seguridad: El administrador solo puede acceder a áreas de gestión
+    if (isAuthenticated && userRole === 'admin') {
+      const isTargetAdmin = to.path.startsWith('/admin') || to.meta.requiresAdmin
 
-  if (isAuthenticated && isAdmin && (to.name === 'Home' || to.path === '/')) {
-    return next({ name: 'AdminDashboard' })
+      if (!isTargetAdmin) {
+        console.log('Bloqueo: El administrador solo puede acceder a áreas de gestión.')
+        return next({ name: 'AdminDashboard' })
+      }
+    }
+    next()
+  } catch (error) {
+    console.error('Router guard error:', error)
+    next({ name: 'Login' })
   }
-
-  if ((to.name === 'Login' || to.name === 'Register') && isAuthenticated) {
-    if (isAdmin) return next({ name: 'AdminDashboard' })
-    return next({ name: 'Home' })
-  }
-
-  next()
 })
 
 export default router

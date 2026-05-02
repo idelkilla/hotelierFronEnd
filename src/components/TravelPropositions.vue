@@ -2,7 +2,7 @@
 
 const plans = [
   {
-    title: 'Ahorra en paquete',
+    title: 'Paquetes baratos',
     description: 'Obtén más por menos con las ofertas de paquete',
     icon: 'luggage',
     badge: 'attach_money',

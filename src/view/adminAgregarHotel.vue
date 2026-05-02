@@ -2,21 +2,6 @@
   <div class="ah-page">
 
     <!-- Header -->
-    <div class="ah-header">
-      <div>
-        <h1>Agregar Nueva Propiedad</h1>
-        <p>Completa los detalles para registrar el hospedaje.</p>
-      </div>
-      <div class="ah-header-actions">
-        <button class="ah-btn-secondary" :disabled="guardando" @click="guardarBorrador">
-          {{ guardando ? 'Guardando...' : 'Guardar Borrador' }}
-        </button>
-        <button class="ah-btn-primary" :disabled="publicando" @click="publicar">
-          {{ publicando ? 'Publicando...' : 'Publicar Propiedad' }}
-        </button>
-      </div>
-    </div>
-
     <!-- Alerta de error/éxito -->
     <div v-if="alerta.mensaje" :class="['ah-alerta', `ah-alerta--${alerta.tipo}`]">
       <i :class="alerta.tipo === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle'"></i>
@@ -42,12 +27,11 @@
 
           <div class="ah-field">
             <label>Tipo de Propiedad</label>
-            <select v-model="form.id_tipo_hospedaje">
-              <option value="">Seleccionar...</option>
-              <option v-for="t in tiposHospedaje" :key="t.ID_TIPO" :value="t.ID_TIPO">
-                {{ t.NOMBRE_TIPO }}
-              </option>
-            </select>
+            <AppSelect
+              v-model="form.id_tipo_hospedaje"
+              :options="tiposHospedaje.map(t => ({ value: t.ID_TIPO, label: t.NOMBRE_TIPO }))"
+              placeholder="Seleccionar..."
+            />
           </div>
 
           <div class="ah-field">
@@ -112,12 +96,11 @@
             <tbody>
               <tr v-for="(hab, i) in habitaciones" :key="i">
                 <td>
-                  <select v-model="hab.id_tipo_habitacion">
-                    <option value="">Tipo...</option>
-                    <option v-for="t in tiposHabitacion" :key="t.ID_TIPO_HABITACION" :value="t.ID_TIPO_HABITACION">
-                      {{ t.NOMBRE }}
-                    </option>
-                  </select>
+                  <AppSelect
+                    v-model="hab.id_tipo_habitacion"
+                    :options="tiposHabitacion.map(t => ({ value: t.ID_TIPO_HABITACION, label: t.NOMBRE }))"
+                    placeholder="Tipo..."
+                  />
                 </td>
                 <td><input type="number" v-model.number="hab.capacidad_adulto" min="1" max="20" /></td>
                 <td><input type="number" v-model.number="hab.capacidad_ninos" min="0" max="15" /></td>
@@ -155,11 +138,15 @@
           </div>
           <div class="ah-field">
             <label>Política de cancelación</label>
-            <select v-model="form.cancelacion">
-              <option value="flexible">Flexible (reembolso hasta 24h)</option>
-              <option value="moderada">Moderada (reembolso hasta 5 días)</option>
-              <option value="estricta">Estricta (sin reembolso)</option>
-            </select>
+            <AppSelect
+              v-model="form.cancelacion"
+              :options="[
+                { value: 'flexible',  label: 'Flexible (reembolso hasta 24h)' },
+                { value: 'moderada',  label: 'Moderada (reembolso hasta 5 días)' },
+                { value: 'estricta',  label: 'Estricta (sin reembolso)' },
+              ]"
+              placeholder="Seleccionar política..."
+            />
           </div>
           <div class="ah-toggles">
             <label class="ah-toggle">
@@ -200,12 +187,11 @@
             </div>
             <div class="ah-field">
               <label>Tipo de Empresa</label>
-              <select v-model="form.id_tipo_proveedor">
-                <option value="">Seleccionar...</option>
-                <option v-for="t in tiposProveedor" :key="t.ID_TIPO" :value="t.ID_TIPO">
-                  {{ t.NOMBRE_TIPO }}
-                </option>
-              </select>
+              <AppSelect
+                v-model="form.id_tipo_proveedor"
+                :options="tiposProveedor.map(t => ({ value: t.ID_TIPO, label: t.NOMBRE_TIPO }))"
+                placeholder="Seleccionar..."
+              />
             </div>
           </div>
         </div>
@@ -218,27 +204,23 @@
 
           <div class="ah-field">
             <label>País</label>
-            <select v-model="form.id_pais" @change="cargarCiudades">
-              <option value="">Seleccionar país...</option>
-              <option v-for="p in paises" :key="p.ID_PAIS" :value="p.ID_PAIS">
-                {{ p.NOMBRE }}
-              </option>
-            </select>
+            <AppSelect
+              v-model="form.id_pais"
+              :options="paises.map(p => ({ value: p.ID_PAIS, label: p.NOMBRE }))"
+              placeholder="Seleccionar país..."
+              @change="cargarCiudades"
+            />
           </div>
 
-          <div class="ah-row">
-            <div class="ah-field">
-              <label>Ciudad</label>
-              <select v-model="form.id_ciudad" :disabled="!ciudades.length">
-                <option value="">
-                  {{ form.id_pais ? 'Seleccionar ciudad...' : 'Primero selecciona un país' }}
-                </option>
-                <option v-for="c in ciudades" :key="c.ID_CIUDAD" :value="c.ID_CIUDAD">
-                  {{ c.NOMBRE }}
-                </option>
-              </select>
-            </div>
-          </div>
+          <div class="ah-field">
+            <label>Ciudad</label>
+            <AppSelect
+              v-model="form.id_ciudad"
+              :options="ciudades.map(c => ({ value: c.ID_CIUDAD, label: c.NOMBRE }))"
+              :disabled="!ciudades.length"
+              :placeholder="form.id_pais ? 'Seleccionar ciudad...' : 'Primero selecciona un país'"
+            />
+           </div>
 
           <div class="ah-row">
             <div class="ah-field">
@@ -291,6 +273,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import AppSelect from '../components/AppSelect.vue'
 
 // ─── Configuración ───────────────────────────────────────────────
 // Cambia esta URL base a la de tu backend
@@ -568,6 +551,8 @@ const guardarBorrador = async () => {
     guardando.value = false
   }
 }
+
+defineExpose({ guardarBorrador, publicar, guardando, publicando })
 </script>
 
 <style scoped>

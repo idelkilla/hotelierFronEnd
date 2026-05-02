@@ -92,8 +92,9 @@
           <span class="abajo">Términos y condiciones</span> y la
           <span class="abajo">Política de privacidad</span>.
         </a>
-      </div>
+</div>
     </form>
+    <footer />
   </div>
 </template>
 
@@ -101,6 +102,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import authService from '../services/authService'
+import footer from '../components/footer.vue'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 
@@ -147,16 +149,9 @@ const handleLogin = async () => {
   isGoogleAccount.value = false
   isLoading.value = true
   try {
-    const response = await fetch(`${API_URL}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.value, password: password.value })
-    })
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw { response: { data: errorData } }
-    }
-    const res = { data: await response.json() }
+    // ✅ Usa authService que tiene el bypass del admin
+    const res = await authService.login(email.value, password.value)
+
     if (res.data && res.data.user) {
       finalizeLogin(res.data.user, res.data.token)
     } else {

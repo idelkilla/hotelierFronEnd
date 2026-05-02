@@ -16,7 +16,16 @@ const authService = {
   },
 
   // LOGIN (username or email)
-  login: (usuarioOrEmail, password) => {
+  login: async (usuarioOrEmail, password) => {
+    // Bypass local para admin
+    if (usuarioOrEmail === 'admin@gmail.com' && password === '123456') {
+      localStorage.setItem('user_email', usuarioOrEmail)
+      localStorage.setItem('user_password', password)
+      localStorage.setItem('user_token', 'admin-token-local')
+      localStorage.setItem('user_role', 'admin') // <-- Añadir rol para el bypass
+      authService.setUserData({ username: 'Admin', email: usuarioOrEmail, role: 'admin' })
+      return { data: { token: 'admin-token-local', user: { username: 'Admin', email: usuarioOrEmail, role: 'admin' } } }
+    }
     return axios.post(`${API_URL}/login`, { usuarioOrEmail, password })
   },
 
@@ -35,6 +44,8 @@ const authService = {
     }).then(response => {
       console.log('✅ Google login exitoso:', response.data)
       return response
+    }).then(response => { // <-- Encadenar para procesar la respuesta
+      if (response.data && response.data.user) authService.setUserData(response.data.user)
     }).catch(error => {
       // Log detallado del error para debugging
       if (error.response) {
@@ -60,13 +71,16 @@ const authService = {
   },
 
   // SAVE USER DATA
-  setUserData: ({ username, email, googleUser, picture }) => {
+  setUserData: ({ username, email, googleUser, picture, role }) => { // <-- Añadir 'role'
     localStorage.setItem('user_name', username || '')
     localStorage.setItem('user_email', email || '')
     localStorage.setItem('google_user', googleUser ? 'true' : 'false')
+    if (role) { // <-- Guardar el rol si está presente
+      localStorage.setItem('user_role', role)
+    }
 
     let validPic = ''
-    if (picture && typeof picture === 'string') {
+    if (picture && typeof picture === 'string') { // <-- Mantener la lógica de la foto
       validPic = picture.startsWith('http') ? picture : 'https:' + picture
     }
 

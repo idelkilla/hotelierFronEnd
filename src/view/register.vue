@@ -101,8 +101,9 @@
           <span class="abajo">Términos y condiciones</span> y la
           <span class="abajo">Política de privacidad</span>.
         </a>
-      </div>
+</div>
     </form>
+    <footer />
   </div>
 </template>
 
@@ -110,6 +111,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import authService from '../services/authService'
+import footer from '../components/footer.vue'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 

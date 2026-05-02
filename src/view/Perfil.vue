@@ -345,14 +345,16 @@
           <p class="empty-text">Próximamente. Estamos trabajando en esta sección para ofrecerte la mejor experiencia.</p>
         </div>
 
-      </main>
+</main>
     </div>
+    <footer />
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import Header from '../components/Header.vue'
+import footer from '../components/footer.vue'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 const activeSection = ref('perfil')
@@ -611,7 +613,7 @@ async function guardarCambios() {
   const payload = payloadMap[tipoModal.value]?.() ?? {}
 
   try {
-    const res = await fetch(`${API_URL}/api/user/profile/update`, {
+    const res = await fetch(`${API_URL}/api/usuarios/profile/update`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -672,7 +674,7 @@ async function fetchUserData() {
   const token = localStorage.getItem('user_token')
   if (!token) return
   try {
-    const response = await fetch(`${API_URL}/api/user/profile`, {
+    const response = await fetch(`${API_URL}/api/usuarios/profile`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     if (response.ok) {

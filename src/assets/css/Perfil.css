@@ -21,7 +21,7 @@
   min-height: 100vh;
   background: #ffffff;
   font-family: 'Nunito Sans', sans-serif;
-  padding-top: 60px;
+  padding-top: 60px; /* Mantiene la consistencia con el alto del header */
 }
 
 .perfil-layout {

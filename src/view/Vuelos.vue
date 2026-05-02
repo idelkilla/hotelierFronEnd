@@ -40,7 +40,7 @@
 .vuelos-main-content-layout {
   width: 100%;
   max-width: 1300px;
-  margin: 80px auto 0; /* Centra el contenedor horizontalmente y sube todo el layout */
+  margin: 60px auto 0; /* Alineado exacto con el alto del header (60px) */
   padding: 0 20px;
   display: flex;
   gap: 24px; /* Espacio entre las columnas */
@@ -48,7 +48,6 @@
 }
 
 .filters-column {
-  margin-top: 0; /* Elimina el margen superior de la columna de filtros, ahora se controla desde el componente */
   margin-top: 30px; /* Ajustado para alinear con el inicio de los resultados de vuelos */
 }
 
