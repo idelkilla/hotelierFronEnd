@@ -39,49 +39,46 @@ const routes = [
     component: AdminLayout,
     meta: { soloAdmin: true },
     children: [
-      { path: '',              name: 'AdminDashboard',    component: AdminDashboard },
-      { path: 'agregar-hotel', name: 'AdminAgregarHotel', component: AdminAgregarHotel },
+      { path: '', name: 'AdminDashboard', component: AdminDashboard },
+      { path: 'agregar-hotel', name: 'AdminAgregarHotel', component: AdminAgregarHotel }
     ]
-  },
-  
-  { path: '/cruceros/:id', component: DetalleCrucero },
-
-];
+  }
+]
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior() {
-    return { top: 0, behavior: 'instant' };
+    return { top: 0, behavior: 'instant' }
   }
-});
+})
 
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = authService.isAuthenticated();
-  const emailGuardado   = localStorage.getItem('user_email');
-  const isAdmin         = emailGuardado === ADMIN_EMAIL;
+  const isAuthenticated = authService.isAuthenticated()
+  const emailGuardado = localStorage.getItem('user_email')
+  const isAdmin = emailGuardado === ADMIN_EMAIL
 
   if (to.meta.soloAdmin) {
     if (!isAuthenticated || !isAdmin) {
-      console.warn("Acceso denegado: Se requiere rol de administrador.");
-      return next({ name: 'Home' });
+      console.warn('Acceso denegado: Se requiere rol de administrador.')
+      return next({ name: 'Home' })
     }
   }
 
   if (to.meta.requiresAuth && !isAuthenticated) {
-    return next({ name: 'Login' });
+    return next({ name: 'Login' })
   }
 
   if (isAuthenticated && isAdmin && (to.name === 'Home' || to.path === '/')) {
-    return next({ name: 'AdminDashboard' });
+    return next({ name: 'AdminDashboard' })
   }
 
   if ((to.name === 'Login' || to.name === 'Register') && isAuthenticated) {
-    if (isAdmin) return next({ name: 'AdminDashboard' });
-    return next({ name: 'Home' });
+    if (isAdmin) return next({ name: 'AdminDashboard' })
+    return next({ name: 'Home' })
   }
 
-  next();
-});
+  next()
+})
 
-export default router;
+export default router

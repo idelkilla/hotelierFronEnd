@@ -31,7 +31,7 @@
         @mousedown="seleccionarUbicacion(loc)"
       >
         <span class="material-symbols-outlined icon-gray">
-          {{ loc.id_tipo === 1 ? 'apartment' : ([2, 3].includes(loc.id_tipo) ? 'local_airport' : 'location_on') }}
+          {{ getIcon(loc) }}
         </span>
         <div class="location-text">
           <span class="loc-name">{{ loc.label }}</span>
@@ -84,12 +84,15 @@ async function fetchUbicaciones() {
   try {
     const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${encodeURIComponent(busquedaDestino.value)}`)
     const data = await res.json()
-    
-    // IMPORTANTE: Mapeamos los datos para que coincidan con lo que el dropdown espera
-    sugerencias.value = data.map(item => ({
-      ...item,
-      label: `${item.ubicacion}, ${item.ciudad}` // Creamos una prop amigable para mostrar
-    }))
+
+    sugerencias.value = data.map(item => {
+      // Construimos una etiqueta que incluya Pais si existe, sin importar el ID
+      const partes = [item.ubicacion, item.ciudad, item.pais].filter(part => part && part.trim() !== '');
+      return {
+        ...item,
+        label: partes.join(', ')
+      }
+    })
     busquedaRealizada.value = true
   } catch (err) {
     console.error("Error al buscar:", err)
@@ -97,6 +100,17 @@ async function fetchUbicaciones() {
   } finally {
     loadingUbicaciones.value = false
   }
+}
+
+function getIcon(loc) {
+  // Ahora el icono viene directamente desde la base de datos
+  if (loc.icono) return loc.icono;
+
+  // Fallback por si la base de datos no tiene el valor definido
+  const nombre = (loc.ubicacion || '').toLowerCase();
+  if (nombre.includes('aeropuerto')) return 'local_airport';
+  if (nombre.includes('hotel')) return 'apartment';
+  return 'location_on';
 }
 
 function seleccionarUbicacion(loc) {

@@ -147,7 +147,6 @@ const handleLogin = async () => {
   isGoogleAccount.value = false
   isLoading.value = true
   try {
-    // Se utiliza la URL base configurada
     const response = await fetch(`${API_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -180,10 +179,25 @@ const handleGoogleCredential = async (response) => {
   error.value = null
   isLoading.value = true
   try {
-    const res = await authService.googleLogin(response.credential)
-    finalizeLogin(res.data.user, res.data.token)
+    const fetchResponse = await fetch(`${API_URL}/api/auth/google-login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ credential: response.credential })
+    })
+
+    if (!fetchResponse.ok) {
+      const errorData = await fetchResponse.json()
+      throw { response: { data: errorData } }
+    }
+
+    const data = await fetchResponse.json()
+    finalizeLogin(data.user, data.token)
   } catch (err) {
-    const msg = err.response?.data?.message || ''
+    const errorServer = err.response?.data
+    const msg = errorServer?.detail || errorServer?.message || err.message || ''
     error.value = msg || 'Fallo en la autenticación con Google.'
   } finally {
     isLoading.value = false
@@ -193,19 +207,25 @@ const handleGoogleCredential = async (response) => {
 onMounted(() => {
   const initGoogle = () => {
     if (window.google?.accounts?.id) {
-      window.google.accounts.id.initialize({
-        client_id: '128715608979-nffc56ns9uagf29p7j9em6vmm6mrkidv.apps.googleusercontent.com',
-        callback: handleGoogleCredential,
-        ux_mode: 'popup',
-        context: 'signin',
-      })
-      const target = document.getElementById('google-button-target')
-      if (target) {
-        window.google.accounts.id.renderButton(target, {
-          theme: 'outline',
-          size: 'large',
-          width: 302,
+      try {
+        window.google.accounts.id.initialize({
+          client_id: '128715608979-nffc56ns9uagf29p7j9em6vmm6mrkidv.apps.googleusercontent.com',
+          callback: (r) => { console.log(r); handleGoogleCredential(r); },
+          ux_mode: 'popup',
         })
+
+        // Forzar render manual y ver si tira error
+        const target = document.getElementById('google-button-target') || document.getElementById('google-target')
+        if (target) {
+          window.google.accounts.id.renderButton(target, {
+            theme: 'outline',
+            size: 'large',
+            width: 302,
+          })
+          console.log('✅ Botón renderizado OK')
+        }
+      } catch (e) {
+        console.error('❌ Error:', e.message)
       }
     } else {
       setTimeout(initGoogle, 200)
