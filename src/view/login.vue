@@ -149,16 +149,9 @@ const handleLogin = async () => {
   isGoogleAccount.value = false
   isLoading.value = true
   try {
-    const response = await fetch(`${API_URL}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.value, password: password.value })
-    })
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw { response: { data: errorData } }
-    }
-    const res = { data: await response.json() }
+    // ✅ Usa authService que tiene el bypass del admin
+    const res = await authService.login(email.value, password.value)
+
     if (res.data && res.data.user) {
       finalizeLogin(res.data.user, res.data.token)
     } else {
