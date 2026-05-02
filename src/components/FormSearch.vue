@@ -373,6 +373,12 @@ async function handleSearch() {
     alert('Por favor completa destino y fechas')
     return
   }
+
+  if (fechaFin.value !== 'FLEXIBLE' && new Date(fechaFin.value) <= new Date(fechaInicio.value)) {
+    alert('La fecha de salida debe ser posterior a la de entrada')
+    return
+  }
+
   router.push({
     path: '/head',
     query: {

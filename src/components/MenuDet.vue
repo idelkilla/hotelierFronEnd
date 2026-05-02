@@ -86,7 +86,6 @@ const sliderClass = computed(() => `pos-${activeTab.value}`);
     padding-bottom: 100px;
     margin-top: 70px;
     padding-top: 90px; 
-  background-color: #ffffff;
 }
 
 .input-group svg.icon, 

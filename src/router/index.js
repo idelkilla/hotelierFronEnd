@@ -17,6 +17,8 @@ import Carros            from '../view/Carros.vue';
 import DetalleCarros     from '../view/DetalleCarros.vue';
 import DetalleCrucero from '../view/DetalleCrucero.vue';
 import Actividades from '../view/Actividades.vue';
+import ForgotPassword    from '../view/ForgotPassword.vue';
+import ResetPassword     from '../view/ResetPassword.vue';
 const ADMIN_EMAIL = 'admin@gmail.com';
 
 const routes = [
@@ -25,6 +27,8 @@ const routes = [
   { path: '/login',            name: 'Login',            component: Login },
   { path: '/register',         name: 'Register',         component: Register },
   { path: '/services',         name: 'servicesMenu',     component: servicesMenu },
+  { path: '/forgot-password',  name: 'ForgotPassword',   component: ForgotPassword },
+  { path: '/reset-password/:token', name: 'ResetPassword', component: ResetPassword },
   { path: '/head',             name: 'Head',             component: head },
   { path: '/Vuelos',           name: 'Vuelos',           component: Vuelos },
   { path: '/servicio-cliente', name: 'ServicioCliente',  component: servicioCliente },

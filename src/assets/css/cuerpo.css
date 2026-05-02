@@ -16,7 +16,7 @@ html {
     background-color: #ffffff;
     width: 100%;
     padding-bottom: 100px;
-    margin-top: 60px;
+    margin-top: 60px; /* Alineado con el alto del header (60px) */
 }
 
 /* ── SECCIÓN DE BÚSQUEDA ──────────────────────────────────── */
