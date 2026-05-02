@@ -15,7 +15,7 @@
         </aside>
 
         <div class="actividades-resultados">
-          <!-- cards aquí -->
+          <OpcionesActividades />
         </div>
       </div>
     </div>
@@ -26,6 +26,7 @@
 import HeaderComponent from "../components/Header.vue";
 import ActividadesSerch from "../components/ActividadesSearch.vue";
 import FiltrosActividades from "../components/FiltrosActividades.vue";
+ import OpcionesActividades from "../components/OpcionesActividades.vue"
 </script>
 
 <style scoped>
@@ -38,7 +39,7 @@ import FiltrosActividades from "../components/FiltrosActividades.vue";
 .actividades-main-content {
   max-width: 1300px;
   margin: 0 auto;
-  padding: 90px 40px 40px; /* 100px top compensa el header fijo */
+  padding: 90px 40px 40px 15px; /* Reducido el padding izquierdo para mover el contenido */
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -52,12 +53,12 @@ import FiltrosActividades from "../components/FiltrosActividades.vue";
 
 .actividades-layout {
   display: flex;
-  gap: 24px;
+  gap: 25px; /* Aumentamos el espacio para evitar que se toquen */
   align-items: flex-start;
 }
 
 .actividades-filtros {
-  width: 240px; /* Reducimos el ancho base del contenedor */
+  width: 255px; /* Aumentado para que quepa el contenido escalado (280px * 0.9) */
   flex-shrink: 0;
   position: sticky;
   top: 150px; /* Aumentado para bajar más la posición de los filtros */
