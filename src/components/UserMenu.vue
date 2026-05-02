@@ -181,5 +181,4 @@ const logout = () => {
   location.reload();
 };
 </script>
-
 <style scoped src="../assets/css/UserMenu.css"></style>

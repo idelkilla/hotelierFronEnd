@@ -61,11 +61,12 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const isAuthenticated = authService.isAuthenticated()
   const emailGuardado = localStorage.getItem('user_email')
-  const isAdmin = emailGuardado === ADMIN_EMAIL
+  const passwordGuardada = localStorage.getItem('user_password')
+  const isAdmin = emailGuardado === ADMIN_EMAIL && passwordGuardada === '123456'
 
   if (to.meta.soloAdmin) {
     if (!isAuthenticated || !isAdmin) {
-      console.warn('Acceso denegado: Se requiere rol de administrador.')
+      console.warn('Acceso denegado: Se requiere rol de administrador y credenciales válidas.')
       return next({ name: 'Home' })
     }
   }

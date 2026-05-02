@@ -178,3 +178,13 @@
   height: 1px;
   background: #ebebeb;
 }
+
+.user-menu {
+  max-height: 90vh;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+.user-menu::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
