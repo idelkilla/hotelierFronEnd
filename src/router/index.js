@@ -45,7 +45,6 @@ const routes = [
     children: [
       { path: '', name: 'AdminDashboard', component: AdminDashboard, meta: { requiresAdmin: true } },
       { path: 'hospedajes/:vista?', name: 'AdminHospedajes', component: AdminHospedajes, meta: { requiresAdmin: true } },
-      // ✅ Wildcard para que el componente maneje su propia sub-navegación con route.path
       { path: 'usuarios/:pathMatch(.*)*', name: 'AdminUsuarios', component: AdminUsuarios, meta: { requiresAdmin: true } },
     ]
   },
