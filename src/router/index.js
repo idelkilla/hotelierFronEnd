@@ -42,7 +42,8 @@ const routes = [
       { path: '', name: 'AdminDashboard', component: AdminDashboard },
       { path: 'agregar-hotel', name: 'AdminAgregarHotel', component: AdminAgregarHotel }
     ]
-  }
+  },
+  { path: '/cruceros/:id', name: 'DetalleCrucero', component: DetalleCrucero },
 ]
 
 const router = createRouter({

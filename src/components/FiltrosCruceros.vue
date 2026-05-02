@@ -145,7 +145,6 @@ const filtros = reactive({
   flex-direction: column;
   gap: 12px;
 }
-
 .filtro-card {
   background: #fff;
   border: 0.5px solid #e0e0e0;
