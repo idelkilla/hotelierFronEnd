@@ -247,7 +247,7 @@ import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AgregarEmpleadoForm from './AdminAgregarEmpleado.vue'
 import AgregarClienteForm from './AdminAgregarCliente.vue'
-import AgregarMiembroForm from './AdminAgregarMiembro.vue'
+import AgregarMiembroForm from './Adminagregarmiembro.vue'
 import EditarUsuarioPanel from './adminEditarUsuario.vue'
 
 const API_BASE =
