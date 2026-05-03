@@ -60,7 +60,7 @@ const router = createRouter({
   }
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   try {
     const isAuthenticated = authService.isAuthenticated()
     const userRole = localStorage.getItem('user_role')
@@ -81,13 +81,13 @@ router.beforeEach((to, from, next) => {
       return next({ name: 'Home' })
     }
 
-    // Si un administrador está logueado y trata de acceder a una ruta no-admin, redirigir al dashboard
+    // Bloqueo de seguridad: El administrador solo puede acceder a áreas de gestión
     if (isAuthenticated && userRole === 'admin') {
-      // Una ruta es considerada de administración si su path empieza con '/admin' o tiene meta.requiresAdmin
-      const isAdminRoute = to.path.startsWith('/admin') || to.meta.requiresAdmin;
-      if (!isAdminRoute) {
-        console.log('Admin intentó acceder a ruta no-admin, redirigiendo a AdminDashboard.');
-        return next({ name: 'AdminDashboard' });
+      const isTargetAdmin = to.path.startsWith('/admin') || to.meta.requiresAdmin
+
+      if (!isTargetAdmin) {
+        console.log('Bloqueo: El administrador solo puede acceder a áreas de gestión.')
+        return next({ name: 'AdminDashboard' })
       }
     }
     next()

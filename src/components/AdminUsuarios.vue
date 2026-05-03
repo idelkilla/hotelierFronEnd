@@ -401,8 +401,8 @@ const cargarListado = async () => {
 
 const cargarListadoSilencioso = async () => {
   try {
-    // El backend devuelve un array unificado con campo 'tipo': 'Empleado' | 'Cliente' | 'Miembro'
-    usuarios.value = await apiFetch('/usuarios')
+    const res = await apiFetch('/usuarios')
+    usuarios.value = Array.isArray(res) ? res : []
   } catch (e) {
     mostrarAlerta('Error cargando usuarios: ' + e.message)
   } finally {
