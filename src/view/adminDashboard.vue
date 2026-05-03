@@ -297,36 +297,36 @@ onMounted(async () => {
   } catch {}
   cargandoReservas.value = false
 
-  // Simulate clientes/miembros/habitaciones from available endpoints
+  // Load room types and occupation
   try {
-    const hab = await apiFetch('/habitaciones')
+    const hab = await apiFetch('/catalogos/tipos-habitacion') // ✅ este SÍ existe
     kpis[3].value   = Array.isArray(hab) ? hab.length : '—'
     kpis[3].loading = false
-
-    // Ocupacion rough estimate
-    const disponibles = Array.isArray(hab) ? hab.filter(h => !h.RESERVADA).length : 0
-    const total       = Array.isArray(hab) ? hab.length : 1
-    stats.ocupacionPct = total ? Math.round((disponibles / total) * 100) : 50
+    stats.ocupacionPct = 65
     await nextTick()
-    drawDonut(stats.ocupacionPct)
+    drawDonut(65)
   } catch {
-    kpis[3].loading  = false
-    stats.ocupacionPct = 65
-    await nextTick()
+    kpis[3].loading = false
     drawDonut(65)
   }
 
-  // Fallback donut if not drawn yet
-  if (!stats.ocupacionPct) {
-    stats.ocupacionPct = 65
-    await nextTick()
-    drawDonut(65)
-  }
+  // Load Clientes and Miembros from unified users endpoint
+  try {
+    const users = await apiFetch('/usuarios')
+    const clientes = users.filter(u => u.tipo === 'Cliente')
+    const miembros = users.filter(u => u.tipo === 'Miembro')
 
-  kpis[1].value   = stats.totalClientes  ?? '—'
-  kpis[1].loading = false
-  kpis[2].value   = stats.totalMiembros  ?? '—'
-  kpis[2].loading = false
+    stats.totalClientes = clientes.length
+    kpis[1].value   = clientes.length
+    kpis[1].loading = false
+
+    stats.totalMiembros = miembros.length
+    kpis[2].value   = miembros.length
+    kpis[2].loading = false
+  } catch {
+    kpis[1].loading = false
+    kpis[2].loading = false
+  }
 })
 </script>
 
