@@ -39,7 +39,7 @@ import FiltrosActividades from "../components/FiltrosActividades.vue";
 .actividades-main-content {
   max-width: 1300px;
   margin: 0 auto;
-  padding: 90px 40px 40px 15px; /* Reducido el padding izquierdo para mover el contenido */
+  padding: 90px 40px 40px 15px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -53,16 +53,13 @@ import FiltrosActividades from "../components/FiltrosActividades.vue";
 
 .actividades-layout {
   display: flex;
-  gap: 25px; /* Aumentamos el espacio para evitar que se toquen */
+  gap: 25px;
   align-items: flex-start;
 }
 
 .actividades-filtros {
-  width: 255px; /* Aumentado para que quepa el contenido escalado (280px * 0.9) */
+  width: 255px;
   flex-shrink: 0;
-  position: sticky;
-  top: 150px; /* Aumentado para bajar más la posición de los filtros */
-  /* Escalamos el contenido al 90% para que todo se vea más pequeño */
   transform: scale(0.9);
   transform-origin: top left;
 }

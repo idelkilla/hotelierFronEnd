@@ -2,9 +2,6 @@
 <template>
   <div class="resultados-actividades">
 
-    <!-- Top bar -->
-   
-
     <!-- Cards -->
     <div v-for="a in actividadesOrdenadas" :key="a.id" class="act-card">
 
@@ -68,27 +65,130 @@
         <div class="precio-desde">desde</div>
         <div class="precio-amount">${{ a.precio }}</div>
         <div class="precio-sub">impuestos incluidos<br/>por adulto</div>
-        <button class="btn-reservar" @click="verDetalle(a.id)">Ver actividad</button>
+        <button class="btn-reservar" @click="abrirDetalle(a)">Ver actividad</button>
       </div>
 
     </div>
+
+    <!-- Modal de detalle -->
+    <DetalleActividad
+      v-if="actividadSeleccionada"
+      :actividad="actividadSeleccionada"
+      :visible="modalVisible"
+      @cerrar="cerrarModal"
+    />
+
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
+import DetalleActividad from '../components/DetalleActividad.vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const verDetalle = (id) => router.push({ name: 'DetalleActividad', params: { id } })
 const orden = ref('default')
+const modalVisible = ref(false)
+const actividadSeleccionada = ref(null)
 
 const actividades = ref([
-  { id: 1, titulo: 'AMBER COVE - Cataratas de Damajagua y Almuerzo Tour', tipo: 'Excursión', duracion: '5 h', ubicacion: 'Puerto Plata', rating: 9.2, label: 'Magnífica', opiniones: 135, precio: 60, cancelacion: true, familias: true,  oferta: false, favorito: false, imagen: 'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=400&q=80' },
-  { id: 2, titulo: 'Sosua Party Boat - Snorkeling + Snack + BBQ Alimentos y Bebidas', tipo: 'Acuático', duracion: '4 h', ubicacion: 'Sosúa', rating: 9.0, label: 'Magnífica', opiniones: 11, precio: 69, cancelacion: true, familias: false, oferta: false, favorito: false, imagen: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&q=80' },
-  { id: 3, titulo: 'Tour por la ciudad de Puerto Plata y teleférico', tipo: 'Ciudad', duracion: '4 h 40 min', ubicacion: 'Puerto Plata', rating: 9.2, label: 'Magnífica', opiniones: 69, precio: 60, cancelacion: true, familias: true,  oferta: false, favorito: false, imagen: 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=400&q=80' },
-  { id: 4, titulo: 'Aventura en ATV por los campos dominicanos', tipo: 'Aventura', duracion: '3 h', ubicacion: 'Santiago', rating: 8.7, label: 'Muy buena', opiniones: 42, precio: 45, cancelacion: false, familias: false, oferta: true,  favorito: false, imagen: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=400&q=80' },
-  { id: 5, titulo: 'Catamarán al atardecer con cena y música en vivo', tipo: 'Acuático', duracion: '2 h 30 min', ubicacion: 'Samaná', rating: 9.5, label: 'Magnífica', opiniones: 88, precio: 85, cancelacion: true, familias: false, oferta: false, favorito: true,  imagen: 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=400&q=80' },
-  { id: 6, titulo: 'Excursión a la Cascada El Limón desde Samaná', tipo: 'Naturaleza', duracion: '6 h', ubicacion: 'Samaná', rating: 8.9, label: 'Muy buena', opiniones: 31, precio: 55, cancelacion: true, familias: true,  oferta: true,  favorito: false, imagen: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&q=80' },
+  {
+    id: 1,
+    titulo: 'AMBER COVE - Cataratas de Damajagua y Almuerzo Tour',
+    tipo: 'Excursión',
+    duracion: '5 h',
+    ubicacion: 'Puerto Plata',
+    rating: 9.2, label: 'Magnífica', opiniones: 135,
+    precio: 60,
+    cancelacion: true, familias: true, oferta: false, favorito: false,
+    imagen: 'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=800&q=80',
+    descripcion: 'Sumérgete en la naturaleza dominicana con una visita guiada a las espectaculares Cataratas de Damajagua. Escala las rocas, salta desde las cascadas y disfruta de un almuerzo típico dominicano incluido en el recorrido.',
+    horarios: ['8:00 a.m.', '9:00 a.m.', '10:00 a.m.'],
+    puntoEncuentro: 'Lobby del Amber Cove Cruise Center, Puerto Plata',
+    incluye: ['Transporte de ida y vuelta', 'Guía bilingüe (español/inglés)', 'Almuerzo típico dominicano', 'Equipo de seguridad', 'Entrada a las cataratas'],
+    noIncluye: ['Bebidas alcohólicas', 'Propinas', 'Seguro de viaje'],
+  },
+  {
+    id: 2,
+    titulo: 'Sosua Party Boat - Snorkeling + Snack + BBQ Alimentos y Bebidas',
+    tipo: 'Acuático',
+    duracion: '4 h',
+    ubicacion: 'Sosúa',
+    rating: 9.0, label: 'Magnífica', opiniones: 11,
+    precio: 69,
+    cancelacion: true, familias: false, oferta: false, favorito: false,
+    imagen: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80',
+    descripcion: 'Zarpa desde Sosúa a bordo de un catamarán con música en vivo, bebidas ilimitadas y el mejor snorkeling del norte dominicano. Una fiesta en el mar que no olvidarás.',
+    horarios: ['9:00 a.m.', '1:00 p.m.'],
+    puntoEncuentro: 'Muelle de Sosúa, frente al Kiosko Marino',
+    incluye: ['Bebidas ilimitadas (ron, cerveza, refrescos)', 'Snack a bordo', 'BBQ en la playa', 'Equipo de snorkeling', 'DJ y música en vivo'],
+    noIncluye: ['Traslado al muelle', 'Propinas', 'Fotos profesionales'],
+  },
+  {
+    id: 3,
+    titulo: 'Tour por la ciudad de Puerto Plata y teleférico',
+    tipo: 'Ciudad',
+    duracion: '4 h 40 min',
+    ubicacion: 'Puerto Plata',
+    rating: 9.2, label: 'Magnífica', opiniones: 69,
+    precio: 60,
+    cancelacion: true, familias: true, oferta: false, favorito: false,
+    imagen: 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=800&q=80',
+    descripcion: 'Descubre la historia y cultura del norte dominicano. Visita el Fuerte San Felipe, sube en el único teleférico del Caribe hasta el Pico Isabel de Torres y disfruta vistas panorámicas espectaculares.',
+    horarios: ['8:30 a.m.', '10:00 a.m.', '2:00 p.m.'],
+    puntoEncuentro: 'Parque Central de Puerto Plata, frente a la Catedral',
+    incluye: ['Guía turístico bilingüe', 'Transporte en bus con A/C', 'Boleto del teleférico', 'Tiempo libre en el mercado artesanal'],
+    noIncluye: ['Entradas a museos adicionales', 'Almuerzo', 'Propinas'],
+  },
+  {
+    id: 4,
+    titulo: 'Aventura en ATV por los campos dominicanos',
+    tipo: 'Aventura',
+    duracion: '3 h',
+    ubicacion: 'Santiago',
+    rating: 8.7, label: 'Muy buena', opiniones: 42,
+    precio: 45,
+    cancelacion: false, familias: false, oferta: true, favorito: false,
+    imagen: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800&q=80',
+    descripcion: 'Vive la adrenalina recorriendo los campos y montañas del Cibao en cuatrimoto. Pasa por ríos, fincas de cacao y vistas impresionantes del Valle del Cibao.',
+    horarios: ['7:00 a.m.', '10:00 a.m.', '3:00 p.m.'],
+    puntoEncuentro: 'Base ATV Cibao Adventures, Km 14 Autopista Duarte, Santiago',
+    incluye: ['Cuatrimoto individual o doble', 'Casco y equipo de protección', 'Guía experto', 'Snack y agua'],
+    noIncluye: ['Seguro adicional (opcional)', 'Transporte al punto de partida', 'Propinas'],
+  },
+  {
+    id: 5,
+    titulo: 'Catamarán al atardecer con cena y música en vivo',
+    tipo: 'Acuático',
+    duracion: '2 h 30 min',
+    ubicacion: 'Samaná',
+    rating: 9.5, label: 'Magnífica', opiniones: 88,
+    precio: 85,
+    cancelacion: true, familias: false, oferta: false, favorito: true,
+    imagen: 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=800&q=80',
+    descripcion: 'Una experiencia romántica e inolvidable navegando la Bahía de Samaná al atardecer. Incluye cena de mariscos, música en vivo y brindis con champán mientras el sol se oculta en el horizonte.',
+    horarios: ['5:00 p.m.', '6:00 p.m.'],
+    puntoEncuentro: 'Marina Santa Bárbara, Samaná',
+    incluye: ['Cena de mariscos y pescado fresco', 'Copa de champán', 'Música en vivo (merengue y bachata)', 'Bebidas no alcohólicas ilimitadas'],
+    noIncluye: ['Bebidas alcohólicas adicionales', 'Transporte a la marina', 'Propinas'],
+  },
+  {
+    id: 6,
+    titulo: 'Excursión a la Cascada El Limón desde Samaná',
+    tipo: 'Naturaleza',
+    duracion: '6 h',
+    ubicacion: 'Samaná',
+    rating: 8.9, label: 'Muy buena', opiniones: 31,
+    precio: 55,
+    cancelacion: true, familias: true, oferta: true, favorito: false,
+    imagen: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80',
+    descripcion: 'Emprende una aventura a caballo o a pie hasta la majestuosa Cascada El Limón, una de las más altas del Caribe con 52 metros de altura. Nada en su poza natural y siente la energía de la selva tropical.',
+    horarios: ['8:00 a.m.', '9:00 a.m.'],
+    puntoEncuentro: 'Plaza Turística de El Limón, Las Terrenas, Samaná',
+    incluye: ['Caballo y guía local', 'Almuerzo típico (pollo, arroz, habichuelas)', 'Agua y frutas frescas', 'Acceso a la cascada'],
+    noIncluye: ['Propinas al guía', 'Fotos profesionales', 'Seguro de viaje'],
+  },
 ])
 
 const actividadesOrdenadas = computed(() => {
@@ -100,7 +200,16 @@ const actividadesOrdenadas = computed(() => {
 })
 
 const toggleFav = (a) => { a.favorito = !a.favorito }
-const verDetalle = (id) => router.push({ name: 'DetalleActividad', params: { id } })
+
+const abrirDetalle = (actividad) => {
+  actividadSeleccionada.value = actividad
+  modalVisible.value = true
+}
+
+const cerrarModal = () => {
+  modalVisible.value = false
+  setTimeout(() => { actividadSeleccionada.value = null }, 300)
+}
 </script>
 
 <style scoped>
@@ -109,21 +218,6 @@ const verDetalle = (id) => router.push({ name: 'DetalleActividad', params: { id 
   flex-direction: column;
   gap: 16px;
 }
-
-/* Top bar */
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
-}
-.count { font-size: 16px; font-weight: 600; color: #1a1a2e; }
-.sort-select {
-  font-size: 13px; padding: 8px 12px;
-  border: 1.5px solid #d0d5e0; border-radius: 8px;
-  background: #fff; color: #333; outline: none; cursor: pointer;
-}
-.sort-select:focus { border-color: #1a73e8; }
 
 /* Card */
 .act-card {
