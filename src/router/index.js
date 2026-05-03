@@ -97,10 +97,10 @@ router.beforeEach(async (to, from, next) => {
 
     // Bloqueo de seguridad: El administrador solo puede acceder a áreas de gestión
     if (isAuthenticated && userRole === 'admin') {
-      const isTargetAdmin = to.path.startsWith('/admin') || to.meta.requiresAdmin
+      const isTargetAdmin = to.path.startsWith('/admin') || to.meta.requiresAdmin || to.name === 'Perfil'
 
       if (!isTargetAdmin) {
-        console.log('Bloqueo: El administrador solo puede acceder a áreas de gestión.')
+        console.warn('Bloqueo: El administrador solo puede acceder a áreas de gestión o a su Perfil.')
         return next({ name: 'AdminDashboard' })
       }
     }
