@@ -13,6 +13,8 @@ import AdminLayout from '../view/adminPanel.vue'
 import AdminDashboard from '../view/adminDashboard.vue'
 import AdminHospedajes from '../view/adminHospedajes.vue'
 import AdminUsuarios from '../components/AdminUsuarios.vue'
+import AdminReservas from '../components/Adminreservas.vue'
+import AdminConfiguracion from '../components/Adminconfiguracion.vue'
 import Perfil from '../view/Perfil.vue'
 import Carros from '../view/Carros.vue'
 import DetalleCarros from '../view/DetalleCarros.vue'
@@ -46,6 +48,8 @@ const routes = [
       { path: '', name: 'AdminDashboard', component: AdminDashboard, meta: { requiresAdmin: true } },
       { path: 'hospedajes/:vista?', name: 'AdminHospedajes', component: AdminHospedajes, meta: { requiresAdmin: true } },
       { path: 'usuarios/:pathMatch(.*)*', name: 'AdminUsuarios', component: AdminUsuarios, meta: { requiresAdmin: true } },
+      { path: 'reservas', name: 'AdminReservas', component: AdminReservas, meta: { requiresAdmin: true } },
+      { path: 'configuracion', name: 'AdminConfiguracion', component: AdminConfiguracion, meta: { requiresAdmin: true } },
     ]
   },
   { path: '/cruceros/:id', name: 'DetalleCrucero', component: DetalleCrucero },
