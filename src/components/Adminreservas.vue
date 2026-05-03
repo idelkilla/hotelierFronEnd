@@ -160,8 +160,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-
-const API = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
+import { API } from '../services/api'
 
 const reservas = ref([])
 const estados = ref([])
@@ -208,8 +207,8 @@ async function fetchReservas() {
     const headers = { Authorization: `Bearer ${token}` }
 
     const [resRes, estRes] = await Promise.all([
-      fetch(`${API}/api/reservas`, { headers }),
-      fetch(`${API}/api/catalogos/estados-reserva`, { headers }),
+      fetch(`${API}/reservas`, { headers }),
+      fetch(`${API}/catalogos/estados-reserva`, { headers }),
     ])
 
     if (!resRes.ok) throw new Error('Error al cargar reservas')
@@ -227,7 +226,7 @@ async function verDetalle(r) {
   detalles.value = []
   try {
     const token = localStorage.getItem('user_token')
-    const res = await fetch(`${API}/api/reservas/${r.ID_RESERVA}/detalles`, {
+    const res = await fetch(`${API}/reservas/${r.ID_RESERVA}/detalles`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     if (res.ok) detalles.value = await res.json()
@@ -243,7 +242,7 @@ async function cambiarEstado() {
   if (!cambioEstadoReserva.value) return
   try {
     const token = localStorage.getItem('user_token')
-    const res = await fetch(`${API}/api/reservas/${cambioEstadoReserva.value.ID_RESERVA}/estado`, {
+    const res = await fetch(`${API}/reservas/${cambioEstadoReserva.value.ID_RESERVA}/estado`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ ID_ESTADO: nuevoEstado.value })

@@ -173,8 +173,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, defineComponent, h } from 'vue'
-
-const API = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+import { API } from '../services/api'
 
 // ── State ──────────────────────────────────────────
 const activeTab = ref('hospedaje')
@@ -226,12 +225,12 @@ const modalFields = computed(() => fieldsMap[modal.tab] || [])
 // ── API endpoint map ──────────────────────────────
 const endpoints = {
   // Sincronizado con catalogos.js del backend
-  hospedaje:   { get: '/api/catalogos/tipos-hospedaje',    post: '/api/catalogos/tipos-hospedaje',    patch: id => `/api/catalogos/tipos-hospedaje/${id}`,    delete: id => `/api/catalogos/tipos-hospedaje/${id}` },
-  habitacion:  { get: '/api/catalogos/tipos-habitacion',   post: '/api/catalogos/tipos-habitacion',   patch: id => `/api/catalogos/tipos-habitacion/${id}`,   delete: id => `/api/catalogos/tipos-habitacion/${id}` },
-  servicios:   { get: '/api/catalogos/servicios-incluidos',post: '/api/catalogos/servicios-incluidos',patch: id => `/api/catalogos/servicios-incluidos/${id}`,delete: id => `/api/catalogos/servicios-incluidos/${id}` },
-  estados:     { get: '/api/catalogos/estados-reserva',    post: '/api/catalogos/estados-reserva',    patch: id => `/api/catalogos/estados-reserva/${id}`,    delete: id => `/api/catalogos/estados-reserva/${id}` },
-  membresia:   { get: '/api/catalogos/niveles-membresia',  post: '/api/catalogos/niveles-membresia',  patch: id => `/api/catalogos/niveles-membresia/${id}`,  delete: id => `/api/catalogos/niveles-membresia/${id}` },
-  ubicaciones: { get: '/api/catalogos/tipos-ubicacion',    post: '/api/catalogos/tipos-ubicacion',    patch: id => `/api/catalogos/tipos-ubicacion/${id}`,    delete: id => `/api/catalogos/tipos-ubicacion/${id}` },
+  hospedaje:   { get: '/catalogos/tipos-hospedaje',    post: '/catalogos/tipos-hospedaje',    patch: id => `/catalogos/tipos-hospedaje/${id}`,    delete: id => `/catalogos/tipos-hospedaje/${id}` },
+  habitacion:  { get: '/catalogos/tipos-habitacion',   post: '/catalogos/tipos-habitacion',   patch: id => `/catalogos/tipos-habitacion/${id}`,   delete: id => `/catalogos/tipos-habitacion/${id}` },
+  servicios:   { get: '/catalogos/servicios-incluidos',post: '/catalogos/servicios-incluidos',patch: id => `/catalogos/servicios-incluidos/${id}`,delete: id => `/catalogos/servicios-incluidos/${id}` },
+  estados:     { get: '/catalogos/estados-reserva',    post: '/catalogos/estados-reserva',    patch: id => `/catalogos/estados-reserva/${id}`,    delete: id => `/catalogos/estados-reserva/${id}` },
+  membresia:   { get: '/catalogos/niveles-membresia',  post: '/catalogos/niveles-membresia',  patch: id => `/catalogos/niveles-membresia/${id}`,  delete: id => `/catalogos/niveles-membresia/${id}` },
+  ubicaciones: { get: '/catalogos/tipos-ubicacion',    post: '/catalogos/tipos-ubicacion',    patch: id => `/catalogos/tipos-ubicacion/${id}`,    delete: id => `/catalogos/tipos-ubicacion/${id}` },
 }
 
 const dataMap = { hospedaje: tiposHospedaje, habitacion: tiposHabitacion, servicios: serviciosIncluidos, estados: estadosReserva, membresia: nivelesMembresia, ubicaciones: tiposUbicacion }
