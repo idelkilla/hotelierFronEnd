@@ -165,8 +165,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed, nextTick } from 'vue'
-
-const API_BASE = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api'
+import { apiFetch } from '../services/api'
 
 const hospedajes      = ref([])
 const reservas        = ref([])
@@ -193,15 +192,6 @@ const kpis = reactive([
   { label: 'Miembros',    value: '—', icon: 'fas fa-id-card',        iconBg: '#f0f7ff', iconColor: '#265073', sub: 'con membresía',       subVal: '', subPositive: true,  spark: '0,22 10,18 20,19 30,14 40,16 50,10 60,13 70,8 80,10', loading: true },
   { label: 'Habitaciones',value: '—', icon: 'fas fa-bed',            iconBg: '#f0f7ff', iconColor: '#265073', sub: 'configuradas',        subVal: '', subPositive: false, spark: '0,16 10,14 20,17 30,11 40,15 50,9 60,12 70,7 80,9',  loading: true },
 ])
-
-const apiFetch = async (path) => {
-  const token = localStorage.getItem('user_token')
-  const headers = { 'Content-Type': 'application/json' }
-  if (token) headers['Authorization'] = `Bearer ${token}`
-  const res = await fetch(`${API_BASE}${path}`, { headers })
-  if (!res.ok) throw new Error(`Error ${res.status}`)
-  return res.json()
-}
 
 const formatDate = (d) => {
   if (!d) return '—'
@@ -313,7 +303,10 @@ onMounted(async () => {
   // Load Clientes and Miembros from unified users endpoint
   try {
     const users = await apiFetch('/usuarios')
-    const clientes = users.filter(u => u.tipo === 'Cliente')
+    // Filtrado inteligente: 
+    // Clientes = Todos los que no son empleados (incluye miembros)
+    // Miembros = Segmento con membresía activa
+    const clientes = users.filter(u => u.tipo === 'Cliente' || u.tipo === 'Miembro')
     const miembros = users.filter(u => u.tipo === 'Miembro')
 
     stats.totalClientes = clientes.length
