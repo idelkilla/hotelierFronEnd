@@ -473,14 +473,20 @@ async function ejecutarBusqueda() {
 
   try {
     const data = await apiPost('/search/hospedaje', {
-      destino: destino,
+      destino: destino || '',
       fecha_inicio: fechaInicio || null,
       fecha_fin: (fechaFin && fechaFin !== 'FLEXIBLE') ? fechaFin : null,
       habitaciones: habs,
     })
 
-    console.log('HOTELES RECIBIDOS:', data.length, data)
-    hoteles.value = data.map(h => ({ ...h, currentImg: 0, isFavorite: false }))
+    // Asegurar que recibimos un array y procesar imágenes
+    const results = Array.isArray(data) ? data : []
+    hoteles.value = results.map(h => ({ 
+      ...h, 
+      currentImg: 0, 
+      isFavorite: false,
+      imagenes: Array.isArray(h.imagenes) && h.imagenes.length > 0 ? h.imagenes : (h.imagen_portada ? [h.imagen_portada] : [])
+    }))
 
   } catch (err) {
     console.error('ERROR FETCH:', err)
