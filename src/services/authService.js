@@ -18,7 +18,7 @@ const authService = {
   // LOGIN (username or email)
   login: async (usuarioOrEmail, password) => {
     // Bypass local para admin
-    if (usuarioOrEmail === 'admin@gmail.com' && password === '123456') {
+    if (usuarioOrEmail?.toLowerCase() === 'admin@gmail.com' && password === '123456') {
       localStorage.setItem('user_email', usuarioOrEmail)
       localStorage.setItem('user_password', password)
       localStorage.setItem('user_token', 'admin-token-local')

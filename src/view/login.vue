@@ -141,7 +141,7 @@ const finalizeLogin = (userData, token) => {
   authService.saveToken(token)
   authService.setUserData(userData)
   window.dispatchEvent(new Event('storage'))
-  router.push(userData.email === 'admin@gmail.com' ? '/admin' : '/home')
+  router.push(userData.role === 'admin' ? '/admin' : '/home')
 }
 
 const handleLogin = async () => {

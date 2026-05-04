@@ -241,13 +241,15 @@ const handleGoogleCredential = async (response) => {
     localStorage.setItem('user_initial', payload.name.charAt(0).toUpperCase())
     localStorage.setItem('user_photo', payload.picture)
     localStorage.setItem('user_token', data.token)
+    localStorage.setItem('user_role', data.user.role)
     window.dispatchEvent(new Event('storage'))
 
     authService.setUserData({
       username: payload.name,
       email: payload.email,
       googleUser: true,
-      picture: payload.picture
+      picture: payload.picture,
+      role: data.user.role
     })
     router.replace('/Home')
   } catch (err) {
