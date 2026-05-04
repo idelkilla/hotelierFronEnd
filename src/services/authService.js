@@ -1,8 +1,8 @@
 // authService.js
 import axios from 'axios'
+import { API_ROOT } from './api'
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
-const API_URL = `${BASE_URL}/api/auth`
+const API_URL = `${API_ROOT}/api/auth`
 
 // Configure axios to include credentials and handle CORS properly
 axios.defaults.withCredentials = true
@@ -11,21 +11,17 @@ axios.defaults.crossDomain = true
 const authService = {
 
   // REGISTER: Debe retornar una promesa que resuelve en { data: { token: '...' } }
-  register: (username, email, password) => {
-    return axios.post(`${API_URL}/register`, { username, email, password })
+  register: (nombre, email, password) => {
+    return axios.post(`${API_URL}/register`, {
+      nombre,
+      email,
+      password,
+      confirmPassword: password
+    })
   },
 
   // LOGIN (username or email)
   login: async (usuarioOrEmail, password) => {
-    // Bypass local para admin
-    if (usuarioOrEmail === 'admin@gmail.com' && password === '123456') {
-      localStorage.setItem('user_email', usuarioOrEmail)
-      localStorage.setItem('user_password', password)
-      localStorage.setItem('user_token', 'admin-token-local')
-      localStorage.setItem('user_role', 'admin') // <-- Añadir rol para el bypass
-      authService.setUserData({ username: 'Admin', email: usuarioOrEmail, role: 'admin' })
-      return { data: { token: 'admin-token-local', user: { username: 'Admin', email: usuarioOrEmail, role: 'admin' } } }
-    }
     return axios.post(`${API_URL}/login`, { usuarioOrEmail, password })
   },
 
@@ -71,20 +67,21 @@ const authService = {
   },
 
   // SAVE USER DATA
-  setUserData: ({ username, email, googleUser, picture, role }) => { // <-- Añadir 'role'
-    localStorage.setItem('user_name', username || '')
+  setUserData: ({ username, nombre, email, googleUser, picture, role }) => {
+    const displayName = username || nombre || ''
+    localStorage.setItem('user_name', displayName)
     localStorage.setItem('user_email', email || '')
-    localStorage.setItem('google_user', googleUser ? 'true' : 'false')
-    if (role) { // <-- Guardar el rol si está presente
+    localStorage.setItem('user_google', googleUser ? 'true' : 'false')
+    if (role) {
       localStorage.setItem('user_role', role)
     }
 
     let validPic = ''
-    if (picture && typeof picture === 'string') { // <-- Mantener la lógica de la foto
+    if (picture && typeof picture === 'string') {
       validPic = picture.startsWith('http') ? picture : 'https:' + picture
     }
-
     localStorage.setItem('user_photo', validPic)
+    localStorage.setItem('user_initial', displayName ? displayName.charAt(0).toUpperCase() : '?')
   },
 
   // CHECK AUTH

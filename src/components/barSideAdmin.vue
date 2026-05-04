@@ -56,7 +56,7 @@ const menuItems = [
 const syncActive = () => {
   const matched = menuItems.find(item => {
     // ✅ Dashboard solo activo en /admin exacto
-    if (item.id === 'dashboard') return route.path === '/admin' || route.path === '/admin/'
+    if (item.id === 'dashboard') return route.path === '/admin/dashboard' || route.path === '/admin'
     return route.path.startsWith(item.route)
   })
   if (matched) activeId.value = matched.id

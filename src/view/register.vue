@@ -112,8 +112,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import authService from '../services/authService'
 import footer from '../components/footer.vue'
-
-const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
+import { API } from '../services/api'
 
 const router = useRouter()
 const username = ref('')
@@ -149,51 +148,23 @@ const handleRegister = async () => {
   error.value = null
   isLoading.value = true
 
-  const payload = {
-    nombre: username.value.trim(),
-    email: email.value.trim(),
-    password: password.value,
-    confirmPassword: password.value
-  }
-
-  console.log('🚀 Enviando registro:', payload)
-
   try {
-    const response = await fetch(`${API_URL}/api/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    })
+    const res = await authService.register(
+      username.value.trim(),
+      email.value.trim(),
+      password.value
+    )
 
-    console.log('📊 Status:', response.status)
+    if (res.data?.token && res.data?.user) {
+      authService.saveToken(res.data.token)
+      authService.setUserData(res.data.user)
+      window.dispatchEvent(new Event('storage'))
 
-    const data = await response.json()
-    console.log('📦 Response:', data)
-
-    if (!response.ok) {
-      error.value = data.code || 'SERVER_ERROR'
-      return
+      // Redirige según el rol
+      router.push(res.data.user.role === 'admin' ? '/admin' : '/home')
     }
-
-    // ✅ Registro exitoso
-    authService.saveToken(data.token)
-
-    const initial = username.value.charAt(0).toUpperCase()
-    localStorage.setItem('user_name', username.value)
-    localStorage.setItem('user_email', email.value)
-    localStorage.setItem('user_initial', initial)
-    localStorage.setItem('user_photo', `initial:${initial}`)
-    localStorage.setItem('user_token', data.token)
-
-    window.dispatchEvent(new Event('storage'))
-    router.replace('/Home')
-
   } catch (err) {
-    console.error('❌ Error de red:', err)
-    error.value = 'SERVER_ERROR'
+    error.value = err.response?.data?.message || 'Error al registrarse'
   } finally {
     isLoading.value = false
   }
@@ -214,7 +185,7 @@ const handleGoogleCredential = async (response) => {
       return
     }
 
-    const responseServer = await fetch(`${API_URL}/api/auth/google-login`, {
+    const responseServer = await fetch(`${API}/auth/google-login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -241,15 +212,19 @@ const handleGoogleCredential = async (response) => {
     localStorage.setItem('user_initial', payload.name.charAt(0).toUpperCase())
     localStorage.setItem('user_photo', payload.picture)
     localStorage.setItem('user_token', data.token)
+    localStorage.setItem('user_role', data.user.role)
     window.dispatchEvent(new Event('storage'))
 
     authService.setUserData({
       username: payload.name,
       email: payload.email,
       googleUser: true,
-      picture: payload.picture
+      picture: payload.picture,
+      role: data.user.role
     })
-    router.replace('/Home')
+
+    // Redirección basada en rol
+    router.replace(data.user?.role === 'admin' ? '/admin' : '/home')
   } catch (err) {
     const errorData = err.response?.data
     console.error('❌ Error Google detallado:', errorData || err)
@@ -289,7 +264,8 @@ const initializeGoogle = () => {
 // ✅ CARGAR SDK Y MONTAR
 onMounted(() => {
   if (authService.isAuthenticated()) {
-    router.replace('/Home')
+    const role = localStorage.getItem('user_role')
+    router.replace(role === 'admin' ? '/admin' : '/home')
     return
   }
 

@@ -103,8 +103,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import authService from '../services/authService'
 import footer from '../components/footer.vue'
-
-const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
+import { API } from '../services/api'
 
 const router = useRouter()
 
@@ -138,10 +137,18 @@ const generalError = computed(() =>
 )
 
 const finalizeLogin = (userData, token) => {
+  console.log('userData completo:', userData)
+  console.log('role recibido:', userData.role)
+
   authService.saveToken(token)
   authService.setUserData(userData)
+
   window.dispatchEvent(new Event('storage'))
-  router.push(userData.email === 'admin@gmail.com' ? '/admin' : '/home')
+  
+  const redirectPath = userData.role === 'admin' ? '/admin' : '/home'
+  router.push(redirectPath).then(() => {
+    window.location.reload()
+  })
 }
 
 const handleLogin = async () => {
@@ -174,7 +181,7 @@ const handleGoogleCredential = async (response) => {
   error.value = null
   isLoading.value = true
   try {
-    const fetchResponse = await fetch(`${API_URL}/api/auth/google-login`, {
+    const fetchResponse = await fetch(`${API}/auth/google-login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -11,10 +11,12 @@
           <i class="fas fa-search"></i>
           <input v-model="searchQuery" type="text" placeholder="Buscar reserva, cliente..." />
         </div>
-        <select v-model="filterEstado" class="filter-select">
-          <option value="">Todos los estados</option>
-          <option v-for="e in estados" :key="e.ID_ESTADO" :value="e.ID_ESTADO">{{ e.ESTADO }}</option>
-        </select>
+        <AppSelect
+          v-model="filterEstado"
+          :options="estados.map(e => ({ value: e.ID_ESTADO, label: e.ESTADO }))"
+          placeholder="Todos los estados"
+          class="header-filter"
+        />
       </div>
     </div>
 
@@ -149,9 +151,12 @@
         <button class="modal-close" @click="cambioEstadoReserva = null"><i class="fas fa-times"></i></button>
         <h2 class="modal-title">Cambiar estado</h2>
         <p class="modal-sub">Reserva #{{ cambioEstadoReserva.ID_RESERVA }}</p>
-        <select v-model="nuevoEstado" class="filter-select full">
-          <option v-for="e in estados" :key="e.ID_ESTADO" :value="e.ID_ESTADO">{{ e.ESTADO }}</option>
-        </select>
+        <AppSelect
+          v-model="nuevoEstado"
+          :options="estados.map(e => ({ value: e.ID_ESTADO, label: e.ESTADO }))"
+          placeholder="Seleccionar estado..."
+          class="mb-4"
+        />
         <button class="btn-primary" @click="cambiarEstado">Guardar cambio</button>
       </div>
     </div>
@@ -160,7 +165,8 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { API } from '../services/api'
+import AppSelect from './AppSelect.vue'
+import { apiFetch } from '../services/api'
 
 const reservas = ref([])
 const estados = ref([])
@@ -203,17 +209,12 @@ async function fetchReservas() {
   loading.value = true
   error.value = null
   try {
-    const token = localStorage.getItem('user_token')
-    const headers = { Authorization: `Bearer ${token}` }
-
-    const [resRes, estRes] = await Promise.all([
-      fetch(`${API}/reservas`, { headers }),
-      fetch(`${API}/catalogos/estados-reserva`, { headers }),
+    const [dataRes, dataEst] = await Promise.all([
+      apiFetch('/reservas'),
+      apiFetch('/catalogos/estados-reserva'),
     ])
-
-    if (!resRes.ok) throw new Error('Error al cargar reservas')
-    reservas.value = await resRes.json()
-    if (estRes.ok) estados.value = await estRes.json()
+    reservas.value = dataRes
+    estados.value = dataEst
   } catch (e) {
     error.value = e.message
   } finally {
@@ -225,11 +226,8 @@ async function verDetalle(r) {
   selectedReserva.value = r
   detalles.value = []
   try {
-    const token = localStorage.getItem('user_token')
-    const res = await fetch(`${API}/reservas/${r.ID_RESERVA}/detalles`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    if (res.ok) detalles.value = await res.json()
+    const data = await apiFetch(`/reservas/${r.ID_RESERVA}/detalles`)
+    detalles.value = data
   } catch (_) {}
 }
 
@@ -239,15 +237,13 @@ function abrirCambioEstado(r) {
 }
 
 async function cambiarEstado() {
-  if (!cambioEstadoReserva.value) return
+  if (!cambioEstadoReserva.value || nuevoEstado.value === null) return
   try {
-    const token = localStorage.getItem('user_token')
-    const res = await fetch(`${API}/reservas/${cambioEstadoReserva.value.ID_RESERVA}/estado`, {
+    await apiFetch(`/reservas/${cambioEstadoReserva.value.ID_RESERVA}/estado`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ ID_ESTADO: nuevoEstado.value })
     })
-    if (!res.ok) throw new Error()
+
     const idx = reservas.value.findIndex(r => r.ID_RESERVA === cambioEstadoReserva.value.ID_RESERVA)
     if (idx !== -1) {
       const estadoObj = estados.value.find(e => e.ID_ESTADO === nuevoEstado.value)
@@ -339,6 +335,8 @@ onMounted(fetchReservas)
 }
 .filter-select:focus { border-color: #265073; }
 .filter-select.full { width: 100%; margin-bottom: 1rem; }
+.header-filter { width: 200px; }
+.mb-4 { margin-bottom: 1rem; }
 
 /* Stats */
 .stats-bar {

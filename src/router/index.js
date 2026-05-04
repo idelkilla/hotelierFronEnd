@@ -6,14 +6,14 @@ import Login             from '../view/login.vue';
 import Register          from '../view/register.vue';
 import Home              from '../view/Home.vue';
 import Perfil            from '../view/Perfil.vue';
-import head              from '../view/head.vue';
-import servicioCliente   from '../view/servicioCliente.vue';
 import ForgotPassword    from '../view/ForgotPassword.vue';
 import ResetPassword     from '../view/ResetPassword.vue';
+import head              from '../view/head.vue';
+import servicioCliente   from '../components/servicioCliente.vue';
 
 // Services & Details
 import DetalleHospedaje  from '../view/DetalleHospedaje.vue';
-import Cruceros          from '../view/Cruceros.vue'; 
+import Cruceros          from '../view/Cruceros.vue';
 import Vuelos            from '../view/Vuelos.vue'; 
 import Carros            from '../view/Carros.vue';
 import DetalleCarros     from '../view/DetalleCarros.vue';
@@ -24,7 +24,7 @@ import servicesMenu      from '../components/servicesMenu.vue';
 
 // Admin
 import AdminLayout       from '../view/adminPanel.vue';
-import AdminDashboard    from '../view/adminDashboard.vue'; 
+import AdminDashboard    from '../view/adminDashboard.vue';
 import AdminHospedajes   from '../view/adminHospedajes.vue';
 import AdminUsuarios     from '../components/AdminUsuarios.vue';
 import AdminReservas     from '../components/Adminreservas.vue';
@@ -43,6 +43,8 @@ const routes = [
   { path: '/servicio-cliente', name: 'ServicioCliente',  component: servicioCliente },
   { path: '/hospedaje/:id',    name: 'DetalleHospedaje', component: DetalleHospedaje },
   { path: '/auto/:id',         name: 'DetalleCarros',    component: DetalleCarros },
+  { path: '/forgot-password',  name: 'ForgotPassword',   component: ForgotPassword },
+  { path: '/reset-password/:token', name: 'ResetPassword', component: ResetPassword },
   { path: '/Carros',           name: 'Carros',           component: Carros },
   { path: '/Cruceros',         name: 'Cruceros',         component: Cruceros },
   { path: '/perfil',           name: 'Perfil',           component: Perfil, meta: { requiresAuth: true } },
@@ -55,7 +57,8 @@ const routes = [
     component: AdminLayout,
     meta: { requiresAuth: true },
     children: [
-      { path: '', name: 'AdminDashboard', component: AdminDashboard, meta: { requiresAdmin: true } },
+      { path: '', redirect: { name: 'AdminDashboard' } },
+      { path: 'dashboard', name: 'AdminDashboard', component: AdminDashboard, meta: { requiresAdmin: true } },
       { path: 'hospedajes/:vista?', name: 'AdminHospedajes', component: AdminHospedajes, meta: { requiresAdmin: true } },
       { path: 'usuarios/:pathMatch(.*)*', name: 'AdminUsuarios', component: AdminUsuarios, meta: { requiresAdmin: true } },
       { path: 'reservas', name: 'AdminReservas', component: AdminReservas, meta: { requiresAdmin: true } },
@@ -79,11 +82,22 @@ router.beforeEach(async (to, from, next) => {
     const isAuthenticated = authService.isAuthenticated()
     const userRole = localStorage.getItem('user_role')
 
-    if (to.meta.requiresAdmin) {
-      if (!isAuthenticated || userRole !== 'admin') {
-        console.warn('Acceso denegado: Se requiere rol de administrador.')
-        return next({ name: 'Home' })
+    // ✅ RESTRICCIÓN ESTRICTA PARA ADMIN
+    if (isAuthenticated && (userRole === 'admin' || localStorage.getItem('user_email') === ADMIN_EMAIL)) {
+      const esRutaAdmin =
+        to.path.startsWith('/admin') ||
+        to.meta.requiresAdmin ||
+        ['Perfil', 'Head', 'ServicioCliente'].includes(to.name)
+
+      if (!esRutaAdmin && to.name !== 'AdminDashboard') {
+        return next({ name: 'AdminDashboard' })
       }
+      return next()
+    }
+
+    // A partir de aquí solo aplica a usuarios normales
+    if (to.meta.requiresAdmin) {
+      return next({ name: 'Home' })
     }
 
     if (to.meta.requiresAuth && !isAuthenticated) {
@@ -91,19 +105,9 @@ router.beforeEach(async (to, from, next) => {
     }
 
     if ((to.name === 'Login' || to.name === 'Register') && isAuthenticated) {
-      if (userRole === 'admin') return next({ name: 'AdminDashboard' })
       return next({ name: 'Home' })
     }
 
-    // Bloqueo de seguridad: El administrador solo puede acceder a áreas de gestión
-    if (isAuthenticated && userRole === 'admin') {
-      const isTargetAdmin = to.path.startsWith('/admin') || to.meta.requiresAdmin || to.name === 'Perfil'
-
-      if (!isTargetAdmin) {
-        console.warn('Bloqueo: El administrador solo puede acceder a áreas de gestión o a su Perfil.')
-        return next({ name: 'AdminDashboard' })
-      }
-    }
     next()
   } catch (error) {
     console.error('Router guard error:', error)

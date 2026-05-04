@@ -228,15 +228,6 @@ const showConfirm = ref(false)
 // Tipo normalizado
 const tipo = computed(() => props.usuario.tipo?.toLowerCase() || '')
 
-// Endpoint según tipo
-const endpoint = computed(() => {
-  const id = props.usuario.id
-  if (tipo.value === 'empleado') return `/empleados/${id}`
-  if (tipo.value === 'cliente')  return `/clientes/${id}`
-  if (tipo.value === 'miembro')  return `/miembros/${id}`
-  return `/usuarios/${id}`
-})
-
 // Form inicializado con los datos actuales del usuario
 const buildForm = () => ({
   nombre_completo:     props.usuario.nombre_completo || props.usuario.nombre || '',
@@ -274,18 +265,7 @@ const tipoBadge = computed(() =>
 const nivelBadge = (nivel) =>
   ({ Bronze: 'badge-amber', Silver: 'badge-blue', Gold: 'badge-gold', Platinum: 'badge-purple' })[nivel] || 'badge-gray'
 
-// API
-const apiFetch = async (path, options = {}) => {
-  const token = localStorage.getItem('user_token')
-  const headers = { 'Content-Type': 'application/json', ...options.headers }
-  if (token) headers['Authorization'] = `Bearer ${token}`
-  const res = await fetch(`${API_BASE}${path}`, { headers, ...options })
-  if (!res.ok) {
-    const e = await res.json().catch(() => ({}))
-    throw new Error(e.message || `Error ${res.status}`)
-  }
-  return res.json()
-}
+import { apiFetch } from '../services/api'
 
 // Guardar
 const guardar = async () => {
@@ -295,6 +275,7 @@ const guardar = async () => {
   guardando.value = true
   try {
     const body = {
+      tipo:              tipo.value, // ← debe estar aquí
       nombre_completo:   form.nombre_completo,
       apellidos:         form.apellidos,
       correo:            form.correo,
@@ -326,7 +307,7 @@ const guardar = async () => {
       })
     }
 
-    await apiFetch(endpoint.value, { method: 'PUT', body: JSON.stringify(body) })
+    await apiFetch(`/usuarios/${props.usuario.id}`, { method: 'PUT', body: JSON.stringify(body) })
     emit('guardado')
   } catch (e) {
     emit('alerta', 'Error al guardar: ' + e.message)
@@ -342,7 +323,7 @@ const eliminar = async () => {
   showConfirm.value = false
   eliminando.value = true
   try {
-    await apiFetch(endpoint.value, { method: 'DELETE' })
+    await apiFetch(`/usuarios/${props.usuario.id}`, { method: 'DELETE' })
     emit('eliminado')
   } catch (e) {
     emit('alerta', 'Error al eliminar: ' + e.message)

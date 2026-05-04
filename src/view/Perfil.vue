@@ -818,7 +818,7 @@
                     <span style="font-size:12px; color:#aaa;">· {{ op.fecha }}</span>
                   </div>
                   <div style="margin-bottom:4px;">
-                    <span v-for="n in 5" :key="n" style="font-size:14px; color: n <= op.estrellas ? '#f5a623' : '#ddd'">★</span>
+                    <span v-for="n in 5" :key="n" :style="{ fontSize: '14px', color: n <= op.estrellas ? '#f5a623' : '#ddd' }">★</span>
                   </div>
                   <p style="font-size:13px; color:#555;">{{ op.texto }}</p>
                 </div>
@@ -948,8 +948,8 @@
 import { ref, reactive, onMounted } from 'vue'
 import Header from '../components/Header.vue'
 import footer from '../components/footer.vue'
+import { apiGet, apiPut } from '../services/api'
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 const activeSection = ref('perfil')
 
 // ── Modal perfil ──────────────────────────────────────────────────────────────
@@ -1389,21 +1389,12 @@ async function guardarCambios() {
   guardando.value = true
   guardadoOk.value = false
   guardadoError.value = false
-  const token   = localStorage.getItem('user_token')
   const payload = payloadMap[tipoModal.value]?.() ?? {}
   try {
-    const res = await fetch(`${API_URL}/api/usuarios/profile/update`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify(payload)
-    })
-    if (res.ok) {
-      actualizarEstadoLocal()
-      guardadoOk.value = true
-      setTimeout(() => cerrarModal(), 900)
-    } else {
-      guardadoError.value = true
-    }
+    await apiPut('/user/profile/update', payload)
+    actualizarEstadoLocal()
+    guardadoOk.value = true
+    setTimeout(() => cerrarModal(), 900)
   } catch (e) {
     console.error('Error al guardar:', e)
     guardadoError.value = true
@@ -1422,20 +1413,13 @@ function actualizarEstadoLocal() {
 }
 
 async function fetchUserData() {
-  const token = localStorage.getItem('user_token')
-  if (!token) return
   try {
-    const response = await fetch(`${API_URL}/api/usuarios/profile`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-    if (response.ok) {
-      const data = await response.json()
-      const { DOCUMENTACION, ...rest } = data
-      Object.assign(perfil, rest)
-      if (data.nombre) perfil.nombre_completo = data.nombre
-      if (DOCUMENTACION) Object.assign(perfil.DOCUMENTACION, DOCUMENTACION)
-      loginItems.value[0].value = perfil.email
-    }
+    const data = await apiGet('/user/profile')
+    const { DOCUMENTACION, ...rest } = data
+    Object.assign(perfil, rest)
+    if (data.nombre) perfil.nombre_completo = data.nombre
+    if (DOCUMENTACION) Object.assign(perfil.DOCUMENTACION, DOCUMENTACION)
+    loginItems.value[0].value = perfil.email
   } catch (error) {
     console.error('Error cargando perfil:', error)
   }

@@ -2,10 +2,10 @@
   <header class="header">
 
     <div class="header-left">
-      <router-link to="/home" class="logo">
+      <a @click.prevent="goHome" class="logo" style="cursor:pointer">
         <img src="../assets/img/logo1.png" alt="Logo" />
-      </router-link>
-      <router-link to="/home" class="header-title">Hotelier</router-link>
+      </a>
+      <a @click.prevent="goHome" class="header-title" style="cursor:pointer">Hotelier</a>
       <div class="header-subtitle desktop-only" @click.stop="toggleServicesMenu">
         <span>Planea tu viaje</span>
         <div class="chevron" :class="{ open: showServicesMenu }">
@@ -86,8 +86,10 @@ const services = ref([
 
 const selectService = (id) => {
   currentService.value = id
-  // Opcional: Redirigir o emitir evento según la lógica de negocio
-  if (id === 'hospedaje') router.push('/home')
+  const role = localStorage.getItem('user_role')
+  if (id === 'hospedaje') {
+    router.push(role === 'admin' ? '/admin' : '/home')
+  }
   // else if ...
 }
 
@@ -148,6 +150,11 @@ const fixPhoto = (url) => {
 
 const isLogged = computed(() => Boolean(localStorage.getItem('user_token')))
 const goToRegister = () => router.push('/register')
+
+const goHome = () => {
+  const role = localStorage.getItem('user_role')
+  router.push(role === 'admin' ? '/admin' : '/home')
+}
 </script>
 
 <style src="../assets/css/Header.css"></style>

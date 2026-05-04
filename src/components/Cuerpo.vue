@@ -296,6 +296,7 @@ const route = useRoute()
 const router = useRouter()
 // Buscador por nombre
 const searchByName = ref('')
+import { apiPost } from '../services/api'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 
@@ -471,23 +472,13 @@ async function ejecutarBusqueda() {
   console.log('EJECUTANDO BÚSQUEDA CON:', { destino, fechaInicio, fechaFin, habs })
 
   try {
-    const res = await fetch(`${API_URL}/api/search/hospedaje`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        destino: destino,
-        fecha_inicio: fechaInicio || null,
-        fecha_fin: (fechaFin && fechaFin !== 'FLEXIBLE') ? fechaFin : null,
-        habitaciones: habs,
-      }),
+    const data = await apiPost('/search/hospedaje', {
+      destino: destino,
+      fecha_inicio: fechaInicio || null,
+      fecha_fin: (fechaFin && fechaFin !== 'FLEXIBLE') ? fechaFin : null,
+      habitaciones: habs,
     })
 
-    if (!res.ok) {
-      const errBody = await res.json().catch(() => ({}))
-      throw new Error(`HTTP ${res.status} - ${errBody.error || 'sin detalle'}`)
-    }
-
-    const data = await res.json()
     console.log('HOTELES RECIBIDOS:', data.length, data)
     hoteles.value = data.map(h => ({ ...h, currentImg: 0, isFavorite: false }))
 

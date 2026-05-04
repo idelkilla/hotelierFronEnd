@@ -93,8 +93,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { apiGet, apiPost } from '../services/api'
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 const router = useRouter()
 const route = useRoute()
 
@@ -116,12 +116,7 @@ const verifyToken = async () => {
       throw new Error('Token no encontrado')
     }
 
-    const response = await fetch(`${API_URL}/api/auth/verify-reset-token/${token}`)
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Token inválido o expirado')
-    }
+    await apiGet(`/auth/verify-reset-token/${token}`)
 
     tokenValid.value = true
   } catch (err) {
@@ -149,21 +144,11 @@ const handleResetPassword = async () => {
   isLoading.value = true
 
   try {
-    const response = await fetch(`${API_URL.replace(/\/api$/, '')}/api/auth/reset-password`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        token,
-        newPassword: newPassword.value,
-        confirmPassword: confirmPassword.value
-      })
+    await apiPost('/auth/reset-password', {
+      token,
+      newPassword: newPassword.value,
+      confirmPassword: confirmPassword.value
     })
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Error al resetear contraseña')
-    }
 
     success.value = '✅ Contraseña actualizada. Redirigiendo...'
     setTimeout(() => router.push('/login'), 2000)

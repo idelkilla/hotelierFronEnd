@@ -46,8 +46,8 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { apiPost } from '../services/api'
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 const router = useRouter()
 
 const email = ref('')
@@ -61,17 +61,7 @@ const handleForgotPassword = async () => {
   isLoading.value = true
 
   try {
-    const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.value })
-    })
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Error al procesar solicitud')
-    }
+    await apiPost('/auth/forgot-password', { email: email.value })
 
     success.value = '✅ Enlace enviado. Revisa tu correo en 2 minutos.'
     email.value = ''

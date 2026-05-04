@@ -138,7 +138,7 @@
           <div v-if="cargandoDetalle" class="usr-loading">
             <i class="fas fa-spinner fa-spin"></i> Cargando...
           </div>
-          <EditarUsuarioPanel
+          <AdminEditarUsuario
             v-else
             :usuario="editando"
             :catalogos="catalogos"
@@ -245,10 +245,10 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import AgregarEmpleadoForm from './AdminAgregarEmpleado.vue'
-import AgregarClienteForm from './AdminAgregarCliente.vue'
-import AgregarMiembroForm from './AdminAgregarMiembro.vue'
-import EditarUsuarioPanel from './adminEditarUsuario.vue'
+import AgregarEmpleadoForm from '../components/AdminAgregarEmpleado.vue'
+import AgregarClienteForm from '../components/AdminAgregarCliente.vue'
+import AgregarMiembroForm from '../components/AdminAgregarMiembro.vue'
+import EditarUsuarioPanel from '../components/adminEditarUsuario.vue'
 import { apiFetch } from '../services/api'
 
 const route = useRoute()

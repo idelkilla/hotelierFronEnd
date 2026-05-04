@@ -274,7 +274,8 @@
 import { ref, reactive, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppSelect from '@/components/AppSelect.vue'
-import AgregarHotelForm from './adminAgregarHotel.vue' 
+import AgregarHotelForm from './adminAgregarHotel.vue'
+import { apiFetch } from '../services/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -307,24 +308,6 @@ const guardandoEdit   = ref(false)
 const eliminando      = ref(false)
 const modalEliminar   = ref(null)
 const alerta = reactive({ mensaje: '', tipo: 'error' })
-
-const mostrarAlerta = (msg, tipo = 'error') => {
-  alerta.mensaje = msg
-  alerta.tipo    = tipo
-  if (tipo === 'exito') setTimeout(() => { alerta.mensaje = '' }, 4000)
-}
-
-const apiFetch = async (path, options = {}) => {
-  const token = localStorage.getItem('user_token')
-  const headers = { 'Content-Type': 'application/json', ...options.headers }
-  if (token) headers['Authorization'] = `Bearer ${token}`
-  const res = await fetch(`${API_BASE}${path}`, { headers, ...options })
-  if (!res.ok) {
-    const e = await res.json().catch(() => ({}))
-    throw new Error(e.message || `Error ${res.status}`)
-  }
-  return res.json()
-}
 
 // ── Cargar catálogos al montar ──────────────────────────────────
 onMounted(async () => {
