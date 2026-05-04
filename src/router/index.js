@@ -6,10 +6,10 @@ import Login             from '../view/login.vue';
 import Register          from '../view/register.vue';
 import Home              from '../view/Home.vue';
 import Perfil            from '../view/Perfil.vue';
-import head              from '../view/head.vue';
-import servicioCliente   from '../view/servicioCliente.vue';
 import ForgotPassword    from '../view/ForgotPassword.vue';
 import ResetPassword     from '../view/ResetPassword.vue';
+import head              from '../view/head.vue';
+import servicioCliente   from '../view/servicioCliente.vue';
 
 // Services & Details
 import DetalleHospedaje  from '../view/DetalleHospedaje.vue';
@@ -43,6 +43,8 @@ const routes = [
   { path: '/servicio-cliente', name: 'ServicioCliente',  component: servicioCliente },
   { path: '/hospedaje/:id',    name: 'DetalleHospedaje', component: DetalleHospedaje },
   { path: '/auto/:id',         name: 'DetalleCarros',    component: DetalleCarros },
+  { path: '/forgot-password',  name: 'ForgotPassword',   component: ForgotPassword },
+  { path: '/reset-password/:token', name: 'ResetPassword', component: ResetPassword },
   { path: '/Carros',           name: 'Carros',           component: Carros },
   { path: '/Cruceros',         name: 'Cruceros',         component: Cruceros },
   { path: '/perfil',           name: 'Perfil',           component: Perfil, meta: { requiresAuth: true } },
@@ -79,11 +81,22 @@ router.beforeEach(async (to, from, next) => {
     const isAuthenticated = authService.isAuthenticated()
     const userRole = localStorage.getItem('user_role')
 
-    if (to.meta.requiresAdmin) {
-      if (!isAuthenticated || userRole !== 'admin') {
-        console.warn('Acceso denegado: Se requiere rol de administrador.')
-        return next({ name: 'Home' })
+    // ✅ PRIMERO: bloquear admin fuera de su área
+    if (isAuthenticated && userRole === 'admin') {
+      const allowedForAdmin =
+        to.path.startsWith('/admin') ||
+        to.meta.requiresAdmin ||
+        to.name === 'Perfil'
+
+      if (!allowedForAdmin) {
+        return next({ name: 'AdminDashboard' })
       }
+      return next() // admin en ruta permitida → dejar pasar
+    }
+
+    // A partir de aquí solo aplica a usuarios normales
+    if (to.meta.requiresAdmin) {
+      return next({ name: 'Home' })
     }
 
     if (to.meta.requiresAuth && !isAuthenticated) {
@@ -91,20 +104,8 @@ router.beforeEach(async (to, from, next) => {
     }
 
     if ((to.name === 'Login' || to.name === 'Register') && isAuthenticated) {
-      if (userRole === 'admin') return next({ name: 'AdminDashboard' })
       return next({ name: 'Home' })
     }
-
-    // Bloqueo de seguridad: El administrador solo puede acceder a áreas de gestión
-    if (isAuthenticated && userRole === 'admin') {
-      const isTargetAdmin = to.path.startsWith('/admin') || to.meta.requiresAdmin || to.name === 'Perfil'
-
-      if (!isTargetAdmin) {
-        console.warn('Bloqueo: El administrador solo puede acceder a áreas de gestión o a su Perfil.')
-        return next({ name: 'AdminDashboard' })
-      }
-    }
-    next()
   } catch (error) {
     console.error('Router guard error:', error)
     next({ name: 'Login' })
