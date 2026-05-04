@@ -277,10 +277,10 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import BuscarButton    from '../components/ButtonSearch.vue'
-import CalendarSelector from '../components/CalendarSelector.vue'
-import LocationDropdown from '../components/LocationDropdown.vue'
-import PasajerosSelector from '../components/PasajerosSelector.vue'
+import BuscarButton    from './ButtonSearch.vue'
+import CalendarSelector from './CalendarSelector.vue'
+import LocationDropdown from './LocationDropdown.vue'
+import PasajerosSelector from './PasajerosSelector.vue'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 const router  = useRouter()
