@@ -24,11 +24,11 @@ import servicesMenu      from '../components/servicesMenu.vue';
 
 // Admin
 import AdminLayout       from '../view/adminPanel.vue';
-import AdminDashboard    from '../view/AdminDashboard.vue';
-import AdminHospedajes   from '../view/AdminHospedajes.vue';
+import AdminDashboard    from '../view/adminAgregarHotel.vue';
+import AdminHospedajes   from '../view/adminHospedajes.vue';
 import AdminUsuarios     from '../components/AdminUsuarios.vue';
-import AdminReservas     from '../components/AdminReservas.vue';
-import AdminConfiguracion from '../components/AdminConfiguracion.vue';
+import AdminReservas     from '../components/Adminreservas.vue';
+import AdminConfiguracion from '../components/Adminconfiguracion.vue';
 
 const ADMIN_EMAIL = 'admin@gmail.com';
 
