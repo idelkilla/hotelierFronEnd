@@ -818,7 +818,7 @@
                     <span style="font-size:12px; color:#aaa;">· {{ op.fecha }}</span>
                   </div>
                   <div style="margin-bottom:4px;">
-                    <span v-for="n in 5" :key="n" style="font-size:14px; color: n <= op.estrellas ? '#f5a623' : '#ddd'">★</span>
+                    <span v-for="n in 5" :key="n" :style="{ fontSize: '14px', color: n <= op.estrellas ? '#f5a623' : '#ddd' }">★</span>
                   </div>
                   <p style="font-size:13px; color:#555;">{{ op.texto }}</p>
                 </div>
