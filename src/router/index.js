@@ -24,7 +24,7 @@ import servicesMenu      from '../components/servicesMenu.vue';
 
 // Admin
 import AdminLayout       from '../view/adminPanel.vue';
-import AdminDashboard    from '../view/adminAgregarHotel.vue';
+import AdminDashboard    from '../view/adminDashboard.vue';
 import AdminHospedajes   from '../view/adminHospedajes.vue';
 import AdminUsuarios     from '../components/AdminUsuarios.vue';
 import AdminReservas     from '../components/Adminreservas.vue';
@@ -57,7 +57,8 @@ const routes = [
     component: AdminLayout,
     meta: { requiresAuth: true },
     children: [
-      { path: '', name: 'AdminDashboard', component: AdminDashboard, meta: { requiresAdmin: true } },
+      { path: '', redirect: { name: 'AdminDashboard' } },
+      { path: 'dashboard', name: 'AdminDashboard', component: AdminDashboard, meta: { requiresAdmin: true } },
       { path: 'hospedajes/:vista?', name: 'AdminHospedajes', component: AdminHospedajes, meta: { requiresAdmin: true } },
       { path: 'usuarios/:pathMatch(.*)*', name: 'AdminUsuarios', component: AdminUsuarios, meta: { requiresAdmin: true } },
       { path: 'reservas', name: 'AdminReservas', component: AdminReservas, meta: { requiresAdmin: true } },

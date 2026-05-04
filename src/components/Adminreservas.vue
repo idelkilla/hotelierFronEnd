@@ -11,10 +11,12 @@
           <i class="fas fa-search"></i>
           <input v-model="searchQuery" type="text" placeholder="Buscar reserva, cliente..." />
         </div>
-        <select v-model="filterEstado" class="filter-select">
-          <option value="">Todos los estados</option>
-          <option v-for="e in estados" :key="e.ID_ESTADO" :value="e.ID_ESTADO">{{ e.ESTADO }}</option>
-        </select>
+        <AppSelect
+          v-model="filterEstado"
+          :options="estados.map(e => ({ value: e.ID_ESTADO, label: e.ESTADO }))"
+          placeholder="Todos los estados"
+          class="header-filter"
+        />
       </div>
     </div>
 
@@ -149,9 +151,12 @@
         <button class="modal-close" @click="cambioEstadoReserva = null"><i class="fas fa-times"></i></button>
         <h2 class="modal-title">Cambiar estado</h2>
         <p class="modal-sub">Reserva #{{ cambioEstadoReserva.ID_RESERVA }}</p>
-        <select v-model="nuevoEstado" class="filter-select full">
-          <option v-for="e in estados" :key="e.ID_ESTADO" :value="e.ID_ESTADO">{{ e.ESTADO }}</option>
-        </select>
+        <AppSelect
+          v-model="nuevoEstado"
+          :options="estados.map(e => ({ value: e.ID_ESTADO, label: e.ESTADO }))"
+          placeholder="Seleccionar estado..."
+          class="mb-4"
+        />
         <button class="btn-primary" @click="cambiarEstado">Guardar cambio</button>
       </div>
     </div>
@@ -160,6 +165,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import AppSelect from './AppSelect.vue'
 import { apiFetch } from '../services/api'
 
 const reservas = ref([])
@@ -329,6 +335,8 @@ onMounted(fetchReservas)
 }
 .filter-select:focus { border-color: #265073; }
 .filter-select.full { width: 100%; margin-bottom: 1rem; }
+.header-filter { width: 200px; }
+.mb-4 { margin-bottom: 1rem; }
 
 /* Stats */
 .stats-bar {
