@@ -46,7 +46,7 @@ const activeId = ref('dashboard')
 const collapsed = ref(false)
 
 const menuItems = [
-  { id: 'dashboard', label: 'Dashboard',     icon: 'fas fa-home',           route: '/admin' },
+  { id: 'dashboard', label: 'Dashboard',     icon: 'fas fa-home',           route: '/admin/dashboard' },
   { id: 'rooms',     label: 'Hospedajes',    icon: 'fas fa-bed',            route: '/admin/hospedajes', badge: '12' },
   { id: 'bookings',  label: 'Reservas',      icon: 'fas fa-calendar-check', route: '/admin/reservas' },
   { id: 'users',     label: 'Usuarios',      icon: 'fas fa-users',          route: '/admin/usuarios' },
@@ -56,7 +56,7 @@ const menuItems = [
 const syncActive = () => {
   const matched = menuItems.find(item => {
     // ✅ Dashboard solo activo en /admin exacto
-    if (item.id === 'dashboard') return route.path === '/admin' || route.path === '/admin/'
+    if (item.id === 'dashboard') return route.path === '/admin/dashboard' || route.path === '/admin'
     return route.path.startsWith(item.route)
   })
   if (matched) activeId.value = matched.id
