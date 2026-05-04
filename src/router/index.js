@@ -1,25 +1,34 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router'
+import authService from '../services/authService'
+
+// Views
 import Login             from '../view/login.vue';
 import Register          from '../view/register.vue';
 import Home              from '../view/Home.vue';
+import Perfil            from '../view/Perfil.vue';
 import head              from '../view/head.vue';
 import servicioCliente   from '../view/servicioCliente.vue';
-import DetalleHospedaje  from '../view/DetalleHospedaje.vue'; 
+import ForgotPassword    from '../view/ForgotPassword.vue';
+import ResetPassword     from '../view/ResetPassword.vue';
+
+// Services & Details
+import DetalleHospedaje  from '../view/DetalleHospedaje.vue';
 import Cruceros          from '../view/Cruceros.vue'; 
 import Vuelos            from '../view/Vuelos.vue'; 
-import servicesMenu      from '../components/servicesMenu.vue';
-import authService       from '../services/authService';
-import AdminLayout       from '../view/adminPanel.vue';
-import AdminDashboard    from '../view/adminDashboard.vue'; 
-import AdminAgregarHotel from '../view/adminAgregarHotel.vue';
-import Perfil            from '../view/Perfil.vue';
 import Carros            from '../view/Carros.vue';
 import DetalleCarros     from '../view/DetalleCarros.vue';
 import DetalleCrucero from '../view/DetalleCrucero.vue';
 import Actividades from '../view/Actividades.vue';
 import DetalleActividad from '../view/DetalleActividad.vue';
-import AdminHospedajes from '../view/adminHospedajes.vue';
-import AdminUsuarios from '../view/adminPanel.vue';
+import servicesMenu      from '../components/servicesMenu.vue';
+
+// Admin
+import AdminLayout       from '../view/adminPanel.vue';
+import AdminDashboard    from '../view/adminDashboard.vue'; 
+import AdminHospedajes   from '../view/adminHospedajes.vue';
+import AdminUsuarios     from '../components/AdminUsuarios.vue';
+import AdminReservas     from '../components/Adminreservas.vue';
+import AdminConfiguracion from '../components/Adminconfiguracion.vue';
 
 const ADMIN_EMAIL = 'admin@gmail.com';
 
@@ -49,6 +58,8 @@ const routes = [
       { path: '', name: 'AdminDashboard', component: AdminDashboard, meta: { requiresAdmin: true } },
       { path: 'hospedajes/:vista?', name: 'AdminHospedajes', component: AdminHospedajes, meta: { requiresAdmin: true } },
       { path: 'usuarios/:pathMatch(.*)*', name: 'AdminUsuarios', component: AdminUsuarios, meta: { requiresAdmin: true } },
+      { path: 'reservas', name: 'AdminReservas', component: AdminReservas, meta: { requiresAdmin: true } },
+      { path: 'configuracion', name: 'AdminConfiguracion', component: AdminConfiguracion, meta: { requiresAdmin: true } },
     ]
   },
   { path: '/cruceros/:id', name: 'DetalleCrucero', component: DetalleCrucero },
@@ -86,10 +97,10 @@ router.beforeEach(async (to, from, next) => {
 
     // Bloqueo de seguridad: El administrador solo puede acceder a áreas de gestión
     if (isAuthenticated && userRole === 'admin') {
-      const isTargetAdmin = to.path.startsWith('/admin') || to.meta.requiresAdmin
+      const isTargetAdmin = to.path.startsWith('/admin') || to.meta.requiresAdmin || to.name === 'Perfil'
 
       if (!isTargetAdmin) {
-        console.log('Bloqueo: El administrador solo puede acceder a áreas de gestión.')
+        console.warn('Bloqueo: El administrador solo puede acceder a áreas de gestión o a su Perfil.')
         return next({ name: 'AdminDashboard' })
       }
     }

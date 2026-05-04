@@ -274,10 +274,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AppSelect from '../components/AppSelect.vue'
-
-// ─── Configuración ───────────────────────────────────────────────
-// Cambia esta URL base a la de tu backend
-const API_BASE = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api'
+import { apiFetch, API } from '../services/api'
 
 const router = useRouter()
 
@@ -332,27 +329,10 @@ const guardando        = ref(false)
 const cargandoServicios = ref(false)
 const alerta = reactive({ mensaje: '', tipo: 'error' }) // tipo: 'error' | 'exito'
 
-// ─── Helpers ─────────────────────────────────────────────────────
 const mostrarAlerta = (mensaje, tipo = 'error') => {
   alerta.mensaje = mensaje
   alerta.tipo    = tipo
   if (tipo === 'exito') setTimeout(() => { alerta.mensaje = '' }, 4000)
-}
-
-const apiFetch = async (path, options = {}) => {
-  const token = localStorage.getItem('user_token')
-  const headers = { 'Content-Type': 'application/json', ...options.headers }
-  if (token) headers['Authorization'] = `Bearer ${token}`
-
-  const res = await fetch(`${API_BASE}${path}`, {
-    headers,
-    ...options,
-  })
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}))
-    throw new Error(err.message || `Error ${res.status}`)
-  }
-  return res.json()
 }
 
 // ─── Carga inicial de catálogos ──────────────────────────────────
@@ -517,7 +497,7 @@ const publicar = async () => {
       fd.append('imagen',    img.file)
       fd.append('orden',     orden)              // → IMAGEN_HOSPEDAJE.ORDEN
       fd.append('alt_text',  img.alt_text || '') // → IMAGEN_HOSPEDAJE.ALT_TEXT
-      await fetch(`${API_BASE}/hospedajes/${idHospedaje}/imagenes`, {
+      await fetch(`${API}/hospedajes/${idHospedaje}/imagenes`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body:   fd,

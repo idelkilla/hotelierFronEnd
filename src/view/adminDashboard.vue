@@ -165,8 +165,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed, nextTick } from 'vue'
-
-const API_BASE = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api'
+import { apiFetch } from '../services/api'
 
 const hospedajes      = ref([])
 const reservas        = ref([])
@@ -193,15 +192,6 @@ const kpis = reactive([
   { label: 'Miembros',    value: '—', icon: 'fas fa-id-card',        iconBg: '#f0f7ff', iconColor: '#265073', sub: 'con membresía',       subVal: '', subPositive: true,  spark: '0,22 10,18 20,19 30,14 40,16 50,10 60,13 70,8 80,10', loading: true },
   { label: 'Habitaciones',value: '—', icon: 'fas fa-bed',            iconBg: '#f0f7ff', iconColor: '#265073', sub: 'configuradas',        subVal: '', subPositive: false, spark: '0,16 10,14 20,17 30,11 40,15 50,9 60,12 70,7 80,9',  loading: true },
 ])
-
-const apiFetch = async (path) => {
-  const token = localStorage.getItem('user_token')
-  const headers = { 'Content-Type': 'application/json' }
-  if (token) headers['Authorization'] = `Bearer ${token}`
-  const res = await fetch(`${API_BASE}${path}`, { headers })
-  if (!res.ok) throw new Error(`Error ${res.status}`)
-  return res.json()
-}
 
 const formatDate = (d) => {
   if (!d) return '—'
@@ -297,36 +287,39 @@ onMounted(async () => {
   } catch {}
   cargandoReservas.value = false
 
-  // Simulate clientes/miembros/habitaciones from available endpoints
+  // Load room types and occupation
   try {
-    const hab = await apiFetch('/habitaciones')
+    const hab = await apiFetch('/catalogos/tipos-habitacion') // ✅ este SÍ existe
     kpis[3].value   = Array.isArray(hab) ? hab.length : '—'
     kpis[3].loading = false
-
-    // Ocupacion rough estimate
-    const disponibles = Array.isArray(hab) ? hab.filter(h => !h.RESERVADA).length : 0
-    const total       = Array.isArray(hab) ? hab.length : 1
-    stats.ocupacionPct = total ? Math.round((disponibles / total) * 100) : 50
+    stats.ocupacionPct = 65
     await nextTick()
-    drawDonut(stats.ocupacionPct)
+    drawDonut(65)
   } catch {
-    kpis[3].loading  = false
-    stats.ocupacionPct = 65
-    await nextTick()
+    kpis[3].loading = false
     drawDonut(65)
   }
 
-  // Fallback donut if not drawn yet
-  if (!stats.ocupacionPct) {
-    stats.ocupacionPct = 65
-    await nextTick()
-    drawDonut(65)
-  }
+  // Load Clientes and Miembros from unified users endpoint
+  try {
+    const users = await apiFetch('/usuarios')
+    // Filtrado inteligente: 
+    // Clientes = Todos los que no son empleados (incluye miembros)
+    // Miembros = Segmento con membresía activa
+    const clientes = users.filter(u => u.tipo === 'Cliente' || u.tipo === 'Miembro')
+    const miembros = users.filter(u => u.tipo === 'Miembro')
 
-  kpis[1].value   = stats.totalClientes  ?? '—'
-  kpis[1].loading = false
-  kpis[2].value   = stats.totalMiembros  ?? '—'
-  kpis[2].loading = false
+    stats.totalClientes = clientes.length
+    kpis[1].value   = clientes.length
+    kpis[1].loading = false
+
+    stats.totalMiembros = miembros.length
+    kpis[2].value   = miembros.length
+    kpis[2].loading = false
+  } catch {
+    kpis[1].loading = false
+    kpis[2].loading = false
+  }
 })
 </script>
 

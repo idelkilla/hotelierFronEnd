@@ -174,7 +174,7 @@
 </template>
 
 <script>
-import SearchBox from '../components/searchBox.vue'
+import SearchBox from './searchBox.vue'
 
 export default {
   name: 'AtencionAlCliente',
