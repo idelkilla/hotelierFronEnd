@@ -274,7 +274,7 @@
 import { ref, reactive, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppSelect from '@/components/AppSelect.vue'
-import AgregarHotelForm from './AdminAgregarHotel.vue'
+import AgregarHotelForm from './adminAgregarHotel.vue'
 import { apiFetch } from '../services/api'
 
 const route = useRoute()
