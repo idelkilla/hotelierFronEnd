@@ -65,17 +65,17 @@ const authService = {
   setUserData: ({ username, email, googleUser, picture, role }) => { // <-- Añadir 'role'
     localStorage.setItem('user_name', username || '')
     localStorage.setItem('user_email', email || '')
-    localStorage.setItem('google_user', googleUser ? 'true' : 'false')
+    localStorage.setItem('user_google', googleUser ? 'true' : 'false')
     if (role) { // <-- Guardar el rol si está presente
       localStorage.setItem('user_role', role)
     }
 
     let validPic = ''
-    if (picture && typeof picture === 'string') { // <-- Mantener la lógica de la foto
+    if (picture && typeof picture === 'string') {
       validPic = picture.startsWith('http') ? picture : 'https:' + picture
     }
-
     localStorage.setItem('user_photo', validPic)
+    localStorage.setItem('user_initial', username ? username.charAt(0).toUpperCase() : '?')
   },
 
   // CHECK AUTH
