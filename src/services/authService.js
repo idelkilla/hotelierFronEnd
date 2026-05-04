@@ -1,8 +1,8 @@
 // authService.js
 import axios from 'axios'
-import { API } from './api'
+import { API_ROOT } from './api'
 
-const API_URL = `${API}/auth`
+const API_URL = `${API_ROOT}/api/auth`
 
 // Configure axios to include credentials and handle CORS properly
 axios.defaults.withCredentials = true
