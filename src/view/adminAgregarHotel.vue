@@ -492,16 +492,14 @@ const publicar = async () => {
 
     // 3. Subir imágenes → IMAGEN_HOSPEDAJE
     for (const [orden, img] of imagenes.value.entries()) {
-      const token = localStorage.getItem('user_token')
       const fd = new FormData()
       fd.append('imagen',    img.file)
       fd.append('orden',     orden)              // → IMAGEN_HOSPEDAJE.ORDEN
       fd.append('alt_text',  img.alt_text || '') // → IMAGEN_HOSPEDAJE.ALT_TEXT
-      await fetch(`${API}/hospedajes/${idHospedaje}/imagenes`, {
+      await apiFetch(`/hospedajes/${idHospedaje}/imagenes`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
+        headers: { 'Content-Type': 'multipart/form-data' },
         body:   fd,
-        // No pongas Content-Type aquí; el browser lo setea con el boundary
       })
     }
 

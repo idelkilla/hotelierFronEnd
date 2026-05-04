@@ -169,7 +169,7 @@ import VuelosSearch from './VuelosSearch.vue'
 import ActividadesSearch from './ActividadesSearch.vue'
 import CrucerosSearch from './CrucerosSearch.vue'
 import AutosSearch from './AutosSearch.vue'
-import { API } from '../services/api'
+import { apiGet } from '../services/api'
 
 const props = defineProps({
   compact: Boolean,
@@ -273,8 +273,8 @@ async function fetchUbicaciones() {
   mostrarCalendario.value  = false
   loadingUbicaciones.value = true
   try {
-    const res = await fetch(`${API}/search/ubicaciones?q=${encodeURIComponent(busquedaDestino.value)}`)
-    sugerencias.value = await res.json()
+    const data = await apiGet(`/search/ubicaciones?q=${encodeURIComponent(busquedaDestino.value)}`)
+    sugerencias.value = data
   } catch {
     sugerencias.value = []
   } finally {
@@ -290,8 +290,8 @@ async function fetchUbicacionesOrigen() {
   mostrarCalendario.value     = false
   loadingUbicacionesOrigen.value = true
   try {
-    const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${encodeURIComponent(origenVuelo.value)}`)
-    sugerenciasOrigen.value = await res.json()
+    const data = await apiGet(`/search/ubicaciones?q=${encodeURIComponent(origenVuelo.value)}`)
+    sugerenciasOrigen.value = data
   } catch {
     sugerenciasOrigen.value = []
   } finally {
@@ -305,8 +305,7 @@ const abrirMenu = () => {
   mostrarHuespedes.value  = false
   mostrarCalendario.value = false
   loadingUbicaciones.value = true
-  fetch(`${API_URL}/api/search/ubicaciones?q=${encodeURIComponent(busquedaDestino.value)}`)
-    .then(r => r.json())
+  apiGet(`/search/ubicaciones?q=${encodeURIComponent(busquedaDestino.value)}`)
     .then(d => sugerencias.value = d)
     .catch(() => sugerencias.value = [])
     .finally(() => loadingUbicaciones.value = false)

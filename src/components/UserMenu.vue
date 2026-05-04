@@ -127,18 +127,8 @@ const formatPoints = (val) => {
 const fetchProfile = async () => {
   if (props.user && props.user.nombre) return;
 
-  // ✅ Fix: usar la misma key que guarda el Header
-  const token = localStorage.getItem('user_token');
-  if (!token) return;
-
   try {
-    const response = await fetch(`${API_URL}/api/user/profile`, {
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
-
-    if (!response.ok) return;
-
-    const data = await response.json();
+    const data = await apiGet('/user/profile');
     if (data) {
       userData.value = { ...defaultState, ...data };
     }

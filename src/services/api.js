@@ -19,7 +19,11 @@ export async function apiFetch(path, options = {}) {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...options.headers,
   }
-  const res = await fetch(`${API}${path}`, { ...options, headers }) //
+  const res = await fetch(`${API}${path}`, {
+    ...options,
+    headers,
+    credentials: 'include' // ← IMPORTANTE
+  })
 
   if (res.status === 401 || res.status === 403) { //
     // Token expirado o inválido — redirige al login
@@ -34,3 +38,18 @@ export async function apiFetch(path, options = {}) {
   }
   return res.json()
 }
+
+// Para GET simple
+export const apiGet = (path) => apiFetch(path)
+
+// Para POST
+export const apiPost = (path, data) =>
+  apiFetch(path, { method: 'POST', body: JSON.stringify(data) })
+
+// Para PUT
+export const apiPut = (path, data) =>
+  apiFetch(path, { method: 'PUT', body: JSON.stringify(data) })
+
+// Para DELETE
+export const apiDelete = (path) =>
+  apiFetch(path, { method: 'DELETE' })

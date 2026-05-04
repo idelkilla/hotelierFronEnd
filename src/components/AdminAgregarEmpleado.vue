@@ -316,10 +316,9 @@
 <script setup>
   import { reactive, ref, onMounted } from 'vue'
   import AppSelect from './AppSelect.vue'
+  import { apiFetch } from '../services/api'
 
   const emit = defineEmits(['alerta'])
-  const API_BASE =
-    import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api'
 
   const form = reactive({
     nombre_completo: '',
@@ -363,18 +362,6 @@
   const tiposDocumento = ref([])
   const tiposTelefono = ref([])
   const tiposCorreo = ref([])
-
-  const apiFetch = async (path, options = {}) => {
-    const token = localStorage.getItem('user_token')
-    const headers = { 'Content-Type': 'application/json', ...options.headers }
-    if (token) headers['Authorization'] = `Bearer ${token}`
-    const res = await fetch(`${API_BASE}${path}`, { headers, ...options })
-    if (!res.ok) {
-      const e = await res.json().catch(() => ({}))
-      throw new Error(e.message || `Error ${res.status}`)
-    }
-    return res.json()
-  }
 
   onMounted(async () => {
     try {
