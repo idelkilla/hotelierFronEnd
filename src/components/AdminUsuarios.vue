@@ -252,7 +252,7 @@ import { useRoute, useRouter } from 'vue-router'
 import AgregarEmpleadoForm from '../components/AdminAgregarEmpleado.vue'
 import AgregarClienteForm from '../components/AdminAgregarCliente.vue'
 import AgregarMiembroForm from '../components/AdminAgregarMiembro.vue'
-import AdminEditarUsuario from '../components/adminEditarUsuario.vue' // Corrected component name
+import AdminEditarUsuario from '../components/adminEditarUsuario.vue'
 import { apiFetch } from '../services/api'
 
 const props = defineProps({
@@ -269,14 +269,13 @@ const filtroTipo = ref('todos')
 const busqueda = ref('')
 const usuarios = ref([])
 const editando = ref(null)
-const catalogos = reactive({ puestos: [], cargos: [], nivelMembresia: [] })
+const catalogos = reactive({ puestos: [], nivelMembresia: [] })
 
 const guardando = ref(false)
 const cargandoLista = ref(false)
 const cargandoDetalle = ref(false)
 const alerta = reactive({ mensaje: '', tipo: 'error' })
 
-// Refs a los sub-formularios
 const empleadoRef = ref(null)
 const clienteRef = ref(null)
 const miembroRef = ref(null)
@@ -314,6 +313,7 @@ const iniciales = (nombre = '') =>
 const avatarBg = (tipo) =>
   ({ Empleado: '#E6F1FB', Cliente: '#EEEDFE', Miembro: '#E1F5EE' })[tipo] ||
   '#F1EFE8'
+
 const avatarColor = (tipo) =>
   ({ Empleado: '#0C447C', Cliente: '#3C3489', Miembro: '#085041' })[tipo] ||
   '#444441'
@@ -351,7 +351,9 @@ const syncRoute = () => {
   if (path.includes('/consultar')) {
     vista.value = 'consultar'
     filtroTipo.value = route.query.tipo || props.tipo || 'todos'
-    if (usuarios.value.length === 0 || route.query.refresh) cargarListado() // Added refresh query param for explicit reload
+    if (usuarios.value.length === 0) {
+      cargarListado()
+    }
   } else {
     vista.value = 'agregar'
     if (path.includes('/cliente')) subtab.value = 'cliente'
@@ -361,8 +363,11 @@ const syncRoute = () => {
 }
 
 watch(filtroTipo, (newVal) => {
-  if (vista.value === 'consultar') cargarListado()
+  if (vista.value === 'consultar') {
+    cargarListado()
+  }
 })
+
 watch(() => route.fullPath, syncRoute, { immediate: true })
 
 const navegar = (v, s = null) => {
@@ -375,39 +380,48 @@ const navegar = (v, s = null) => {
 }
 
 const cambiarFiltro = (t) => {
-  router.push({ query: { ...route.query, tipo: t } })
+  filtroTipo.value = t
+  router.push({ path: route.path, query: { tipo: t } })
 }
 
 // ── Consultar listado unificado ──────────────────────────────────
 const cargarListado = async () => {
   editando.value = null
   cargandoLista.value = true
-  await cargarListadoSilencioso()
-}
-
-const cargarListadoSilencioso = async () => {
   try {
-    const t = filtroTipo.value !== 'todos' ? `?tipo=${filtroTipo.value}` : ''
-    const res = await apiFetch(`/usuarios${t}`)
+    const tipoParam = filtroTipo.value !== 'todos' ? `?tipo=${filtroTipo.value}` : ''
+    console.log(`📡 Cargando: /api/usuarios${tipoParam}`)
+    
+    const res = await apiFetch(`/api/usuarios${tipoParam}`)
     usuarios.value = Array.isArray(res) ? res : []
+    
+    console.log(`✅ Usuarios cargados: ${usuarios.value.length}`)
   } catch (e) {
+    console.error('❌ Error cargando usuarios:', e)
     mostrarAlerta('Error cargando usuarios: ' + e.message)
   } finally {
     cargandoLista.value = false
   }
 }
 
+// ── Búsqueda ──────────────────────────────────────────────────────
 const buscarUsuarios = async () => {
   if (!busqueda.value.trim()) {
     return cargarListado()
   }
   try {
     const q = encodeURIComponent(busqueda.value.trim())
-    const t = filtroTipo.value
-    const res = await apiFetch(`/usuarios/buscar?q=${q}&tipo=${t}`)
+    const tipoParam = filtroTipo.value !== 'todos' ? `&tipo=${filtroTipo.value}` : ''
+    const url = `/api/usuarios/buscar?q=${q}${tipoParam}`
+    
+    console.log(`📡 Buscando: ${url}`)
+    const res = await apiFetch(url)
     usuarios.value = Array.isArray(res) ? res : []
+    
+    console.log(`✅ Resultados: ${usuarios.value.length}`)
   } catch (e) {
     console.error('❌ Error en búsqueda:', e)
+    mostrarAlerta('Error en búsqueda: ' + e.message)
   }
 }
 
@@ -422,9 +436,16 @@ const abrirEdicion = async (u) => {
   editando.value = u
   cargandoDetalle.value = true
   try {
-    const det = await apiFetch(`/usuarios/${u.id}?tipo=${u.tipo.toLowerCase()}`)
+    const tipoParam = u.tipo.toLowerCase() !== 'usuario' ? `?tipo=${u.tipo.toLowerCase()}` : ''
+    const url = `/api/usuarios/${u.id}${tipoParam}`
+    
+    console.log(`📡 Cargando detalle: ${url}`)
+    const det = await apiFetch(url)
     editando.value = { ...u, ...det }
+    
+    console.log(`✅ Detalle cargado`)
   } catch (e) {
+    console.error('❌ Error cargando detalle:', e)
     mostrarAlerta('Error cargando detalle: ' + e.message)
   } finally {
     cargandoDetalle.value = false
@@ -436,26 +457,45 @@ const onGuardado = async () => {
   await cargarListado()
   editando.value = null
 }
+
 const onEliminado = async () => {
   mostrarAlerta('Usuario eliminado.', 'exito')
   await cargarListado()
   editando.value = null
 }
 
+const eliminarUsuario = async (id) => {
+  if (!confirm('¿Eliminar este usuario?')) return
+  
+  try {
+    await apiFetch(`/api/usuarios/${id}`, { method: 'DELETE' })
+    mostrarAlerta('Usuario eliminado.', 'exito')
+    await cargarListado()
+  } catch (e) {
+    console.error('❌ Error eliminando:', e)
+    mostrarAlerta('Error al eliminar: ' + e.message)
+  }
+}
+
 // ── Catálogos ────────────────────────────────────────────────────
 onMounted(async () => {
   try {
     const [puestos, niveles] = await Promise.all([
-      apiFetch('/catalogos/puestos'),
-      apiFetch('/catalogos/niveles-membresia'),
+      apiFetch('/api/catalogos/puestos'),
+      apiFetch('/api/catalogos/niveles-membresia'),
     ])
-    catalogos.puestos = puestos
-    catalogos.nivelMembresia = niveles
+    catalogos.puestos = puestos || []
+    catalogos.nivelMembresia = niveles || []
   } catch (e) {
+    console.error('❌ Error cargando catálogos:', e)
     mostrarAlerta('Error cargando catálogos: ' + e.message)
   }
+  
+  // Cargar usuarios iniciales
+  cargarListado()
 })
 </script>
+
 
 <style scoped>
 .usr-page {
