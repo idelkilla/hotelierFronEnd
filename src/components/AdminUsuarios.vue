@@ -100,25 +100,25 @@
       <div class="usr-subtabs">
         <button
           :class="['usr-stab', { active: filtroTipo === 'todos' }]"
-          @click="filtroTipo = 'todos'"
+          @click="cambiarFiltro('todos')"
         >
           Todos
         </button>
         <button
           :class="['usr-stab', { active: filtroTipo === 'empleado' }]"
-          @click="filtroTipo = 'empleado'"
+          @click="cambiarFiltro('empleado')"
         >
           Empleados
         </button>
         <button
           :class="['usr-stab', { active: filtroTipo === 'cliente' }]"
-          @click="filtroTipo = 'cliente'"
+          @click="cambiarFiltro('cliente')"
         >
           Clientes
         </button>
         <button
           :class="['usr-stab', { active: filtroTipo === 'miembro' }]"
-          @click="filtroTipo = 'miembro'"
+          @click="cambiarFiltro('miembro')"
         >
           Miembros
         </button>
@@ -161,6 +161,7 @@
             v-model="busqueda"
             type="text"
             placeholder="Buscar por nombre, correo o ID..."
+            @input="handleSearch"
           />
         </div>
 
@@ -227,6 +228,9 @@
                   <button class="usr-btn-edit" @click="abrirEdicion(u)">
                     <i class="fas fa-pen"></i> Editar
                   </button>
+                  <button class="usr-btn-delete" @click="eliminarUsuario(u.id)">
+                    <i class="fas fa-trash"></i>
+                  </button>
                 </td>
               </tr>
               <tr v-if="!usuariosFiltrados.length">
@@ -248,8 +252,12 @@ import { useRoute, useRouter } from 'vue-router'
 import AgregarEmpleadoForm from '../components/AdminAgregarEmpleado.vue'
 import AgregarClienteForm from '../components/AdminAgregarCliente.vue'
 import AgregarMiembroForm from '../components/AdminAgregarMiembro.vue'
-import EditarUsuarioPanel from '../components/adminEditarUsuario.vue'
+import AdminEditarUsuario from '../components/adminEditarUsuario.vue' // Corrected component name
 import { apiFetch } from '../services/api'
+
+const props = defineProps({
+  tipo: { type: String, default: 'todos' }
+})
 
 const route = useRoute()
 const router = useRouter()
@@ -283,22 +291,7 @@ const labelGuardar = computed(() => {
   return map[subtab.value] || 'Guardar'
 })
 
-const usuariosFiltrados = computed(() => {
-  let list = usuarios.value
-  if (filtroTipo.value !== 'todos') {
-    list = list.filter((u) => u.tipo.toLowerCase() === filtroTipo.value)
-  }
-  if (busqueda.value.trim()) {
-    const q = busqueda.value.toLowerCase()
-    list = list.filter(
-      (u) =>
-        u.nombre.toLowerCase().includes(q) ||
-        (u.correo || '').toLowerCase().includes(q) ||
-        String(u.id).includes(q),
-    )
-  }
-  return list
-})
+const usuariosFiltrados = computed(() => usuarios.value)
 
 // ── Helpers ──────────────────────────────────────────────────────
 const mostrarAlerta = (mensaje, tipo = 'error') => {
@@ -357,7 +350,8 @@ const syncRoute = () => {
   const path = route.path
   if (path.includes('/consultar')) {
     vista.value = 'consultar'
-    if (usuarios.value.length === 0) cargarListadoSilencioso()
+    filtroTipo.value = route.query.tipo || props.tipo || 'todos'
+    if (usuarios.value.length === 0 || route.query.refresh) cargarListado() // Added refresh query param for explicit reload
   } else {
     vista.value = 'agregar'
     if (path.includes('/cliente')) subtab.value = 'cliente'
@@ -366,15 +360,22 @@ const syncRoute = () => {
   }
 }
 
-watch(() => route.path, syncRoute, { immediate: true })
+watch(filtroTipo, (newVal) => {
+  if (vista.value === 'consultar') cargarListado()
+})
+watch(() => route.fullPath, syncRoute, { immediate: true })
 
 const navegar = (v, s = null) => {
   let path = '/admin/usuarios'
   if (v === 'consultar') {
-    router.push(`${path}/consultar`)
+    router.push({ path: `${path}/consultar`, query: { tipo: filtroTipo.value } })
   } else {
     router.push(`${path}/agregar/${s || subtab.value}`)
   }
+}
+
+const cambiarFiltro = (t) => {
+  router.push({ query: { ...route.query, tipo: t } })
 }
 
 // ── Consultar listado unificado ──────────────────────────────────
@@ -386,13 +387,34 @@ const cargarListado = async () => {
 
 const cargarListadoSilencioso = async () => {
   try {
-    const res = await apiFetch('/usuarios')
+    const t = filtroTipo.value !== 'todos' ? `?tipo=${filtroTipo.value}` : ''
+    const res = await apiFetch(`/usuarios${t}`)
     usuarios.value = Array.isArray(res) ? res : []
   } catch (e) {
     mostrarAlerta('Error cargando usuarios: ' + e.message)
   } finally {
     cargandoLista.value = false
   }
+}
+
+const buscarUsuarios = async () => {
+  if (!busqueda.value.trim()) {
+    return cargarListado()
+  }
+  try {
+    const q = encodeURIComponent(busqueda.value.trim())
+    const t = filtroTipo.value
+    const res = await apiFetch(`/usuarios/buscar?q=${q}&tipo=${t}`)
+    usuarios.value = Array.isArray(res) ? res : []
+  } catch (e) {
+    console.error('❌ Error en búsqueda:', e)
+  }
+}
+
+let searchTimer = null
+const handleSearch = () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(buscarUsuarios, 400)
 }
 
 // ── Abrir edición ────────────────────────────────────────────────
@@ -563,6 +585,24 @@ onMounted(async () => {
   border-color: #265073;
 }
 
+.usr-action-buttons {
+  display: flex;
+  gap: 8px;
+}
+.usr-btn-delete {
+  background: #fff;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.usr-btn-delete:hover {
+  background: #fef2f2;
+}
 /* ── Alerta ── */
 .usr-alerta {
   display: flex;
