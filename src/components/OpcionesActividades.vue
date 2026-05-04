@@ -231,6 +231,7 @@ const cerrarModal = () => {
   background: #fff;
   align-items: stretch;
   transition: box-shadow 0.2s;
+  z-index: 1; /* Establece una base baja para que no tape los dropdowns del buscador */
 }
 .act-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.09); }
 

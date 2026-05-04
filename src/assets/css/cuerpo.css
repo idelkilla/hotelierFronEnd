@@ -18,7 +18,17 @@ html {
     padding-bottom: 100px;
     margin-top: 60px; /* Alineado con el alto del header (60px) */
 }
+/* Botón filtros oculto en desktop */
+.filters-toggle-btn {
+  display: none;
+}
 
+/* Panel siempre visible en desktop */
+.filters-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 /* ── SECCIÓN DE BÚSQUEDA ──────────────────────────────────── */
 .search-section-container {
     width: 100%;
@@ -26,6 +36,8 @@ html {
     margin: 0 auto;
     padding: 20px 20px 0;
     box-sizing: border-box;
+    position: relative;
+    z-index: 1100; /* Supera el z-index interno de Leaflet (1000) */
 }
 
 .search-bar-content {

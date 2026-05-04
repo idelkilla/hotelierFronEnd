@@ -12,7 +12,7 @@
       <!-- Columna derecha para el buscador y resultados -->
       <div class="vuelos-right-column">
         <!-- El buscador de vuelos -->
-        <div class="vuelos-search-wrapper">
+        <div class="vuelos-search-wrapper search-top-layer">
           <VuelosBuscar />
         </div>
          <div class="vuelos-search-wrapper">
@@ -77,6 +77,13 @@
   /* No necesitamos padding o margin-top aquí, ya que el padre .vuelos-main-content-layout los maneja */
   /* No necesitamos display: flex o justify-content aquí, ya que el padre .vuelos-right-column ya alinea su contenido a la derecha */
 }
+
+/* Asegura que el buscador y sus menús (calendario, direcciones) queden siempre por delante */
+.search-top-layer {
+  position: relative;
+  z-index: 100;
+}
+
 /* Mover los tabs (Viaje redondo...) debajo de los inputs usando order */
 :deep(.vuelos-tabs) {
   order: 2; 

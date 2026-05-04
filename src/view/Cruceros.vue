@@ -42,6 +42,8 @@ import OpcionesCruceros from "../components/OpcionesCruceros.vue";
   width: 100%;
   align-items: flex-end;
   padding-right: 40px;
+  position: relative;
+  z-index: 100; /* Eleva el buscador por encima de los resultados */
 }
 
 :deep(.cruceros-search) {

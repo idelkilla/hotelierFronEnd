@@ -7,7 +7,7 @@
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  z-index: 200;
+  z-index: 1200; /* Mayor que el contenedor para asegurar prioridad absoluta */
   background: white;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
