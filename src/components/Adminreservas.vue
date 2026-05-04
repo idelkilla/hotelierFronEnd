@@ -233,13 +233,11 @@ function abrirCambioEstado(r) {
 async function cambiarEstado() {
   if (!cambioEstadoReserva.value) return
   try {
-    const token = localStorage.getItem('user_token')
-    const res = await fetch(`${API}/reservas/${cambioEstadoReserva.value.ID_RESERVA}/estado`, {
+    await apiFetch(`/reservas/${cambioEstadoReserva.value.ID_RESERVA}/estado`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ ID_ESTADO: nuevoEstado.value })
     })
-    if (!res.ok) throw new Error()
+
     const idx = reservas.value.findIndex(r => r.ID_RESERVA === cambioEstadoReserva.value.ID_RESERVA)
     if (idx !== -1) {
       const estadoObj = estados.value.find(e => e.ID_ESTADO === nuevoEstado.value)
