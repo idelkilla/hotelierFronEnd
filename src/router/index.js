@@ -18,6 +18,8 @@ import DetalleCarros     from '../view/DetalleCarros.vue';
 import DetalleCrucero from '../view/DetalleCrucero.vue';
 import Actividades from '../view/Actividades.vue';
 import DetalleActividad from '../view/DetalleActividad.vue';
+import AdminHospedajes from '../view/adminHospedajes.vue';
+import AdminUsuarios from '../view/adminPanel.vue';
 
 const ADMIN_EMAIL = 'admin@gmail.com';
 
