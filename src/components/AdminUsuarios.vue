@@ -390,9 +390,9 @@ const cargarListado = async () => {
   cargandoLista.value = true
   try {
     const tipoParam = filtroTipo.value !== 'todos' ? `?tipo=${filtroTipo.value}` : ''
-    console.log(`📡 Cargando: /api/usuarios${tipoParam}`)
+    console.log(`📡 Cargando: /usuarios${tipoParam}`)
     
-    const res = await apiFetch(`/api/usuarios${tipoParam}`)
+    const res = await apiFetch(`/usuarios${tipoParam}`)
     usuarios.value = Array.isArray(res) ? res : []
     
     console.log(`✅ Usuarios cargados: ${usuarios.value.length}`)
@@ -412,7 +412,7 @@ const buscarUsuarios = async () => {
   try {
     const q = encodeURIComponent(busqueda.value.trim())
     const tipoParam = filtroTipo.value !== 'todos' ? `&tipo=${filtroTipo.value}` : ''
-    const url = `/api/usuarios/buscar?q=${q}${tipoParam}`
+    const url = `/usuarios/buscar?q=${q}${tipoParam}`
     
     console.log(`📡 Buscando: ${url}`)
     const res = await apiFetch(url)
@@ -437,7 +437,7 @@ const abrirEdicion = async (u) => {
   cargandoDetalle.value = true
   try {
     const tipoParam = u.tipo.toLowerCase() !== 'usuario' ? `?tipo=${u.tipo.toLowerCase()}` : ''
-    const url = `/api/usuarios/${u.id}${tipoParam}`
+    const url = `/usuarios/${u.id}${tipoParam}`
     
     console.log(`📡 Cargando detalle: ${url}`)
     const det = await apiFetch(url)
@@ -468,7 +468,7 @@ const eliminarUsuario = async (id) => {
   if (!confirm('¿Eliminar este usuario?')) return
   
   try {
-    await apiFetch(`/api/usuarios/${id}`, { method: 'DELETE' })
+    await apiFetch(`/usuarios/${id}`, { method: 'DELETE' })
     mostrarAlerta('Usuario eliminado.', 'exito')
     await cargarListado()
   } catch (e) {
@@ -481,8 +481,8 @@ const eliminarUsuario = async (id) => {
 onMounted(async () => {
   try {
     const [puestos, niveles] = await Promise.all([
-      apiFetch('/api/catalogos/puestos'),
-      apiFetch('/api/catalogos/niveles-membresia'),
+      apiFetch('/catalogos/puestos'),
+      apiFetch('/catalogos/niveles-membresia'),
     ])
     catalogos.puestos = puestos || []
     catalogos.nivelMembresia = niveles || []
