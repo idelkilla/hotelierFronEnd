@@ -138,7 +138,7 @@
           <div v-if="cargandoDetalle" class="usr-loading">
             <i class="fas fa-spinner fa-spin"></i> Cargando...
           </div>
-          <EditarUsuarioPanel
+          <AdminEditarUsuario
             v-else
             :usuario="editando"
             :catalogos="catalogos"

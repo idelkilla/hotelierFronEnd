@@ -296,6 +296,7 @@ const route = useRoute()
 const router = useRouter()
 // Buscador por nombre
 const searchByName = ref('')
+import { API } from '../services/api'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 
@@ -471,7 +472,7 @@ async function ejecutarBusqueda() {
   console.log('EJECUTANDO BÚSQUEDA CON:', { destino, fechaInicio, fechaFin, habs })
 
   try {
-    const res = await fetch(`${API_URL}/api/search/hospedaje`, {
+    const res = await fetch(`${API}/search/hospedaje`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

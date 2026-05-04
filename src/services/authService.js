@@ -11,8 +11,13 @@ axios.defaults.crossDomain = true
 const authService = {
 
   // REGISTER: Debe retornar una promesa que resuelve en { data: { token: '...' } }
-  register: (username, email, password) => {
-    return axios.post(`${API_URL}/register`, { username, email, password })
+  register: (nombre, email, password) => {
+    return axios.post(`${API_URL}/register`, {
+      nombre,
+      email,
+      password,
+      confirmPassword: password
+    })
   },
 
   // LOGIN (username or email)

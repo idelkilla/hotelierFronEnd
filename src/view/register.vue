@@ -148,55 +148,23 @@ const handleRegister = async () => {
   error.value = null
   isLoading.value = true
 
-  const payload = {
-    nombre: username.value.trim(),
-    email: email.value.trim(),
-    password: password.value,
-    confirmPassword: password.value
-  }
-
-  console.log('🚀 Enviando registro:', payload)
-
   try {
-    const response = await fetch(`${API}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    })
+    const res = await authService.register(
+      username.value.trim(),
+      email.value.trim(),
+      password.value
+    )
 
-    console.log('📊 Status:', response.status)
+    if (res.data?.token && res.data?.user) {
+      authService.saveToken(res.data.token)
+      authService.setUserData(res.data.user)
+      window.dispatchEvent(new Event('storage'))
 
-    const data = await response.json()
-    console.log('📦 Response:', data)
-
-    if (!response.ok) {
-      error.value = data.code || 'SERVER_ERROR'
-      return
+      // Redirige según el rol
+      router.push(res.data.user.role === 'admin' ? '/admin' : '/home')
     }
-
-    // ✅ Registro exitoso
-    authService.saveToken(data.token)
-
-    const initial = username.value.charAt(0).toUpperCase()
-    localStorage.setItem('user_name', username.value)
-    localStorage.setItem('user_email', email.value)
-    localStorage.setItem('user_initial', initial)
-    localStorage.setItem('user_photo', `initial:${initial}`)
-    localStorage.setItem('user_token', data.token)
-    if (data.user?.role) {
-      localStorage.setItem('user_role', data.user.role)
-    }
-
-    window.dispatchEvent(new Event('storage'))
-    
-    // Redirección basada en rol
-    router.replace(data.user?.role === 'admin' ? '/admin' : '/home')
   } catch (err) {
-    console.error('❌ Error de red:', err)
-    error.value = 'SERVER_ERROR'
+    error.value = err.response?.data?.message || 'Error al registrarse'
   } finally {
     isLoading.value = false
   }
@@ -296,7 +264,8 @@ const initializeGoogle = () => {
 // ✅ CARGAR SDK Y MONTAR
 onMounted(() => {
   if (authService.isAuthenticated()) {
-    router.replace('/Home')
+    const role = localStorage.getItem('user_role')
+    router.replace(role === 'admin' ? '/admin' : '/home')
     return
   }
 

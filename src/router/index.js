@@ -9,11 +9,11 @@ import Perfil            from '../view/Perfil.vue';
 import ForgotPassword    from '../view/ForgotPassword.vue';
 import ResetPassword     from '../view/ResetPassword.vue';
 import head              from '../view/head.vue';
-import servicioCliente   from '../view/servicioCliente.vue';
+import servicioCliente   from '../components/servicioCliente.vue';
 
 // Services & Details
 import DetalleHospedaje  from '../view/DetalleHospedaje.vue';
-import Cruceros          from '../view/Cruceros.vue'; 
+import Cruceros          from '../view/Cruceros.vue';
 import Vuelos            from '../view/Vuelos.vue'; 
 import Carros            from '../view/Carros.vue';
 import DetalleCarros     from '../view/DetalleCarros.vue';
@@ -24,11 +24,11 @@ import servicesMenu      from '../components/servicesMenu.vue';
 
 // Admin
 import AdminLayout       from '../view/adminPanel.vue';
-import AdminDashboard    from '../view/adminDashboard.vue'; 
-import AdminHospedajes   from '../view/adminHospedajes.vue';
+import AdminDashboard    from '../view/AdminDashboard.vue';
+import AdminHospedajes   from '../view/AdminHospedajes.vue';
 import AdminUsuarios     from '../components/AdminUsuarios.vue';
-import AdminReservas     from '../components/Adminreservas.vue';
-import AdminConfiguracion from '../components/Adminconfiguracion.vue';
+import AdminReservas     from '../components/AdminReservas.vue';
+import AdminConfiguracion from '../components/AdminConfiguracion.vue';
 
 const ADMIN_EMAIL = 'admin@gmail.com';
 
@@ -81,17 +81,18 @@ router.beforeEach(async (to, from, next) => {
     const isAuthenticated = authService.isAuthenticated()
     const userRole = localStorage.getItem('user_role')
 
-    // ✅ PRIMERO: bloquear admin fuera de su área
+    // ✅ RESTRICCIÓN ESTRICTA PARA ADMIN
     if (isAuthenticated && userRole === 'admin') {
-      const allowedForAdmin =
+      const esRutaAdmin =
         to.path.startsWith('/admin') ||
         to.meta.requiresAdmin ||
-        to.name === 'Perfil'
+        to.name === 'Perfil' ||
+        to.path === '/perfil'
 
-      if (!allowedForAdmin) {
+      if (!esRutaAdmin) {
         return next({ name: 'AdminDashboard' })
       }
-      return next() // admin en ruta permitida → dejar pasar
+      return next()
     }
 
     // A partir de aquí solo aplica a usuarios normales

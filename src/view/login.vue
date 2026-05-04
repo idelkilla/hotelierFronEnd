@@ -137,8 +137,14 @@ const generalError = computed(() =>
 )
 
 const finalizeLogin = (userData, token) => {
+  console.log('userData completo:', userData)
+  console.log('role recibido:', userData.role)
+
   authService.saveToken(token)
   authService.setUserData(userData)
+
+  console.log('user_role en localStorage:', localStorage.getItem('user_role'))
+
   window.dispatchEvent(new Event('storage'))
   router.push(userData.role === 'admin' ? '/admin' : '/home')
 }
