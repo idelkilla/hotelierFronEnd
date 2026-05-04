@@ -274,18 +274,7 @@ const tipoBadge = computed(() =>
 const nivelBadge = (nivel) =>
   ({ Bronze: 'badge-amber', Silver: 'badge-blue', Gold: 'badge-gold', Platinum: 'badge-purple' })[nivel] || 'badge-gray'
 
-// API
-const apiFetch = async (path, options = {}) => {
-  const token = localStorage.getItem('user_token')
-  const headers = { 'Content-Type': 'application/json', ...options.headers }
-  if (token) headers['Authorization'] = `Bearer ${token}`
-  const res = await fetch(`${API_BASE}${path}`, { headers, ...options })
-  if (!res.ok) {
-    const e = await res.json().catch(() => ({}))
-    throw new Error(e.message || `Error ${res.status}`)
-  }
-  return res.json()
-}
+import { apiFetch } from '../services/api'
 
 // Guardar
 const guardar = async () => {
