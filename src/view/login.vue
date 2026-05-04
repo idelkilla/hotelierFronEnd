@@ -143,10 +143,12 @@ const finalizeLogin = (userData, token) => {
   authService.saveToken(token)
   authService.setUserData(userData)
 
-  console.log('user_role en localStorage:', localStorage.getItem('user_role'))
-
   window.dispatchEvent(new Event('storage'))
-  router.push(userData.role === 'admin' ? '/admin' : '/home')
+  
+  const redirectPath = userData.role === 'admin' ? '/admin' : '/home'
+  router.push(redirectPath).then(() => {
+    window.location.reload()
+  })
 }
 
 const handleLogin = async () => {
