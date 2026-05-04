@@ -231,7 +231,7 @@ function abrirCambioEstado(r) {
 }
 
 async function cambiarEstado() {
-  if (!cambioEstadoReserva.value) return
+  if (!cambioEstadoReserva.value || nuevoEstado.value === null) return
   try {
     await apiFetch(`/reservas/${cambioEstadoReserva.value.ID_RESERVA}/estado`, {
       method: 'PATCH',
