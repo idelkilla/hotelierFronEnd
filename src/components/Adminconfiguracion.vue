@@ -172,10 +172,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, defineComponent, h } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { API } from '../services/api'
 
-// ── State ──────────────────────────────────────────
+// ── State (REFERENCIAS CON ref) ──────────────────
 const activeTab = ref('hospedaje')
 
 const tiposHospedaje   = ref([])
@@ -186,76 +186,137 @@ const nivelesMembresia = ref([])
 const tiposUbicacion   = ref([])
 
 const loadings = reactive({
-  hospedaje: false, habitacion: false, servicios: false,
-  estados: false, membresia: false, ubicaciones: false,
+  hospedaje: false,
+  habitacion: false,
+  servicios: false,
+  estados: false,
+  membresia: false,
+  ubicaciones: false,
 })
 
-const modal = reactive({ open: false, tab: '', editId: null, data: {}, saving: false })
+const modal = reactive({
+  open: false,
+  tab: '',
+  editId: null,
+  data: {},
+  saving: false
+})
 
-const toast = reactive({ visible: false, message: '', type: 'success' })
+const toast = reactive({
+  visible: false,
+  message: '',
+  type: 'success'
+})
 
 // ── Tabs config ───────────────────────────────────
 const tabs = [
-  { id: 'hospedaje',   label: 'Tipos hospedaje',   icon: 'fas fa-hotel' },
-  { id: 'habitacion',  label: 'Tipos habitación',  icon: 'fas fa-door-open' },
+  { id: 'hospedaje',   label: 'Tipos hospedaje',     icon: 'fas fa-hotel' },
+  { id: 'habitacion',  label: 'Tipos habitación',    icon: 'fas fa-door-open' },
   { id: 'servicios',   label: 'Servicios incluidos', icon: 'fas fa-concierge-bell' },
-  { id: 'estados',     label: 'Estados reserva',   icon: 'fas fa-flag' },
-  { id: 'membresia',   label: 'Membresías',         icon: 'fas fa-crown' },
-  { id: 'ubicaciones', label: 'Tipos ubicación',   icon: 'fas fa-map-marker-alt' },
+  { id: 'estados',     label: 'Estados reserva',     icon: 'fas fa-flag' },
+  { id: 'membresia',   label: 'Membresías',          icon: 'fas fa-crown' },
+  { id: 'ubicaciones', label: 'Tipos ubicación',     icon: 'fas fa-map-marker-alt' },
 ]
 
-const tabLabel = computed(() => tabs.find(t => t.id === activeTab.value)?.label || '')
+const tabLabel = computed(() => 
+  tabs.find(t => t.id === activeTab.value)?.label || ''
+)
 
 // ── Modal fields per tab ──────────────────────────
 const fieldsMap = {
-  hospedaje:   [{ key: 'NOMBRE_TIPO', label: 'Nombre del tipo', placeholder: 'Ej: Hotel, Hostal...' }],
-  habitacion:  [{ key: 'NOMBRE', label: 'Nombre del tipo', placeholder: 'Ej: Suite, Doble...' }],
-  servicios:   [{ key: 'NOMBRE', label: 'Nombre del servicio', placeholder: 'Ej: WiFi, Piscina...' }],
-  estados:     [{ key: 'ESTADO', label: 'Nombre del estado', placeholder: 'Ej: Confirmada...' }],
-  membresia:   [
+  hospedaje:   [{ key: 'NOMBRE_TIPO', label: 'Nombre del tipo' }],
+  habitacion:  [{ key: 'NOMBRE', label: 'Nombre del tipo' }],
+  servicios:   [{ key: 'NOMBRE', label: 'Nombre del servicio' }],
+  estados:     [{ key: 'ESTADO', label: 'Nombre del estado' }],
+  membresia: [
     { key: 'NOMBRE_NIVEL', label: 'Nombre del nivel' },
     { key: 'PUNTOS_MINIMOS', label: 'Puntos mínimos', type: 'number' },
-    { key: 'DESCRIPCION', label: 'Descripción', type: 'textarea', placeholder: 'Descripción opcional...' },
+    { key: 'DESCRIPCION', label: 'Descripción', type: 'textarea' },
   ],
-  ubicaciones: [{ key: 'NOMBRE', label: 'Nombre del tipo', placeholder: 'Ej: Aeropuerto...' }],
+  ubicaciones: [{ key: 'NOMBRE', label: 'Nombre del tipo' }],
 }
 
 const modalFields = computed(() => fieldsMap[modal.tab] || [])
 
-// ── API endpoint map ──────────────────────────────
+// ── API endpoints ─────────────────────────────────
 const endpoints = {
-  // Sincronizado con catalogos.js del backend
-  hospedaje:   { get: '/catalogos/tipos-hospedaje',    post: '/catalogos/tipos-hospedaje',    patch: id => `/catalogos/tipos-hospedaje/${id}`,    delete: id => `/catalogos/tipos-hospedaje/${id}` },
-  habitacion:  { get: '/catalogos/tipos-habitacion',   post: '/catalogos/tipos-habitacion',   patch: id => `/catalogos/tipos-habitacion/${id}`,   delete: id => `/catalogos/tipos-habitacion/${id}` },
-  servicios:   { get: '/catalogos/servicios-incluidos',post: '/catalogos/servicios-incluidos',patch: id => `/catalogos/servicios-incluidos/${id}`,delete: id => `/catalogos/servicios-incluidos/${id}` },
-  estados:     { get: '/catalogos/estados-reserva',    post: '/catalogos/estados-reserva',    patch: id => `/catalogos/estados-reserva/${id}`,    delete: id => `/catalogos/estados-reserva/${id}` },
-  membresia:   { get: '/catalogos/niveles-membresia',  post: '/catalogos/niveles-membresia',  patch: id => `/catalogos/niveles-membresia/${id}`,  delete: id => `/catalogos/niveles-membresia/${id}` },
-  ubicaciones: { get: '/catalogos/tipos-ubicacion',    post: '/catalogos/tipos-ubicacion',    patch: id => `/catalogos/tipos-ubicacion/${id}`,    delete: id => `/catalogos/tipos-ubicacion/${id}` },
+  hospedaje:   { get: '/catalogos/tipos-hospedaje',    post: '/catalogos/tipos-hospedaje' },
+  habitacion:  { get: '/catalogos/tipos-habitacion',   post: '/catalogos/tipos-habitacion' },
+  servicios:   { get: '/catalogos/servicios-incluidos',post: '/catalogos/servicios-incluidos' },
+  estados:     { get: '/catalogos/estados-reserva',    post: '/catalogos/estados-reserva' },
+  membresia:   { get: '/catalogos/niveles-membresia',  post: '/catalogos/niveles-membresia' },
+  ubicaciones: { get: '/catalogos/tipos-ubicacion',    post: '/catalogos/tipos-ubicacion' },
 }
 
-const dataMap = { hospedaje: tiposHospedaje, habitacion: tiposHabitacion, servicios: serviciosIncluidos, estados: estadosReserva, membresia: nivelesMembresia, ubicaciones: tiposUbicacion }
-const idMap   = { hospedaje: 'ID_TIPO', habitacion: 'ID_TIPO_HABITACION', servicios: 'ID_SERVICIO_INCLUIDO', estados: 'ID_ESTADO', membresia: 'ID_NIVEL', ubicaciones: 'ID_TIPO' }
+const idMap = {
+  hospedaje: 'ID_TIPO',
+  habitacion: 'ID_TIPO_HABITACION',
+  servicios: 'ID_SERVICIO_INCLUIDO',
+  estados: 'ID_ESTADO',
+  membresia: 'ID_NIVEL',
+  ubicaciones: 'ID_TIPO'
+}
 
-// ── Fetch ─────────────────────────────────────────
+// ── DATA MAP (MAPEO DE REFS) ──────────────────────
+const dataRefMap = {
+  hospedaje: tiposHospedaje,
+  habitacion: tiposHabitacion,
+  servicios: serviciosIncluidos,
+  estados: estadosReserva,
+  membresia: nivelesMembresia,
+  ubicaciones: tiposUbicacion,
+}
+
+// ── FETCH ─────────────────────────────────────────
 async function fetchTab(tab) {
   loadings[tab] = true
   try {
     const token = localStorage.getItem('user_token')
-    const res = await fetch(`${API}${endpoints[tab].get}`, { headers: { Authorization: `Bearer ${token}` } })
-    if (!res.ok) throw new Error()
-    dataMap[tab].value = await res.json()
-  } catch {
-    showToast(`Error al cargar ${tabs.find(t=>t.id===tab)?.label}`, 'error')
+    const endpoint = endpoints[tab]
+    
+    if (!endpoint) {
+      throw new Error(`Endpoint no configurado para: ${tab}`)
+    }
+
+    const res = await fetch(`${API}${endpoint.get}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+    }
+
+    const data = await res.json()
+    
+    // ✅ CORRECTO: Usar .value para asignar a las refs
+    if (dataRefMap[tab]) {
+      dataRefMap[tab].value = Array.isArray(data) ? data : []
+    }
+
+  } catch (err) {
+    console.error(`❌ Error fetching ${tab}:`, err)
+    const tabName = tabs.find(t => t.id === tab)?.label || tab
+    showToast(`Error al cargar ${tabName}: ${err.message}`, 'error')
+    
+    // Asignar array vacío en caso de error
+    if (dataRefMap[tab]) {
+      dataRefMap[tab].value = []
+    }
   } finally {
     loadings[tab] = false
   }
 }
 
+// ── LIFECYCLE ─────────────────────────────────────
 onMounted(() => {
   Object.keys(endpoints).forEach(fetchTab)
 })
 
-// ── CRUD ──────────────────────────────────────────
+// ── CRUD OPERATIONS ──────────────────────────────
 function openModal(tab, item = null) {
   modal.tab = tab
   modal.open = true
@@ -264,90 +325,87 @@ function openModal(tab, item = null) {
   modal.saving = false
 }
 
-function editItem(tab, item) { openModal(tab, item) }
+function editItem(tab, item) {
+  openModal(tab, item)
+}
 
-function closeModal() { modal.open = false }
+function closeModal() {
+  modal.open = false
+  modal.data = {}
+}
 
 async function saveItem() {
   modal.saving = true
   try {
     const token = localStorage.getItem('user_token')
     const ep = endpoints[modal.tab]
-    const url = modal.editId ? `${API}${ep.patch(modal.editId)}` : `${API}${ep.post}`
+    const url = modal.editId 
+      ? `${API}${ep.post}/${modal.editId}` 
+      : `${API}${ep.post}`
     const method = modal.editId ? 'PATCH' : 'POST'
+
     const res = await fetch(url, {
       method,
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify(modal.data),
     })
-    if (!res.ok) throw new Error()
+
+    if (!res.ok) {
+      throw new Error(`Error: ${res.statusText}`)
+    }
+
     await fetchTab(modal.tab)
     closeModal()
-    showToast(modal.editId ? 'Actualizado correctamente' : 'Creado correctamente', 'success')
-  } catch {
-    showToast('Error al guardar', 'error')
+    showToast(
+      modal.editId ? 'Actualizado correctamente' : 'Creado correctamente',
+      'success'
+    )
+  } catch (err) {
+    console.error('❌ Error saving:', err)
+    showToast(`Error al guardar: ${err.message}`, 'error')
   } finally {
     modal.saving = false
   }
 }
 
 async function deleteItem(tab, id) {
-  if (!confirm('¿Eliminar este elemento?')) return
+  if (!confirm('¿Estás seguro de que deseas eliminar?')) return
+
   try {
     const token = localStorage.getItem('user_token')
-    const res = await fetch(`${API}${endpoints[tab].delete(id)}`, {
+    const url = `${API}${endpoints[tab].post}/${id}`
+
+    const res = await fetch(url, {
       method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { 'Authorization': `Bearer ${token}` },
     })
-    if (!res.ok) throw new Error()
+
+    if (!res.ok) {
+      throw new Error(`Error: ${res.statusText}`)
+    }
+
     await fetchTab(tab)
-    showToast('Eliminado', 'success')
-  } catch {
-    showToast('Error al eliminar', 'error')
+    showToast('Eliminado correctamente', 'success')
+  } catch (err) {
+    console.error('❌ Error deleting:', err)
+    showToast(`Error al eliminar: ${err.message}`, 'error')
   }
 }
 
-// ── Toast ─────────────────────────────────────────
+// ── TOAST ─────────────────────────────────────────
 function showToast(message, type = 'success') {
   toast.message = message
   toast.type = type
   toast.visible = true
-  setTimeout(() => toast.visible = false, 3000)
+  setTimeout(() => {
+    toast.visible = false
+  }, 3000)
 }
 </script>
 
-<script>
-// Inline sub-component for catalog tables
-export default {
-  components: {
-    CatalogTable: {
-      props: ['items', 'loading', 'labelField', 'idField'],
-      emits: ['delete', 'edit'],
-      template: `
-        <div>
-          <div v-if="loading" class="loading-inline"><div class="spinner"></div></div>
-          <table v-else class="catalog-table">
-            <thead><tr><th>ID</th><th>Nombre</th><th>Acciones</th></tr></thead>
-            <tbody>
-              <tr v-for="item in items" :key="item[idField]">
-                <td class="id-cell">#{{ item[idField] }}</td>
-                <td>{{ item[labelField] }}</td>
-                <td>
-                  <div class="action-buttons">
-                    <button class="btn-icon edit" @click="$emit('edit', item)"><i class="fas fa-edit"></i></button>
-                    <button class="btn-icon del" @click="$emit('delete', item[idField])"><i class="fas fa-trash"></i></button>
-                  </div>
-                </td>
-              </tr>
-              <tr v-if="!items.length"><td colspan="3" class="empty-row">Sin registros.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      `
-    }
-  }
-}
-</script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
