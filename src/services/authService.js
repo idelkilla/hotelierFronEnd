@@ -62,11 +62,12 @@ const authService = {
   },
 
   // SAVE USER DATA
-  setUserData: ({ username, email, googleUser, picture, role }) => { // <-- Añadir 'role'
-    localStorage.setItem('user_name', username || '')
+  setUserData: ({ username, nombre, email, googleUser, picture, role }) => {
+    const displayName = username || nombre || ''
+    localStorage.setItem('user_name', displayName)
     localStorage.setItem('user_email', email || '')
     localStorage.setItem('user_google', googleUser ? 'true' : 'false')
-    if (role) { // <-- Guardar el rol si está presente
+    if (role) {
       localStorage.setItem('user_role', role)
     }
 
@@ -75,7 +76,7 @@ const authService = {
       validPic = picture.startsWith('http') ? picture : 'https:' + picture
     }
     localStorage.setItem('user_photo', validPic)
-    localStorage.setItem('user_initial', username ? username.charAt(0).toUpperCase() : '?')
+    localStorage.setItem('user_initial', displayName ? displayName.charAt(0).toUpperCase() : '?')
   },
 
   // CHECK AUTH
