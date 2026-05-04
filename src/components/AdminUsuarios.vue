@@ -248,7 +248,7 @@ import { useRoute, useRouter } from 'vue-router'
 import AgregarEmpleadoForm from '../components/AdminAgregarEmpleado.vue'
 import AgregarClienteForm from '../components/AdminAgregarCliente.vue'
 import AgregarMiembroForm from '../components/AdminAgregarMiembro.vue'
-import EditarUsuarioPanel from '../components/AdminEditarUsuario.vue'
+import EditarUsuarioPanel from '../components/adminEditarUsuario.vue'
 import { apiFetch } from '../services/api'
 
 const route = useRoute()
