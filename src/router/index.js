@@ -82,14 +82,13 @@ router.beforeEach(async (to, from, next) => {
     const userRole = localStorage.getItem('user_role')
 
     // ✅ RESTRICCIÓN ESTRICTA PARA ADMIN
-    if (isAuthenticated && userRole === 'admin') {
+    if (isAuthenticated && (userRole === 'admin' || localStorage.getItem('user_email') === ADMIN_EMAIL)) {
       const esRutaAdmin =
         to.path.startsWith('/admin') ||
         to.meta.requiresAdmin ||
-        to.name === 'Perfil' ||
-        to.path === '/perfil'
+        ['Perfil', 'Head', 'ServicioCliente'].includes(to.name)
 
-      if (!esRutaAdmin) {
+      if (!esRutaAdmin && to.name !== 'AdminDashboard') {
         return next({ name: 'AdminDashboard' })
       }
       return next()
