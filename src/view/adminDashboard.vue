@@ -50,7 +50,7 @@
           class="kpi-value"
           style="color: #ffffff; font-size: 26px; line-height: 1"
         >
-          {{ stats.totalReservas ?? '—' }}
+          {{ stats.actividad_total ?? '—' }}
         </div>
         <div class="kpi-sub" style="color: rgba(255, 255, 255, 0.55)">
           Reservas registradas
@@ -367,62 +367,56 @@ const drawDonut = (pct) => {
 }
 
 onMounted(async () => {
-  // Todas las peticiones en paralelo — si una falla, las demás siguen
-  const [hospData, reservasData, clientesData, habCount] = await Promise.all([
-    apiFetch('/hospedajes').catch(() => null),
-    apiFetch('/reservas').catch(() => null),
-    apiFetch('/clientes').catch(() => null),
-    apiFetch('/hospedajes/habitaciones-count').catch(() => null),
-  ])
-
-  // Hospedajes
-  if (Array.isArray(hospData)) {
-    hospedajes.value = hospData
-    stats.totalHospedajes = hospData.length
-    kpis[0].value = hospData.length
+  try {
+    const data = await apiFetch('/dashboard/stats')
+    
+    // Map stats to local state
+    stats.totalHospedajes = data.hospedajes || 0
+    stats.totalReservas = data.reservas || 0
+    stats.totalClientes = data.clientes || 0
+    stats.totalMiembros = data.miembros || 0
+    stats.totalHabitaciones = data.habitaciones || 0
+    stats.actividad_total = data.actividad_total || 0
+    
+    // Update KPIs
+    kpis[0].value = stats.totalHospedajes
+    kpis[1].value = stats.totalClientes
+    kpis[2].value = stats.totalMiembros
+    kpis[3].value = stats.totalHabitaciones
+    
+    // Load lists (keep for recent views)
+    const [hospData, reservasData] = await Promise.all([
+      apiFetch('/hospedajes').catch(() => []),
+      apiFetch('/reservas').catch(() => [])
+    ])
+    hospedajes.value = Array.isArray(hospData) ? hospData : []
+    reservas.value = Array.isArray(reservasData) ? reservasData : []
+    
+    // Charts data
     const byTipo = {}
-    hospData.forEach((h) => {
-      const t = h.tipo_hospedaje || 'Otro'
+    hospedajes.value.forEach((h) => {
+      const t = h.tipo_hospedaje || h.NOMBRE_TIPO || 'Otro'
       byTipo[t] = (byTipo[t] || 0) + 1
     })
+    const pctMiembros = stats.totalClientes > 0 ? Math.round((stats.totalMiembros / stats.totalClientes) * 100) : 0
+    donutPct.value = pctMiembros
+    
     await nextTick()
     drawBar(Object.entries(byTipo).map(([l, v]) => ({ l, v })))
+    drawDonut(pctMiembros)
+    
+    // Loading flags
+    Object.values(kpis).forEach(k => k.loading = false)
+    cargando.value = false
+    cargandoReservas.value = false
+  } catch (error) {
+    console.error('Dashboard load error:', error)
+    // Fallback to 0s
+    Object.values(stats).forEach((_, key) => stats[key] = 0)
+    Object.values(kpis).forEach(k => { k.value = 0; k.loading = false })
+    cargando.value = false
+    cargandoReservas.value = false
   }
-  kpis[0].loading = false
-  cargando.value = false
-
-  // Reservas
-  if (Array.isArray(reservasData)) {
-    reservas.value = reservasData
-    stats.totalReservas = reservasData.length
-  }
-  cargandoReservas.value = false
-
-  // Habitaciones
-  kpis[3].value = habCount?.total ?? '—'
-  kpis[3].loading = false
-
-  // Clientes + Miembros — /clientes es público, no necesita authenticateAdmin
-  if (Array.isArray(clientesData)) {
-    const miembros = clientesData.filter((c) => c.nivel_membresia)
-    stats.totalClientes = clientesData.length
-    stats.totalMiembros = miembros.length
-    kpis[1].value = clientesData.length
-    kpis[2].value = miembros.length
-    const pct =
-      clientesData.length > 0
-        ? Math.round((miembros.length / clientesData.length) * 100)
-        : 0
-    donutPct.value = pct
-    await nextTick()
-    drawDonut(pct)
-  } else {
-    kpis[1].value = 0
-    kpis[2].value = 0
-    drawDonut(0)
-  }
-  kpis[1].loading = false
-  kpis[2].loading = false
 })
 </script>
 
