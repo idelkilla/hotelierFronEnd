@@ -175,15 +175,15 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { API } from '../services/api'
 
-// ── State (REFERENCIAS CON ref) ──────────────────
+// ── State ──────────────────────────────────────────
 const activeTab = ref('hospedaje')
 
-const tiposHospedaje   = ref([])
-const tiposHabitacion  = ref([])
+const tiposHospedaje = ref([])
+const tiposHabitacion = ref([])
 const serviciosIncluidos = ref([])
-const estadosReserva   = ref([])
+const estadosReserva = ref([])
 const nivelesMembresia = ref([])
-const tiposUbicacion   = ref([])
+const tiposUbicacion = ref([])
 
 const loadings = reactive({
   hospedaje: false,
@@ -210,24 +210,24 @@ const toast = reactive({
 
 // ── Tabs config ───────────────────────────────────
 const tabs = [
-  { id: 'hospedaje',   label: 'Tipos hospedaje',     icon: 'fas fa-hotel' },
-  { id: 'habitacion',  label: 'Tipos habitación',    icon: 'fas fa-door-open' },
-  { id: 'servicios',   label: 'Servicios incluidos', icon: 'fas fa-concierge-bell' },
-  { id: 'estados',     label: 'Estados reserva',     icon: 'fas fa-flag' },
-  { id: 'membresia',   label: 'Membresías',          icon: 'fas fa-crown' },
-  { id: 'ubicaciones', label: 'Tipos ubicación',     icon: 'fas fa-map-marker-alt' },
+  { id: 'hospedaje', label: 'Tipos hospedaje', icon: 'fas fa-hotel' },
+  { id: 'habitacion', label: 'Tipos habitación', icon: 'fas fa-door-open' },
+  { id: 'servicios', label: 'Servicios incluidos', icon: 'fas fa-concierge-bell' },
+  { id: 'estados', label: 'Estados reserva', icon: 'fas fa-flag' },
+  { id: 'membresia', label: 'Membresías', icon: 'fas fa-crown' },
+  { id: 'ubicaciones', label: 'Tipos ubicación', icon: 'fas fa-map-marker-alt' },
 ]
 
 const tabLabel = computed(() => 
   tabs.find(t => t.id === activeTab.value)?.label || ''
 )
 
-// ── Modal fields per tab ──────────────────────────
+// ── Modal fields ───────────────────────────────────
 const fieldsMap = {
-  hospedaje:   [{ key: 'NOMBRE_TIPO', label: 'Nombre del tipo' }],
-  habitacion:  [{ key: 'NOMBRE', label: 'Nombre del tipo' }],
-  servicios:   [{ key: 'NOMBRE', label: 'Nombre del servicio' }],
-  estados:     [{ key: 'ESTADO', label: 'Nombre del estado' }],
+  hospedaje: [{ key: 'NOMBRE_TIPO', label: 'Nombre del tipo' }],
+  habitacion: [{ key: 'NOMBRE', label: 'Nombre del tipo' }],
+  servicios: [{ key: 'NOMBRE', label: 'Nombre del servicio' }],
+  estados: [{ key: 'ESTADO', label: 'Nombre del estado' }],
   membresia: [
     { key: 'NOMBRE_NIVEL', label: 'Nombre del nivel' },
     { key: 'PUNTOS_MINIMOS', label: 'Puntos mínimos', type: 'number' },
@@ -238,14 +238,14 @@ const fieldsMap = {
 
 const modalFields = computed(() => fieldsMap[modal.tab] || [])
 
-// ── API endpoints ─────────────────────────────────
+// ── API endpoints ──────────────────────────────────
 const endpoints = {
-  hospedaje:   { get: '/catalogos/tipos-hospedaje',    post: '/catalogos/tipos-hospedaje' },
-  habitacion:  { get: '/catalogos/tipos-habitacion',   post: '/catalogos/tipos-habitacion' },
-  servicios:   { get: '/catalogos/servicios-incluidos',post: '/catalogos/servicios-incluidos' },
-  estados:     { get: '/catalogos/estados-reserva',    post: '/catalogos/estados-reserva' },
-  membresia:   { get: '/catalogos/niveles-membresia',  post: '/catalogos/niveles-membresia' },
-  ubicaciones: { get: '/catalogos/tipos-ubicacion',    post: '/catalogos/tipos-ubicacion' },
+  hospedaje: { get: '/catalogos/tipos-hospedaje', post: '/catalogos/tipos-hospedaje' },
+  habitacion: { get: '/catalogos/tipos-habitacion', post: '/catalogos/tipos-habitacion' },
+  servicios: { get: '/catalogos/servicios-incluidos', post: '/catalogos/servicios-incluidos' },
+  estados: { get: '/catalogos/estados-reserva', post: '/catalogos/estados-reserva' },
+  membresia: { get: '/catalogos/niveles-membresia', post: '/catalogos/niveles-membresia' },
+  ubicaciones: { get: '/catalogos/tipos-ubicacion', post: '/catalogos/tipos-ubicacion' },
 }
 
 const idMap = {
@@ -257,7 +257,7 @@ const idMap = {
   ubicaciones: 'ID_TIPO'
 }
 
-// ── DATA MAP (MAPEO DE REFS) ──────────────────────
+// ── DATA MAP ───────────────────────────────────────
 const dataRefMap = {
   hospedaje: tiposHospedaje,
   habitacion: tiposHabitacion,
@@ -267,32 +267,66 @@ const dataRefMap = {
   ubicaciones: tiposUbicacion,
 }
 
-// ── FETCH ─────────────────────────────────────────
+// ── GET TOKEN (BUSCA EN TODOS LOS POSIBLES LUGARES) ──
+function getAuthToken() {
+  // Intenta múltiples nombres de token
+  const possibleTokenNames = [
+    'token',           // Más común
+    'auth_token',
+    'user_token',
+    'access_token',
+    'authToken',
+    'authorization'
+  ]
+
+  for (const name of possibleTokenNames) {
+    const token = localStorage.getItem(name)
+    if (token) {
+      console.log(`✅ Token encontrado en: ${name}`)
+      return token
+    }
+  }
+
+  console.warn('⚠️ No se encontró token en localStorage')
+  return null
+}
+
+// ── FETCH ──────────────────────────────────────────
 async function fetchTab(tab) {
   loadings[tab] = true
   try {
-    const token = localStorage.getItem('user_token')
-    const endpoint = endpoints[tab]
+    const token = getAuthToken()
     
+    if (!token) {
+      throw new Error('No autenticado. Por favor inicia sesión.')
+    }
+
+    const endpoint = endpoints[tab]
     if (!endpoint) {
       throw new Error(`Endpoint no configurado para: ${tab}`)
     }
 
+    console.log(`📡 Fetching ${tab} from: ${API}${endpoint.get}`)
+
     const res = await fetch(`${API}${endpoint.get}`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
       }
     })
 
+    console.log(`📊 Response status: ${res.status}`)
+
     if (!res.ok) {
-      throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+      const errorText = await res.text()
+      throw new Error(`HTTP ${res.status}: ${errorText}`)
     }
 
     const data = await res.json()
-    
-    // ✅ CORRECTO: Usar .value para asignar a las refs
+    console.log(`✅ Data loaded for ${tab}:`, data)
+
+    // ✅ Asignar datos
     if (dataRefMap[tab]) {
       dataRefMap[tab].value = Array.isArray(data) ? data : []
     }
@@ -302,7 +336,7 @@ async function fetchTab(tab) {
     const tabName = tabs.find(t => t.id === tab)?.label || tab
     showToast(`Error al cargar ${tabName}: ${err.message}`, 'error')
     
-    // Asignar array vacío en caso de error
+    // Array vacío en caso de error
     if (dataRefMap[tab]) {
       dataRefMap[tab].value = []
     }
@@ -311,12 +345,19 @@ async function fetchTab(tab) {
   }
 }
 
-// ── LIFECYCLE ─────────────────────────────────────
+// ── LIFECYCLE ──────────────────────────────────────
 onMounted(() => {
-  Object.keys(endpoints).forEach(fetchTab)
+  console.log('🚀 AdminConfiguracion montado')
+  console.log('📦 API URL:', API)
+  
+  // Cargar todos los tabs
+  Object.keys(endpoints).forEach(tab => {
+    console.log(`Loading tab: ${tab}`)
+    fetchTab(tab)
+  })
 })
 
-// ── CRUD OPERATIONS ──────────────────────────────
+// ── CRUD ───────────────────────────────────────────
 function openModal(tab, item = null) {
   modal.tab = tab
   modal.open = true
@@ -337,12 +378,16 @@ function closeModal() {
 async function saveItem() {
   modal.saving = true
   try {
-    const token = localStorage.getItem('user_token')
+    const token = getAuthToken()
+    if (!token) throw new Error('No autenticado')
+
     const ep = endpoints[modal.tab]
     const url = modal.editId 
       ? `${API}${ep.post}/${modal.editId}` 
       : `${API}${ep.post}`
     const method = modal.editId ? 'PATCH' : 'POST'
+
+    console.log(`📤 ${method} to:`, url)
 
     const res = await fetch(url, {
       method,
@@ -354,7 +399,7 @@ async function saveItem() {
     })
 
     if (!res.ok) {
-      throw new Error(`Error: ${res.statusText}`)
+      throw new Error(`HTTP ${res.status}`)
     }
 
     await fetchTab(modal.tab)
@@ -372,10 +417,12 @@ async function saveItem() {
 }
 
 async function deleteItem(tab, id) {
-  if (!confirm('¿Estás seguro de que deseas eliminar?')) return
+  if (!confirm('¿Estás seguro?')) return
 
   try {
-    const token = localStorage.getItem('user_token')
+    const token = getAuthToken()
+    if (!token) throw new Error('No autenticado')
+
     const url = `${API}${endpoints[tab].post}/${id}`
 
     const res = await fetch(url, {
@@ -383,9 +430,7 @@ async function deleteItem(tab, id) {
       headers: { 'Authorization': `Bearer ${token}` },
     })
 
-    if (!res.ok) {
-      throw new Error(`Error: ${res.statusText}`)
-    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
 
     await fetchTab(tab)
     showToast('Eliminado correctamente', 'success')
@@ -395,7 +440,7 @@ async function deleteItem(tab, id) {
   }
 }
 
-// ── TOAST ─────────────────────────────────────────
+// ── TOAST ──────────────────────────────────────────
 function showToast(message, type = 'success') {
   toast.message = message
   toast.type = type
@@ -405,7 +450,6 @@ function showToast(message, type = 'success') {
   }, 3000)
 }
 </script>
-
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
