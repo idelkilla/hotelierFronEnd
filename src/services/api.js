@@ -5,8 +5,9 @@
 // All routes below add /api/... themselves.
 
 const BASE = (import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com')
+  .trim()
   .replace(/\/+$/, '')          // strip trailing slash
-  .replace(/\/api$/, '')        // strip accidental /api suffix
+  .replace(/\/api$/i, '')       // strip accidental /api suffix
 
 export const API_ROOT = BASE           // https://hotelierbackend-1.onrender.com
 export const API      = `${BASE}/api`  // https://hotelierbackend-1.onrender.com/api

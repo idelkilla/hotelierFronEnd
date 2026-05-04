@@ -169,6 +169,7 @@ import VuelosSearch from './VuelosSearch.vue'
 import ActividadesSearch from './ActividadesSearch.vue'
 import CrucerosSearch from './CrucerosSearch.vue'
 import AutosSearch from './AutosSearch.vue'
+import { API } from '../services/api'
 
 const props = defineProps({
   compact: Boolean,
@@ -178,7 +179,6 @@ const props = defineProps({
   initialHuespedes: Array,
 });
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
 const router  = useRouter()
 
 const originWrapper = ref(null)
@@ -273,7 +273,7 @@ async function fetchUbicaciones() {
   mostrarCalendario.value  = false
   loadingUbicaciones.value = true
   try {
-    const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${encodeURIComponent(busquedaDestino.value)}`)
+    const res = await fetch(`${API}/search/ubicaciones?q=${encodeURIComponent(busquedaDestino.value)}`)
     sugerencias.value = await res.json()
   } catch {
     sugerencias.value = []
