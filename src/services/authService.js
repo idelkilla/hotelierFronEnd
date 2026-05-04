@@ -1,8 +1,8 @@
 // authService.js
 import axios from 'axios'
+import { API } from './api'
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
-const API_URL = `${BASE_URL}/api/auth`
+const API_URL = `${API}/auth`
 
 // Configure axios to include credentials and handle CORS properly
 axios.defaults.withCredentials = true

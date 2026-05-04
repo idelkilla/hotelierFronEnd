@@ -112,8 +112,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import authService from '../services/authService'
 import footer from '../components/footer.vue'
-
-const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
+import { API } from '../services/api'
 
 const router = useRouter()
 const username = ref('')
@@ -159,7 +158,7 @@ const handleRegister = async () => {
   console.log('🚀 Enviando registro:', payload)
 
   try {
-    const response = await fetch(`${API_URL}/api/auth/register`, {
+    const response = await fetch(`${API}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -214,7 +213,7 @@ const handleGoogleCredential = async (response) => {
       return
     }
 
-    const responseServer = await fetch(`${API_URL}/api/auth/google-login`, {
+    const responseServer = await fetch(`${API}/auth/google-login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
