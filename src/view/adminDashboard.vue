@@ -214,32 +214,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed, nextTick } from 'vue'
-
-const API =
-  (import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com')
-    .replace(/\/+$/, '')
-    .replace(/\/api$/, '') + '/api'
-
-// Safe fetch — nunca lanza, devuelve null en error/403
-const safeFetch = async (path, options = {}) => {
-  try {
-    const token = localStorage.getItem('user_token')
-    const headers = {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    }
-    const res = await fetch(`${API}${path}`, { ...options, headers })
-    if (!res.ok) {
-      console.warn(`[dashboard] ${res.status} en ${path}`)
-      return null
-    }
-    return await res.json()
-  } catch (e) {
-    console.warn(`[dashboard] Error en ${path}:`, e.message)
-    return null
-  }
-}
+import { apiFetch } from '../services/api'
 
 const hospedajes = ref([])
 const reservas = ref([])
@@ -394,10 +369,10 @@ const drawDonut = (pct) => {
 onMounted(async () => {
   // Todas las peticiones en paralelo — si una falla, las demás siguen
   const [hospData, reservasData, clientesData, habCount] = await Promise.all([
-    safeFetch('/hospedajes'),
-    safeFetch('/reservas'),
-    safeFetch('/clientes'),
-    safeFetch('/hospedajes/habitaciones-count'),
+    apiFetch('/hospedajes').catch(() => null),
+    apiFetch('/reservas').catch(() => null),
+    apiFetch('/clientes').catch(() => null),
+    apiFetch('/hospedajes/habitaciones-count').catch(() => null),
   ])
 
   // Hospedajes
