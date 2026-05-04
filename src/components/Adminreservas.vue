@@ -160,7 +160,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { API } from '../services/api'
+import { apiFetch } from '../services/api'
 
 const reservas = ref([])
 const estados = ref([])
@@ -203,17 +203,12 @@ async function fetchReservas() {
   loading.value = true
   error.value = null
   try {
-    const token = localStorage.getItem('user_token')
-    const headers = { Authorization: `Bearer ${token}` }
-
-    const [resRes, estRes] = await Promise.all([
-      fetch(`${API}/reservas`, { headers }),
-      fetch(`${API}/catalogos/estados-reserva`, { headers }),
+    const [dataRes, dataEst] = await Promise.all([
+      apiFetch('/reservas'),
+      apiFetch('/catalogos/estados-reserva'),
     ])
-
-    if (!resRes.ok) throw new Error('Error al cargar reservas')
-    reservas.value = await resRes.json()
-    if (estRes.ok) estados.value = await estRes.json()
+    reservas.value = dataRes
+    estados.value = dataEst
   } catch (e) {
     error.value = e.message
   } finally {
@@ -225,11 +220,8 @@ async function verDetalle(r) {
   selectedReserva.value = r
   detalles.value = []
   try {
-    const token = localStorage.getItem('user_token')
-    const res = await fetch(`${API}/reservas/${r.ID_RESERVA}/detalles`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    if (res.ok) detalles.value = await res.json()
+    const data = await apiFetch(`/reservas/${r.ID_RESERVA}/detalles`)
+    detalles.value = data
   } catch (_) {}
 }
 
