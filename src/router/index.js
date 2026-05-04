@@ -106,6 +106,8 @@ router.beforeEach(async (to, from, next) => {
     if ((to.name === 'Login' || to.name === 'Register') && isAuthenticated) {
       return next({ name: 'Home' })
     }
+
+    next()
   } catch (error) {
     console.error('Router guard error:', error)
     next({ name: 'Login' })

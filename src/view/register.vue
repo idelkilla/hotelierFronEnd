@@ -186,10 +186,14 @@ const handleRegister = async () => {
     localStorage.setItem('user_initial', initial)
     localStorage.setItem('user_photo', `initial:${initial}`)
     localStorage.setItem('user_token', data.token)
+    if (data.user?.role) {
+      localStorage.setItem('user_role', data.user.role)
+    }
 
     window.dispatchEvent(new Event('storage'))
-    router.replace('/Home')
-
+    
+    // Redirección basada en rol
+    router.replace(data.user?.role === 'admin' ? '/admin' : '/home')
   } catch (err) {
     console.error('❌ Error de red:', err)
     error.value = 'SERVER_ERROR'
@@ -250,7 +254,9 @@ const handleGoogleCredential = async (response) => {
       picture: payload.picture,
       role: data.user.role
     })
-    router.replace('/Home')
+
+    // Redirección basada en rol
+    router.replace(data.user?.role === 'admin' ? '/admin' : '/home')
   } catch (err) {
     const errorData = err.response?.data
     console.error('❌ Error Google detallado:', errorData || err)
