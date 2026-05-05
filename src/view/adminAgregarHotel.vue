@@ -27,11 +27,9 @@
 
           <div class="ah-field">
             <label>Tipo de Propiedad</label>
-            <AppSelect
-              v-model="form.id_tipo_hospedaje"
+            <AppSelect v-model="form.id_tipo_hospedaje"
               :options="tiposHospedaje.map(t => ({ value: t.ID_TIPO, label: t.NOMBRE_TIPO }))"
-              placeholder="Seleccionar..."
-            />
+              placeholder="Seleccionar..." />
           </div>
 
           <div class="ah-field">
@@ -48,27 +46,24 @@
             <span class="ah-card-hint">Mínimo 5 fotos recomendadas</span>
           </div>
 
-          <div class="ah-dropzone" @click="$refs.fileInput.click()"
-            @dragover.prevent @drop.prevent="onDrop">
+          <div class="ah-dropzone" @click="$refs.fileInput.click()" @dragover.prevent @drop.prevent="onDrop">
             <i class="fas fa-cloud-upload-alt"></i>
             <p>Arrastra y suelta tus imágenes aquí</p>
             <small>JPG, PNG y WEBP. Máximo 10MB</small>
             <button class="ah-btn-outline" type="button">Explorar Archivos</button>
-            <input ref="fileInput" type="file" multiple accept="image/*"
-              style="display:none" @change="onFileSelect" />
+            <input ref="fileInput" type="file" multiple accept="image/*" style="display:none" @change="onFileSelect" />
           </div>
 
           <div class="ah-gallery" v-if="imagenes.length">
             <div v-for="(img, i) in imagenes" :key="i" class="ah-thumb">
-              <img :src="img.preview" :alt="img.alt_text || 'Imagen ' + (i+1)" />
+              <img :src="img.preview" :alt="img.alt_text || 'Imagen ' + (i + 1)" />
               <!-- Campo alt text inline -->
               <input v-model="img.alt_text" placeholder="Texto alternativo" class="ah-alt-input" />
               <button class="ah-thumb-remove" @click="imagenes.splice(i, 1)">
                 <i class="fas fa-times"></i>
               </button>
             </div>
-            <div v-for="n in Math.max(0, 4 - imagenes.length)" :key="'empty-'+n"
-              class="ah-thumb ah-thumb-empty">
+            <div v-for="n in Math.max(0, 4 - imagenes.length)" :key="'empty-' + n" class="ah-thumb ah-thumb-empty">
               <i class="fas fa-image"></i>
             </div>
           </div>
@@ -96,11 +91,9 @@
             <tbody>
               <tr v-for="(hab, i) in habitaciones" :key="i">
                 <td>
-                  <AppSelect
-                    v-model="hab.id_tipo_habitacion"
+                  <AppSelect v-model="hab.id_tipo_habitacion"
                     :options="tiposHabitacion.map(t => ({ value: t.ID_TIPO_HABITACION, label: t.NOMBRE }))"
-                    placeholder="Tipo..."
-                  />
+                    placeholder="Tipo..." />
                 </td>
                 <td><input type="number" v-model.number="hab.capacidad_adulto" min="1" max="20" /></td>
                 <td><input type="number" v-model.number="hab.capacidad_ninos" min="0" max="15" /></td>
@@ -111,7 +104,7 @@
                   </div>
                 </td>
                 <td>
-                  <button class="ah-icon-btn" @click="habitaciones.splice(i,1)">
+                  <button class="ah-icon-btn" @click="habitaciones.splice(i, 1)">
                     <i class="fas fa-trash"></i>
                   </button>
                 </td>
@@ -138,15 +131,11 @@
           </div>
           <div class="ah-field">
             <label>Política de cancelación</label>
-            <AppSelect
-              v-model="form.cancelacion"
-              :options="[
-                { value: 'flexible',  label: 'Flexible (reembolso hasta 24h)' },
-                { value: 'moderada',  label: 'Moderada (reembolso hasta 5 días)' },
-                { value: 'estricta',  label: 'Estricta (sin reembolso)' },
-              ]"
-              placeholder="Seleccionar política..."
-            />
+            <AppSelect v-model="form.cancelacion" :options="[
+              { value: 'flexible', label: 'Flexible (reembolso hasta 24h)' },
+              { value: 'moderada', label: 'Moderada (reembolso hasta 5 días)' },
+              { value: 'estricta', label: 'Estricta (sin reembolso)' },
+            ]" placeholder="Seleccionar política..." />
           </div>
           <div class="ah-toggles">
             <label class="ah-toggle">
@@ -187,11 +176,9 @@
             </div>
             <div class="ah-field">
               <label>Tipo de Empresa</label>
-              <AppSelect
-                v-model="form.id_tipo_proveedor"
+              <AppSelect v-model="form.id_tipo_proveedor"
                 :options="tiposProveedor.map(t => ({ value: t.ID_TIPO, label: t.NOMBRE_TIPO }))"
-                placeholder="Seleccionar..."
-              />
+                placeholder="Seleccionar..." />
             </div>
           </div>
         </div>
@@ -204,23 +191,16 @@
 
           <div class="ah-field">
             <label>País</label>
-            <AppSelect
-              v-model="form.id_pais"
-              :options="paises.map(p => ({ value: p.ID_PAIS, label: p.NOMBRE }))"
-              placeholder="Seleccionar país..."
-              @change="cargarCiudades"
-            />
+            <AppSelect v-model="form.id_pais" :options="paises.map(p => ({ value: p.ID_PAIS, label: p.NOMBRE }))"
+              placeholder="Seleccionar país..." @change="cargarCiudades" />
           </div>
 
           <div class="ah-field">
             <label>Ciudad</label>
-            <AppSelect
-              v-model="form.id_ciudad"
-              :options="ciudades.map(c => ({ value: c.ID_CIUDAD, label: c.NOMBRE }))"
+            <AppSelect v-model="form.id_ciudad" :options="ciudades.map(c => ({ value: c.ID_CIUDAD, label: c.NOMBRE }))"
               :disabled="!ciudades.length"
-              :placeholder="form.id_pais ? 'Seleccionar ciudad...' : 'Primero selecciona un país'"
-            />
-           </div>
+              :placeholder="form.id_pais ? 'Seleccionar ciudad...' : 'Primero selecciona un país'" />
+          </div>
 
           <div class="ah-row">
             <div class="ah-field">
@@ -281,57 +261,57 @@ const router = useRouter()
 // ─── Estado del formulario ───────────────────────────────────────
 const form = reactive({
   // SERVICIO.NOMBRE + campos extra del hospedaje
-  nombre:              '',
-  descripcion:         '',
+  nombre: '',
+  descripcion: '',
 
   // HOSPEDAJE.ID_TIPO → TIPO_HOSPEDAJE
-  id_tipo_hospedaje:   '',
+  id_tipo_hospedaje: '',
 
   // PROVEEDOR
-  nombre_legal:        '',
-  rnc:                 '',
-  id_tipo_proveedor:   '',
+  nombre_legal: '',
+  rnc: '',
+  id_tipo_proveedor: '',
 
   // UBICACION
-  nombre_ubicacion:    '',
-  latitud:             '',
-  longitud:            '',
-  id_ciudad:           '',
+  nombre_ubicacion: '',
+  latitud: '',
+  longitud: '',
+  id_ciudad: '',
 
   // Auxiliar frontend (no se envía directamente)
-  id_pais:             '',
+  id_pais: '',
 
   // HOSPEDAJE_SERVICIO (array de ID_SERVICIO_INCLUIDO)
   servicios_incluidos: [],
 
   // Políticas (campos extra que tu backend puede manejar)
-  checkin:             '15:00',
-  checkout:            '11:00',
-  cancelacion:         'flexible',
-  mascotas:            false,
-  fumar:               false,
+  checkin: '15:00',
+  checkout: '11:00',
+  cancelacion: 'flexible',
+  mascotas: false,
+  fumar: false,
 })
 
-const imagenes     = ref([])   // [{ file, preview, alt_text }]
+const imagenes = ref([])   // [{ file, preview, alt_text }]
 const habitaciones = ref([])   // [{ id_tipo_habitacion, capacidad_adulto, capacidad_ninos, precio_noche }]
 
 // ─── Catálogos ───────────────────────────────────────────────────
-const tiposHospedaje  = ref([])
+const tiposHospedaje = ref([])
 const tiposHabitacion = ref([])
-const tiposProveedor  = ref([])
-const paises          = ref([])
-const ciudades        = ref([])
-const servicios       = ref([])
+const tiposProveedor = ref([])
+const paises = ref([])
+const ciudades = ref([])
+const servicios = ref([])
 
 // ─── UI state ────────────────────────────────────────────────────
-const publicando       = ref(false)
-const guardando        = ref(false)
+const publicando = ref(false)
+const guardando = ref(false)
 const cargandoServicios = ref(false)
 const alerta = reactive({ mensaje: '', tipo: 'error' }) // tipo: 'error' | 'exito'
 
 const mostrarAlerta = (mensaje, tipo = 'error') => {
   alerta.mensaje = mensaje
-  alerta.tipo    = tipo
+  alerta.tipo = tipo
   if (tipo === 'exito') setTimeout(() => { alerta.mensaje = '' }, 4000)
 }
 
@@ -345,10 +325,10 @@ onMounted(async () => {
       apiFetch('/catalogos/paises'),
       apiFetch('/catalogos/tipos-proveedor'),
     ])
-    tiposHospedaje.value  = resTipos
+    tiposHospedaje.value = resTipos
     tiposHabitacion.value = resHab
-    paises.value          = resPaises
-    tiposProveedor.value  = resProv
+    paises.value = resPaises
+    tiposProveedor.value = resProv
   } catch (e) {
     mostrarAlerta('No se pudieron cargar los catálogos: ' + e.message)
   }
@@ -397,31 +377,31 @@ const procesarArchivos = (files) => {
 const agregarHabitacion = () => {
   habitaciones.value.push({
     id_tipo_habitacion: '',  // → HABITACION.ID_TIPO_HABITACION
-    capacidad_adulto:   2,   // → HABITACION.CAPACIDAD_ADULTO
-    capacidad_ninos:    0,   // → HABITACION.CAPACIDAD_NINOS
-    precio_noche:       0,   // → HABITACION.PRECIO_NOCHE
+    capacidad_adulto: 2,   // → HABITACION.CAPACIDAD_ADULTO
+    capacidad_ninos: 0,   // → HABITACION.CAPACIDAD_NINOS
+    precio_noche: 0,   // → HABITACION.PRECIO_NOCHE
   })
 }
 
 // ─── Validación ──────────────────────────────────────────────────
 const validar = () => {
-  if (!form.nombre.trim())          return 'El nombre del hotel es requerido.'
+  if (!form.nombre.trim()) return 'El nombre del hotel es requerido.'
   if (!form.nombre_legal.trim() || form.nombre_legal.trim().length < 5) return 'El nombre legal es requerido y debe tener al menos 5 caracteres.'
 
   // ✅ VALIDAR RNC: Exactamente 12 dígitos
-  if (!form.rnc.trim())             return 'El RNC es requerido.'
+  if (!form.rnc.trim()) return 'El RNC es requerido.'
   if (form.rnc.trim().length !== 12) return `El RNC debe tener exactamente 12 dígitos. Tienes ${form.rnc.trim().length}.`
-  if (!/^\d+$/.test(form.rnc))      return 'El RNC debe contener solo números.'
+  if (!/^\d+$/.test(form.rnc)) return 'El RNC debe contener solo números.'
 
-  if (!form.id_tipo_proveedor)      return 'Selecciona el tipo de proveedor.'
-  if (!form.id_tipo_hospedaje)      return 'Selecciona el tipo de propiedad.'
-  if (!form.id_ciudad)              return 'Selecciona una ciudad.'
+  if (!form.id_tipo_proveedor) return 'Selecciona el tipo de proveedor.'
+  if (!form.id_tipo_hospedaje) return 'Selecciona el tipo de propiedad.'
+  if (!form.id_ciudad) return 'Selecciona una ciudad.'
   if (!form.latitud || !form.longitud) return 'La ubicación (lat/lng) es requerida.'
   if (isNaN(form.latitud) || isNaN(form.longitud)) return 'Latitud y longitud deben ser números válidos.'
   if (habitaciones.value.length === 0) return 'Agrega al menos un tipo de habitación.'
   for (const [i, hab] of habitaciones.value.entries()) {
-    if (!hab.id_tipo_habitacion)    return `La habitación #${i + 1} no tiene tipo seleccionado.`
-    if (hab.precio_noche <= 0)      return `La habitación #${i + 1} debe tener un precio mayor a 0.`
+    if (!hab.id_tipo_habitacion) return `La habitación #${i + 1} no tiene tipo seleccionado.`
+    if (hab.precio_noche <= 0) return `La habitación #${i + 1} debe tener un precio mayor a 0.`
   }
   return null
 }
@@ -447,22 +427,22 @@ const publicar = async () => {
 
   try {
     const payload = {
-      nombre:              form.nombre.trim(),
-      descripcion:         form.descripcion.trim(),
-      id_tipo_hospedaje:   parseInt(form.id_tipo_hospedaje),
-      nombre_legal:        form.nombre_legal.trim(),
-      rnc:                 form.rnc.trim(), // ← Asegúrate que sea 12 dígitos
-      id_tipo_proveedor:   parseInt(form.id_tipo_proveedor),
-      checkin:             form.checkin || '15:00',
-      checkout:            form.checkout || '11:00',
-      cancelacion:         form.cancelacion || 'flexible',
-      mascotas:            !!form.mascotas,
-      fumar:               !!form.fumar,
+      nombre: form.nombre.trim(),
+      descripcion: form.descripcion.trim(),
+      id_tipo_hospedaje: parseInt(form.id_tipo_hospedaje),
+      nombre_legal: form.nombre_legal.trim(),
+      rnc: form.rnc.trim(), // ← Asegúrate que sea 12 dígitos
+      id_tipo_proveedor: parseInt(form.id_tipo_proveedor),
+      checkin: form.checkin || '15:00',
+      checkout: form.checkout || '11:00',
+      cancelacion: form.cancelacion || 'flexible',
+      mascotas: !!form.mascotas,
+      fumar: !!form.fumar,
       ubicacion: {
-        nombre:     form.nombre_ubicacion?.trim() || form.nombre,
-        latitud:    parseFloat(form.latitud),
-        longitud:   parseFloat(form.longitud),
-        id_ciudad:  parseInt(form.id_ciudad),
+        nombre: form.nombre_ubicacion?.trim() || form.nombre,
+        latitud: parseFloat(form.latitud),
+        longitud: parseFloat(form.longitud),
+        id_ciudad: parseInt(form.id_ciudad),
       },
       servicios_incluidos: form.servicios_incluidos.map(s => parseInt(s)),
     }
@@ -483,9 +463,9 @@ const publicar = async () => {
         body: JSON.stringify(
           habitaciones.value.map(h => ({
             id_tipo_habitacion: parseInt(h.id_tipo_habitacion),
-            capacidad_adulto:   parseInt(h.capacidad_adulto),
-            capacidad_ninos:    parseInt(h.capacidad_ninos),
-            precio_noche:       parseFloat(h.precio_noche),
+            capacidad_adulto: parseInt(h.capacidad_adulto),
+            capacidad_ninos: parseInt(h.capacidad_ninos),
+            precio_noche: parseFloat(h.precio_noche),
           }))
         ),
       })
@@ -493,15 +473,14 @@ const publicar = async () => {
 
     // ✅ Imágenes
     if (imagenes.value.length > 0) {
-      console.log('📤 Subiendo imágenes...')
-
       for (const [orden, img] of imagenes.value.entries()) {
         const fd = new FormData()
         fd.append('imagen', img.file)
-        fd.append('id_hospedaje', idHospedaje)
+        fd.append('id_hospedaje', idHospedaje)  // ← agregar aquí
         fd.append('orden', orden)
         fd.append('alt_text', img.alt_text || '')
-        await apiFetch(`/imagenes`, {
+
+        await apiFetch(`/imagenes`, {  // ← cambiar endpoint
           method: 'POST',
           body: fd,
         })
@@ -533,7 +512,7 @@ const guardarBorrador = async () => {
   try {
     await apiFetch('/hospedajes/borrador', {
       method: 'POST',
-      body:   JSON.stringify({ ...form, habitaciones: habitaciones.value }),
+      body: JSON.stringify({ ...form, habitaciones: habitaciones.value }),
     })
     mostrarAlerta('Borrador guardado.', 'exito')
   } catch (e) {
