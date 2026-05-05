@@ -102,215 +102,191 @@ const sliderClass = computed(() => `pos-${activeTab.value}`);
 }
 
 .search-section-container {
-    width: 80%; 
-    max-width: 80%; 
-    margin-top: 4px;
-    margin-left: auto;
-    margin-right: auto;
-    font-family: 'Inter', 'Pli', sans-serif;
-    font-weight: bold;
+  width: 80%;
+  max-width: 80%;
+  margin-top: 4px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Inter', 'Pli', sans-serif;
+  font-weight: bold;
 }
 
 .search-bar-content {
-    display: flex;
-    flex-direction: column;
-    background-color: transparent;
-    padding: 0; 
-    box-shadow: none; 
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;
+  padding: 0;
+  box-shadow: none;
 }
 
-.search-box-icon {
-    width: 10px; 
-    height: 10px;
-    color: #1a4f78;
-    margin-right: 12px;
-    flex-shrink: 0;
-}
-
+/* =====================
+   PILL SEARCH BAR
+   ===================== */
 .search-inputs-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid #dddddd; 
-    border-radius: 8px; 
-    overflow: hidden; 
-    margin-bottom: 0;
-    padding: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 999px;           /* ← pill shape */
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  height: 64px;
+  padding: 0;
 }
 
-.dropdown-container {
-    position: relative;
-    flex-grow: 1; 
+.search-inputs-row:hover {
+  border-color: #b0b0b0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  transition: all 0.2s ease;
 }
 
-.dropdown-container:after {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 15%;
-    height: 70%;
-    width: 1px;
-    background-color: #dddddd;
-    overflow: hidden;
-    z-index: 10;
-}
-
-
-
-
-
-.input-row {
-    display: flex;
-    align-items: center;
-    font-weight: bold;
-    color: #113955;
-}
-
-.input-row input {
-    border: none;
-    outline: none;
-    width: 100%;
-    font-size: 16px;
-    font-weight: bold;
-    color: #113955;
-    background: transparent;
-    padding-left: 2px;
-}
-
-.input-row input::-webkit-inner-spin-button,
-.input-row input::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-
-
-
-
+/* Separadores verticales entre campos */
 .input-group {
-    flex-grow: 1; 
-    display: flex;
-    align-items: center;
-    padding: 5px 10px; 
-    border-radius: 0; 
-    cursor: pointer;
-    position: relative;
-    transition: background-color 0.1s;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  height: 100%;
+  border-right: 1.5px solid #e8e8e8;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.15s;
+  border-radius: 0;
+}
+
+.input-group:first-child {
+  border-radius: 999px 0 0 999px;
+  padding-left: 24px;
+}
+
+.input-group:last-of-type {
+  border-right: none;
 }
 
 .input-group:hover {
-    background-color: #f8f8f8;
+  background-color: #f5f5f5;
 }
 
-.date-input::after, .guests-input::after {
-    content: ''; 
-    position: absolute;
-    right: 0;
-    top: 15%;
-    height: 70%;
-    width: 1px;
-    background-color: #eee;
-}
-
+/* Icono dentro del campo */
+.input-group svg.icon,
 .input-group .icon {
-    width: 20px;
-    height: 20px;
-    color: #333;
-    margin-right: 10px;
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  margin-right: 10px !important;
+  color: #555;
+  display: block !important;
 }
 
+/* Texto del campo */
 .input-text-area {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.2;
-    width: 100%; 
-    padding-top:6px;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  width: 100%;
 }
 
 .input-text-area label {
-    font-size: 12px;
-    color: #888;
-    font-weight: 500;
+  font-size: 11px;
+  color: #888;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .input-text-area input {
-    border: none;
-    outline: none;
-    font-size: 14px;
-    font-weight: bold;
-    color: #333;
-    width: 100%;
-    background: none;
-padding-top:2px ;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #222;
+  width: 100%;
+  background: none;
+  padding-top: 2px;
 }
 
 .input-text-area input::placeholder {
-    color: #333; 
-    font-weight: bold;
+  color: #aaa;
+  font-weight: 400;
 }
 
+/* =====================
+   BOTÓN CIRCULAR OSCURO
+   ===================== */
 .search-button {
-    background-color: #1a4f78; 
-    color: white;
-    padding: 12px 27px;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    margin-left: 0; 
-    border-radius: 0 8px 8px 0; 
-    height: 70px; 
-    flex-shrink: 0; 
-    
+  background-color: #1a1a1a;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  flex-shrink: 0;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
 
 .search-button:hover {
-    background-color: #113955;
+  background-color: #333;
+  transform: scale(1.05);
 }
 
+/* Ícono SVG dentro del botón */
+.search-button svg {
+  width: 20px;
+  height: 20px;
+  stroke: white;
+}
+
+/* =====================
+   TABS (sin cambios)
+   ===================== */
 .accommodation-tabs {
-    background-color: #e9f1f6;
-    border-radius: 500px;
-    display: flex;
-    position: relative;
-    padding: 6px;
-    margin: 25px auto;
-    width: 80%;
-    max-width: 800px;
-    align-items: center;
+  background-color: #e9f1f6;
+  border-radius: 500px;
+  display: flex;
+  position: relative;
+  padding: 6px;
+  margin: 25px auto;
+  width: 80%;
+  max-width: 800px;
+  align-items: center;
 }
 
 .tab {
-    flex: 1;
-    border: none;
-    background: none;
-    padding: 12px 20px;
-    cursor: pointer;
-    font-size: 16px;
-    color: #113955;
-    display: flex;
-    z-index: 1;
-    outline: none;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #113955;
+  display: flex;
+  z-index: 1;
+  outline: none;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
 }
 
 .tab.active {
-    background-color: #cbd9e6; 
-    color: #113955; 
-    font-weight: 700;
-    border-radius: 40px; 
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
+  background-color: #cbd9e6;
+  color: #113955;
+  font-weight: 700;
+  border-radius: 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.tab:focus {
-    outline: none;
-}
-
+.tab:focus,
 .tab:active {
-    outline: none;
+  outline: none;
 }
 
 </style>
