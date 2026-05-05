@@ -13,7 +13,7 @@
     <div class="layout-detalle">
       <Reviewssection />
     </div>
-    <footer />
+    <FooterComponent />
   </div>
 </template>
 
@@ -25,7 +25,7 @@ import BuscadorPrincipal from '../components/MenuDet.vue'
 import GaleriaCollage from '../components/GaleriaCollage.vue'
 import DetallesHotel from '../components/DetallesHotel.vue'
 import Reviewssection from '../components/Reviewssection.vue'
-import footer from '../components/footer.vue'
+import FooterComponent from '../components/footer.vue'
 
 const route = useRoute()
 const BASE = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api'
@@ -36,13 +36,16 @@ onMounted(async () => {
   const id = route.params.id
   try {
     const res = await fetch(`${BASE}/hospedaje/${id}/imagenes`)
-    if (res.ok) {
-      imagenesHotel.value = await res.json()
-      // El backend devuelve { URL, ORDEN, ALT_TEXT }
-      // GaleriaCollage ya soporta tanto obj.URL como string directo
+    if (!res.ok) throw new Error(`Error HTTP: ${res.status}`)
+    
+    const data = await res.json()
+    if (Array.isArray(data)) {
+      imagenesHotel.value = data
+    } else {
+      console.warn('El backend no devolvió un array de imágenes:', data)
     }
   } catch (e) {
-    console.error('Error cargando imágenes:', e)
+    console.error('Fallo al conectar con el backend (Imágenes):', e.message)
   }
 })
 </script>

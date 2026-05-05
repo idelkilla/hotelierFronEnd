@@ -182,6 +182,11 @@ const totalPrecio = computed(() =>
 // ── Fetch desde la BD ─────────────────────────────────────────
 async function cargarTodo() {
   const id = route.params.id
+  if (!id) {
+    console.error('No se encontró el ID en la ruta')
+    return
+  }
+
   try {
     const [infoRes, serviciosRes, anfitrionRes] = await Promise.all([
       fetch(`${BASE}/hospedaje/${id}`),
@@ -190,14 +195,11 @@ async function cargarTodo() {
     ])
 
     // Info principal
-    if (infoRes.ok) {
-      hospedaje.value = await infoRes.json()
-    }
+    if (infoRes.ok) hospedaje.value = await infoRes.json()
+    else console.error('Error al cargar info principal:', infoRes.status)
 
     // Servicios
-    if (serviciosRes.ok) {
-      servicios.value = await serviciosRes.json()
-    }
+    if (serviciosRes.ok) servicios.value = await serviciosRes.json()
 
     // Anfitrión (puede no existir, no rompemos el render)
     if (anfitrionRes.ok) {
