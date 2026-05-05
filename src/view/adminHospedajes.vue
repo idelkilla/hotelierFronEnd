@@ -354,7 +354,7 @@ const cargarListado = async () => {
 const cargarListadoSilencioso = async () => {
   try {
     hospedajes.value = await apiFetch('/hospedaje')
-  } catch (e) {
+  } catch (e) { //
     mostrarAlerta('Error cargando hospedajes: ' + e.message)
   } finally {
     cargandoLista.value = false
@@ -367,7 +367,7 @@ const abrirEdicion = async (h) => {
   cargandoDetalle.value = true
   ciudadesEdit.value    = []
   try {
-    const det = await apiFetch(`/hospedaje/${h.ID_HOSPEDAJE}`)
+    const det = await apiFetch(`/hospedaje/${h.ID_HOSPEDAJE}`) //
     if (det.ID_PAIS) {
       ciudadesEdit.value = await apiFetch(`/catalogos/ciudades?id_pais=${det.ID_PAIS}`)
     }
@@ -459,7 +459,7 @@ const guardarEdicion = async () => {
     })
     const nuevas = editForm.habitaciones.filter(h => !h.id_habitacion)
     if (nuevas.length) {
-      await apiFetch(`/hospedaje/${id}/habitaciones`, {
+      await apiFetch(`/hospedaje/${id}/habitaciones`, { //
         method: 'POST',
         body: JSON.stringify(nuevas.map(h => ({
           id_tipo_habitacion: h.id_tipo_habitacion,
@@ -495,8 +495,8 @@ const guardarEdicion = async () => {
 const confirmarEliminar = (id) => { modalEliminar.value = id }
 const ejecutarEliminar  = async () => {
   eliminando.value = true
-  try {
-    await apiFetch(`/hospedaje/${modalEliminar.value}`, { method: 'DELETE' })
+  try { //
+    await apiFetch(`/hospedaje/${modalEliminar.value}`, { method: 'DELETE' }) //
     mostrarAlerta('Propiedad eliminada.', 'exito')
     modalEliminar.value = null
     editando.value      = null

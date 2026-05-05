@@ -437,7 +437,7 @@ const publicar = async () => {
   alerta.mensaje   = ''
 
   try {
-    // 1. Crear el hospedaje principal
+    // 1. Crear el hospedaje principal //
     //    El backend se encarga de insertar en SERVICIO + UBICACION + HOSPEDAJE + HOSPEDAJE_SERVICIO
     const payload = {
       // Datos del servicio/hospedaje
@@ -469,14 +469,14 @@ const publicar = async () => {
       servicios_incluidos: form.servicios_incluidos,
     }
 
-    const hospedaje = await apiFetch('/hospedaje', {
+    const hospedaje = await apiFetch('/hospedaje', { //
       method: 'POST',
       body:   JSON.stringify(payload),
     })
     const idHospedaje = hospedaje.ID_HOSPEDAJE || hospedaje.id
 
     // 2. Crear habitaciones → HABITACION (bulk)
-    if (habitaciones.value.length) {
+    if (habitaciones.value.length) { //
       await apiFetch(`/hospedaje/${idHospedaje}/habitaciones`, {
         method: 'POST',
         body:   JSON.stringify(
@@ -493,7 +493,7 @@ const publicar = async () => {
     // 3. Subir imágenes → IMAGEN_HOSPEDAJE
     for (const [orden, img] of imagenes.value.entries()) {
       const fd = new FormData()
-      fd.append('imagen',    img.file)
+      fd.append('imagen',    img.file) //
       fd.append('orden',     orden)              // → IMAGEN_HOSPEDAJE.ORDEN
       fd.append('alt_text',  img.alt_text || '') // → IMAGEN_HOSPEDAJE.ALT_TEXT
       await apiFetch(`/hospedaje/${idHospedaje}/imagenes`, {

@@ -401,7 +401,7 @@
     return null
   }
 
-  const guardar = async () => {
+  const guardar = async () => { //
     const error = validar()
     if (error) {
       emit('alerta', error)
