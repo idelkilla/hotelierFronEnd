@@ -46,3 +46,28 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.main-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 90px;
+  background-color: #ffffff;
+}
+
+.layout-detalle {
+  max-width: 1200px;
+  width: 90%;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .main-container { padding-top: 70px; }
+  .layout-detalle { width: 95%; margin: 10px auto; gap: 15px; }
+}
+</style>
