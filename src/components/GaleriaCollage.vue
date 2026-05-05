@@ -1,29 +1,19 @@
 <template>
-  <div class="galeria-grid" :class="gridClass" v-if="misImagenes.length > 0">
+  <div class="galeria-grid" v-if="misImagenes.length > 0">
+    
     <!-- Foto grande izquierda -->
     <div class="foto-grande">
-      <img :src="misImagenes[0]?.URL || misImagenes[0]" alt="Vista Principal" />
+      <img :src="misImagenes[0]?.URL || misImagenes[0]" alt="Vista Principal">
     </div>
 
-    <!-- Columna del medio -->
-    <div class="fotos-secundarias-col" v-if="misImagenes.length > 1">
-      <img
-        v-if="misImagenes[1]"
-        :src="misImagenes[1]?.URL || misImagenes[1]"
-        :class="{ 'border-top-right': misImagenes.length <= 3 }"
-      />
-      <img
-        v-if="misImagenes[2]"
-        :src="misImagenes[2]?.URL || misImagenes[2]"
-        :class="{ 'border-bottom-right': misImagenes.length <= 3 }"
-      />
+    <!-- Grid 2x2 derecha -->
+    <div class="fotos-grid-derecha" v-if="misImagenes.length > 1">
+      <img v-if="misImagenes[1]" :src="misImagenes[1]?.URL || misImagenes[1]" class="top-left">
+      <img v-if="misImagenes[2]" :src="misImagenes[2]?.URL || misImagenes[2]" class="top-right">
+      <img v-if="misImagenes[3]" :src="misImagenes[3]?.URL || misImagenes[3]" class="bottom-left">
+      <img v-if="misImagenes[4]" :src="misImagenes[4]?.URL || misImagenes[4]" class="bottom-right">
     </div>
 
-    <!-- Columna derecha -->
-    <div class="fotos-secundarias-col ultima-col" v-if="misImagenes.length > 3">
-      <img v-if="misImagenes[3]" :src="misImagenes[3]?.URL || misImagenes[3]" />
-      <img v-if="misImagenes[4]" :src="misImagenes[4]?.URL || misImagenes[4]" />
-    </div>
   </div>
 
   <div v-else class="sin-fotos">
@@ -32,29 +22,22 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed } from 'vue';
 
 const props = defineProps({
   imagenesBd: {
     type: Array,
-    default: () => [],
-  },
-})
+    default: () => []
+  }
+});
 
-const misImagenes = computed(() => props.imagenesBd)
-
-const gridClass = computed(() => {
-  const n = misImagenes.value.length
-  if (n === 1) return 'solo-una'
-  if (n <= 3) return 'dos-cols'
-  return 'tres-cols'
-})
+const misImagenes = computed(() => props.imagenesBd);
 </script>
 
 <style scoped>
 .galeria-grid {
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
   height: 380px;
   width: 100%;
@@ -62,25 +45,9 @@ const gridClass = computed(() => {
   overflow: hidden;
 }
 
-/* Layout con 3 columnas (5 fotos) */
-.galeria-grid.tres-cols {
-  grid-template-columns: 2fr 1fr 1fr;
-}
-
-/* Layout con 2 columnas (2-3 fotos) */
-.galeria-grid.dos-cols {
-  grid-template-columns: 2fr 1fr;
-}
-
-/* Layout solo 1 foto */
-.galeria-grid.solo-una {
-  grid-template-columns: 1fr;
-}
-
-/* --- Foto grande --- */
+/* --- Foto grande izquierda --- */
 .foto-grande {
-  grid-column: 1;
-  grid-row: 1 / 3;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -91,40 +58,27 @@ const gridClass = computed(() => {
   border-radius: 15px 0 0 15px;
 }
 
-.solo-una .foto-grande img {
-  border-radius: 15px;
-}
-
-/* --- Columnas secundarias --- */
-.fotos-secundarias-col {
-  display: flex;
-  flex-direction: column;
+/* --- Grid 2x2 derecha --- */
+.fotos-grid-derecha {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
   gap: 8px;
   height: 100%;
 }
 
-.fotos-secundarias-col img {
+.fotos-grid-derecha img {
   width: 100%;
-  flex: 1;
+  height: 100%;
   object-fit: cover;
   border-radius: 0;
 }
 
-/* Bordes de la última columna visible */
-
-/* Cuando hay solo 2 cols (col del medio es la última) */
-.dos-cols .fotos-secundarias-col img:first-child {
+/* Bordes redondeados solo en las esquinas exteriores */
+.fotos-grid-derecha img.top-right {
   border-radius: 0 15px 0 0;
 }
-.dos-cols .fotos-secundarias-col img:last-child {
-  border-radius: 0 0 15px 0;
-}
-
-/* Cuando hay 3 cols, bordes solo en la última columna */
-.tres-cols .ultima-col img:first-child {
-  border-radius: 0 15px 0 0;
-}
-.tres-cols .ultima-col img:last-child {
+.fotos-grid-derecha img.bottom-right {
   border-radius: 0 0 15px 0;
 }
 
@@ -142,18 +96,10 @@ const gridClass = computed(() => {
 /* --- Mobile --- */
 @media (max-width: 768px) {
   .galeria-grid {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr;
     height: 200px;
   }
-  .fotos-secundarias-col {
-    display: none;
-  }
-  .foto-grande {
-    grid-row: 1;
-    grid-column: 1;
-  }
-  .foto-grande img {
-    border-radius: 12px !important;
-  }
+  .fotos-grid-derecha { display: none; }
+  .foto-grande img { border-radius: 12px; }
 }
 </style>
