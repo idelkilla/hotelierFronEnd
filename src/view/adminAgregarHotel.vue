@@ -498,9 +498,10 @@ const publicar = async () => {
       for (const [orden, img] of imagenes.value.entries()) {
         const fd = new FormData()
         fd.append('imagen', img.file)
+        fd.append('id_hospedaje', idHospedaje)
         fd.append('orden', orden)
         fd.append('alt_text', img.alt_text || '')
-        await apiFetch(`/hospedajes/${idHospedaje}/imagenes`, {
+        await apiFetch(`/imagenes`, {
           method: 'POST',
           body: fd,
         })
