@@ -71,6 +71,7 @@ const misImagenes = computed(() => props.imagenesBd);
   display: grid;
   grid-template-rows: 1fr 1fr;
   gap: 8px;
+  height: 100%;
 }
 
 .fotos-secundarias-col img {
