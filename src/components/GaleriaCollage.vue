@@ -40,18 +40,22 @@ const misImagenes = computed(() => props.imagenesBd);
 <style scoped>
 .galeria-grid {
   display: grid;
-  grid-template-columns: 1.8fr 1fr;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr 1fr;
   gap: 8px;
-  height: 380px;
+  height: 480px;
   width: 100%;
+  border-radius: 15px;
+  overflow: hidden;
 }
 
 /* Con 5 imágenes activa tercera columna */
 .galeria-grid:has(.fotos-secundarias-col:nth-child(3)) {
-  grid-template-columns: 1.8fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr;
 }
 
 .foto-grande {
+  grid-row: 1 / 3;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -69,10 +73,7 @@ const misImagenes = computed(() => props.imagenesBd);
 }
 
 .fotos-secundarias-col {
-  display: grid;
-  grid-template-rows: 1fr 1fr;
-  gap: 8px;
-  width: 100%;
+  display: contents;
   height: 100%;
 }
 
@@ -82,11 +83,14 @@ const misImagenes = computed(() => props.imagenesBd);
   object-fit: cover;
 }
 
-.border-top-right   { border-radius: 0 15px 0 0; }
-.border-bottom-right { border-radius: 0 0 15px 0; }
+/* Bordes redondeados de las secundarias */
+.fotos-secundarias-col:last-child img:first-child { border-radius: 0 15px 0 0; }
+.fotos-secundarias-col:last-child img:last-child { border-radius: 0 0 15px 0; }
+.fotos-secundarias-col:not(:last-child) img:first-child { border-radius: 0; }
+.fotos-secundarias-col:not(:last-child) img:last-child { border-radius: 0; }
 
 .sin-fotos {
-  height: 380px;
+  height: 480px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -98,9 +102,11 @@ const misImagenes = computed(() => props.imagenesBd);
 @media (max-width: 768px) {
   .galeria-grid {
     grid-template-columns: 1fr;
+    grid-template-rows: 250px;
     height: 250px;
   }
   .fotos-secundarias-col { display: none; }
+  .foto-grande { grid-row: 1; }
   .foto-grande img { border-radius: 12px; }
 }
 </style>
