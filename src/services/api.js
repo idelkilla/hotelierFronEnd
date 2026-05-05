@@ -4,7 +4,7 @@
 //   e.g. https://hotelierbackend-1.onrender.com
 // All routes below add /api/... themselves.
 
-const BASE = (import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com')
+const BASE = (import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api')
   .trim()
   .replace(/\/+$/, '')          // strip trailing slash
   .replace(/\/api$/i, '')       // strip accidental /api suffix

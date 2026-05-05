@@ -48,7 +48,7 @@ import { ref, watch } from 'vue';
 const props = defineProps(['modelValue'])
 const emit = defineEmits(['update:modelValue', 'focus'])
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
+const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api'
 const sugerencias = ref([])
 const mostrarDropdown = ref(false)
 const loadingUbicaciones = ref(false)

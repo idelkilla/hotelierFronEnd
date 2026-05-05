@@ -298,7 +298,7 @@ const router = useRouter()
 const searchByName = ref('')
 import { apiPost } from '../services/api'
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
+const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api'
 
 // ── Parámetros de la URL ──────────────────────────────────────────────────────
 const searchDestino = ref(route.query.destino || '')
