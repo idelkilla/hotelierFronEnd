@@ -118,13 +118,16 @@ const layoutClass = computed(() => {
   grid-template-rows: 1fr 1fr;
   gap: 8px;
   height: 100%;
+  min-height: 0;
   overflow: hidden;
 }
 
 .fotos-grid-derecha img {
   width: 100%;
   height: 100%;
+  min-height: 0;
   object-fit: cover;
+  display: block;
 }
 
 .fotos-grid-derecha img.top-right {
