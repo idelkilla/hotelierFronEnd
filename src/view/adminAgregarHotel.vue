@@ -469,7 +469,7 @@ const publicar = async () => {
       servicios_incluidos: form.servicios_incluidos,
     }
 
-    const hospedaje = await apiFetch('/hospedaje', { //
+    const hospedaje = await apiFetch('/hospedajes', { //
       method: 'POST',
       body:   JSON.stringify(payload),
     })
@@ -477,7 +477,7 @@ const publicar = async () => {
 
     // 2. Crear habitaciones → HABITACION (bulk)
     if (habitaciones.value.length) { //
-      await apiFetch(`/hospedaje/${idHospedaje}/habitaciones`, {
+      await apiFetch(`/hospedajes/${idHospedaje}/habitaciones`, {
         method: 'POST',
         body:   JSON.stringify(
           habitaciones.value.map(h => ({
@@ -496,7 +496,7 @@ const publicar = async () => {
       fd.append('imagen',    img.file) //
       fd.append('orden',     orden)              // → IMAGEN_HOSPEDAJE.ORDEN
       fd.append('alt_text',  img.alt_text || '') // → IMAGEN_HOSPEDAJE.ALT_TEXT
-      await apiFetch(`/hospedaje/${idHospedaje}/imagenes`, {
+      await apiFetch(`/hospedajes/${idHospedaje}/imagenes`, {
         method: 'POST',
         body:   fd,
       })
@@ -517,7 +517,7 @@ const guardarBorrador = async () => {
   if (!form.nombre.trim()) { mostrarAlerta('Escribe al menos el nombre para guardar el borrador.'); return }
   guardando.value = true
   try {
-    await apiFetch('/hospedaje/borrador', {
+    await apiFetch('/hospedajes/borrador', {
       method: 'POST',
       body:   JSON.stringify({ ...form, habitaciones: habitaciones.value }),
     })
