@@ -353,7 +353,7 @@ const cargarListado = async () => {
 
 const cargarListadoSilencioso = async () => {
   try {
-    hospedajes.value = await apiFetch('/hospedajes')
+    hospedajes.value = await apiFetch('/hospedaje')
   } catch (e) {
     mostrarAlerta('Error cargando hospedajes: ' + e.message)
   } finally {
@@ -367,7 +367,7 @@ const abrirEdicion = async (h) => {
   cargandoDetalle.value = true
   ciudadesEdit.value    = []
   try {
-    const det = await apiFetch(`/hospedajes/${h.ID_HOSPEDAJE}`)
+    const det = await apiFetch(`/hospedaje/${h.ID_HOSPEDAJE}`)
     if (det.ID_PAIS) {
       ciudadesEdit.value = await apiFetch(`/catalogos/ciudades?id_pais=${det.ID_PAIS}`)
     }
@@ -437,7 +437,7 @@ const guardarEdicion = async () => {
   guardandoEdit.value = true
   const id = editando.value.ID_HOSPEDAJE
   try {
-    await apiFetch(`/hospedajes/${id}`, {
+    await apiFetch(`/hospedaje/${id}`, {
       method: 'PUT',
       body: JSON.stringify({
         nombre:              editForm.nombre,
@@ -459,7 +459,7 @@ const guardarEdicion = async () => {
     })
     const nuevas = editForm.habitaciones.filter(h => !h.id_habitacion)
     if (nuevas.length) {
-      await apiFetch(`/hospedajes/${id}/habitaciones`, {
+      await apiFetch(`/hospedaje/${id}/habitaciones`, {
         method: 'POST',
         body: JSON.stringify(nuevas.map(h => ({
           id_tipo_habitacion: h.id_tipo_habitacion,
@@ -496,7 +496,7 @@ const confirmarEliminar = (id) => { modalEliminar.value = id }
 const ejecutarEliminar  = async () => {
   eliminando.value = true
   try {
-    await apiFetch(`/hospedajes/${modalEliminar.value}`, { method: 'DELETE' })
+    await apiFetch(`/hospedaje/${modalEliminar.value}`, { method: 'DELETE' })
     mostrarAlerta('Propiedad eliminada.', 'exito')
     modalEliminar.value = null
     editando.value      = null

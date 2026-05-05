@@ -94,7 +94,7 @@
 <script setup>
 import { ref, computed, reactive, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { API } from '../services/api.js'
+import { apiFetch } from '../services/api.js'
 
 const route = useRoute()
 const activeFilter = ref('all')
@@ -130,9 +130,7 @@ function formatFecha(fechaStr) {
 onMounted(async () => {
   const id = route.params.id
   try {
-    const res = await fetch(`${API}/hospedaje/${id}/resenas`)
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    const data = await res.json()
+    const data = await apiFetch(`/hospedaje/${id}/resenas`)
     reviews.value = data.map((r, i) => ({
       id:          r.id,
       name:        `${r.nombre} ${r.apellidos || ''}`.trim(),

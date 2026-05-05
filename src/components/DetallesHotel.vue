@@ -107,7 +107,7 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import CalendarSelector from './CalendarSelector.vue'
 import GuestSelector from './GuestSelector.vue'
-import { API } from '../services/api'
+import { API, apiFetch } from '../services/api'
 
 const props = defineProps({ hotel: Object })
 const route = useRoute()

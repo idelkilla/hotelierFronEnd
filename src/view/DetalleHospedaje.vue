@@ -26,7 +26,7 @@ import GaleriaCollage from '../components/GaleriaCollage.vue'
 import DetallesHotel from '../components/DetallesHotel.vue'
 import Reviewssection from '../components/Reviewssection.vue'
 import FooterComponent from '../components/footer.vue'
-import { API } from '../services/api'
+import { API, apiFetch } from '../services/api'
 
 const route = useRoute()
 const BASE = API
