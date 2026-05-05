@@ -6,25 +6,65 @@
     <div class="vuelos-main-content-layout">
       <!-- Columna izquierda para los filtros -->
       <div class="filters-column">
-        <FiltrosVuelos />
+        <FiltrosVuelos 
+          :id-origen="searchParams.id_origen" 
+          :id-destino="searchParams.id_destino"
+          @filtros-cambiados="handleFiltros"
+        />
       </div>
 
       <!-- Columna derecha para el buscador y resultados -->
       <div class="vuelos-right-column">
         <!-- El buscador de vuelos -->
         <div class="vuelos-search-wrapper">
-          <VuelosBuscar />
+          <VuelosBuscar @buscar="ejecutarBusqueda" />
         </div>
-         <div class="vuelos-search-wrapper">
-          <OpcionesVuelos/>
+        
+        <!-- Resultados de vuelos -->
+        <div class="vuelos-results-container">
+          <div v-if="loading" class="loading-state">Buscando los mejores vuelos...</div>
+          <div v-else-if="vuelos.length === 0" class="empty-state">
+            No se encontraron vuelos con los criterios seleccionados.
+          </div>
+          <template v-else>
+            <div v-for="vuelo in vuelos" :key="vuelo.ID_VUELO" class="vuelo-card">
+              <div class="vuelo-info-main">
+                <div class="airline-info">
+                  <span class="airline-name">{{ vuelo.aerolinea }}</span>
+                  <span class="flight-number">{{ vuelo.NUMERO_VUELO }}</span>
+                </div>
+                <div class="flight-route">
+                  <div class="point">
+                    <span class="time">{{ formatTime(vuelo.FECHA_SALIDA) }}</span>
+                    <span class="iata">{{ vuelo.iata_origen }}</span>
+                  </div>
+                  <div class="duration-line">
+                    <span class="duration">{{ formatDuration(vuelo.DURACION_MINUTOS) }}</span>
+                    <div class="line"></div>
+                  </div>
+                  <div class="point">
+                    <span class="time">{{ formatTime(vuelo.FECHA_LLEGADA) }}</span>
+                    <span class="iata">{{ vuelo.iata_destino }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="vuelo-price-section">
+                <div class="price-tag">${{ vuelo.PRECIO.toLocaleString() }}</div>
+                <button class="btn-select">Seleccionar</button>
+              </div>
+            </div>
+          </template>
         </div>
-        <!-- Aquí irían los resultados de vuelos si los hubiera -->
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* Estilos adicionales para resultados */
+.vuelos-results-container { width: 100%; margin-top: 20px; }
+.vuelo-card { background: #fff; border: 1px solid #ddd; border-radius: 12px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.flight-route { display: flex; align-items: center; gap: 30px; }
 /* Contenedor principal de la vista de Vuelos */
 .vuelos-view-wrapper {
   background-color:#ffffff!important; /* Fondo blanco para toda la pantalla */
@@ -121,9 +161,50 @@
 </style>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import Header from "../components/Header.vue";
 import VuelosBuscar from"../components/VuelosSearch.vue";
 import FiltrosVuelos from"../components/FiltrosVuelos.vue";
-import OpcionesVuelos from '../components/OpcionesVuelos.vue';
+import { buscarVuelos } from '../services/vueloService';
+
+const vuelos = ref([]);
+const loading = ref(false);
+const searchParams = reactive({
+  id_origen: null,
+  id_destino: null,
+  fecha_salida: null
+});
+const activeFilters = ref({});
+
+const ejecutarBusqueda = async (params) => {
+  loading.value = true;
+  Object.assign(searchParams, params);
+  try {
+    // Combinamos parámetros de búsqueda con filtros activos
+    const query = { ...params, ...activeFilters.value };
+    vuelos.value = await buscarVuelos(query);
+  } catch (err) {
+    console.error("Error al buscar vuelos:", err);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const handleFiltros = (filtros) => {
+  activeFilters.value = {
+    aerolineas: filtros.aerolineas.join(','),
+    clase: filtros.claseId,
+    tiempo_max: filtros.tiempoMaximoHoras,
+    nombre: filtros.nombre
+  };
+  // Re-ejecutar si ya había una búsqueda previa
+  if (searchParams.id_origen) ejecutarBusqueda(searchParams);
+};
+
+const formatTime = (dateStr) => new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+const formatDuration = (min) => {
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return `${h}h ${m}m`;
+};
 </script>

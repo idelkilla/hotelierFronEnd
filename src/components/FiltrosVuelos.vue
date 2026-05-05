@@ -118,7 +118,8 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed } from 'vue';
+import { ref, watch, onMounted } from 'vue';
+import { getFiltrosVuelos } from '../services/vueloService';
 
 // ── Props ──────────────────────────────────────────────────────────────────────
 const props = defineProps({
@@ -159,12 +160,11 @@ async function cargarFiltros() {
     if (props.idDestino)   params.set('id_destino',  props.idDestino);
     if (props.fechaSalida) params.set('fecha_salida', props.fechaSalida);
 
-    const res  = await fetch(`${props.apiBase}/filtros/vuelos?${params}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    // Usamos el servicio centralizado que ya maneja la URL base y errores
+    const data = await getFiltrosVuelos(Object.fromEntries(params));
 
     // Aerolíneas
-    aerolineas.value = (data.aerolineas ?? []).map(a => ({
+    aerolineas.value = (data.aerolineas || []).map(a => ({
       ...a,
       seleccionada: false,
     }));
