@@ -92,10 +92,14 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, reactive, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { API } from '../services/api.js'
 
+const route = useRoute()
 const activeFilter = ref('all')
 const hoverRating = ref(0)
+const cargando = ref(true)
 
 const filters = [
   { label: 'Todos', value: 'all' },
@@ -104,79 +108,61 @@ const filters = [
   { label: '3 estrellas', value: 3 },
 ]
 
-const categories = ref([
-  { label: 'Limpieza',         value: 4.8 },
-  { label: 'Ubicación',        value: 4.6 },
-  { label: 'Comunicación',     value: 4.9 },
-  { label: 'Calidad / precio', value: 4.5 },
-  { label: 'Comodidad',        value: 4.7 },
-])
-
-const reviews = ref([
-  {
-    id: 1,
-    name: 'María López',
-    initials: 'ML',
-    avatarColor: '#2563a8',
-    country: 'México',
-    date: 'Marzo 2025',
-    rating: 5,
-    text: 'Un lugar absolutamente increíble. La habitación estaba impecable, el anfitrión fue muy atento y la ubicación es perfecta para explorar la ciudad. Definitivamente volvería a quedarme aquí.',
-    tags: ['Limpieza', 'Ubicación'],
-    likes: 12,
-    expanded: false,
-  },
-  {
-    id: 2,
-    name: 'Carlos Ramírez',
-    initials: 'CR',
-    avatarColor: '#1a4a80',
-    country: 'Colombia',
-    date: 'Febrero 2025',
-    rating: 4,
-    text: 'Muy buena experiencia en general. El desayuno incluido fue una sorpresa agradable y la cama es muy cómoda. Solo mejoraría la señal de WiFi en los cuartos.',
-    tags: ['Comodidad', 'Desayuno'],
-    likes: 7,
-    expanded: false,
-  },
-  {
-    id: 3,
-    name: 'Ana Fernández',
-    initials: 'AF',
-    avatarColor: '#0e7490',
-    country: 'Argentina',
-    date: 'Enero 2025',
-    rating: 5,
-    text: 'Todo perfecto desde el check-in hasta el check-out. El anfitrión estuvo disponible en todo momento y la propiedad es tal cual aparece en las fotos, incluso mejor.',
-    tags: ['Comunicación', 'Valor'],
-    likes: 19,
-    expanded: false,
-  },
-  {
-    id: 4,
-    name: 'Tomás García',
-    initials: 'TG',
-    avatarColor: '#3b5ea6',
-    country: 'Chile',
-    date: 'Diciembre 2024',
-    rating: 3,
-    text: 'El hospedaje está bien ubicado pero esperaba un poco más por el precio. La habitación es cómoda aunque algo pequeña.',
-    tags: ['Ubicación'],
-    likes: 3,
-    expanded: false,
-  },
-])
-
+const reviews = ref([])
 const newReview = reactive({ rating: 0, text: '' })
 
+const colores = [
+  '#2563a8','#1a4a80','#0e7490','#3b5ea6','#1a3a5c','#15616d'
+]
+
+function iniciales(nombre, apellidos) {
+  const n = (nombre || '').trim()[0] || ''
+  const a = (apellidos || '').trim()[0] || ''
+  return (n + a).toUpperCase() || '?'
+}
+
+function formatFecha(fechaStr) {
+  if (!fechaStr) return ''
+  const d = new Date(fechaStr)
+  return d.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
+}
+
+onMounted(async () => {
+  const id = route.params.id
+  try {
+    const res = await fetch(`${API}/hospedaje/${id}/resenas`)
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const data = await res.json()
+    reviews.value = data.map((r, i) => ({
+      id:          r.id,
+      name:        `${r.nombre} ${r.apellidos || ''}`.trim(),
+      initials:    iniciales(r.nombre, r.apellidos),
+      avatarColor: colores[i % colores.length],
+      country:     r.pais || 'Desconocido',
+      date:        formatFecha(r.fecha),
+      rating:      Math.round(r.calificacion),
+      text:        r.texto,
+      tags:        [],
+      likes:       0,
+      expanded:    false,
+    }))
+  } catch (e) {
+    console.error('Error cargando reseñas:', e)
+  } finally {
+    cargando.value = false
+  }
+})
+
 const averageRating = computed(() =>
-  reviews.value.reduce((s, r) => s + r.rating, 0) / reviews.value.length
+  reviews.value.length
+    ? reviews.value.reduce((s, r) => s + r.rating, 0) / reviews.value.length
+    : 0
 )
 
 const filteredReviews = computed(() =>
   activeFilter.value === 'all'
-    ? reviews.value
-    : reviews.value.filter(r => r.rating === activeFilter.value)
+  ? reviews.value
+  : reviews.value.filter(r => r.rating === activeFilter.value)
 )
 
 const ratingLabel = computed(() => {
@@ -188,7 +174,7 @@ const ratingLabel = computed(() => {
 function submitReview() {
   if (!newReview.rating || !newReview.text.trim()) return
   reviews.value.unshift({
-    id: Date.now(),
+    id:          Date.now(),
     name: 'Tú',
     initials: 'TÚ',
     avatarColor: '#2563a8',
@@ -201,7 +187,7 @@ function submitReview() {
     expanded: false,
   })
   newReview.rating = 0
-  newReview.text = ''
+  newReview.text   = ''
 }
 </script>
 
