@@ -136,14 +136,14 @@ onMounted(async () => {
     reviews.value = data.map((r, i) => ({
       id:          r.id,
       name:        `${r.nombre} ${r.apellidos || ''}`.trim(),
-      initials:    iniciales(r.nombre, r.apellidos),
+      initials:    r.initials,
       avatarColor: colores[i % colores.length],
-      country:     r.pais || 'Desconocido',
-      date:        formatFecha(r.fecha),
-      rating:      Math.round(r.calificacion),
+      country:     r.pais,
+      date:        r.fecha,
+      rating:      r.calificacion,
       text:        r.texto,
       tags:        [],
-      likes:       0,
+      likes:       r.likes,
       expanded:    false,
     }))
   } catch (e) {
