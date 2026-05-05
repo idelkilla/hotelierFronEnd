@@ -1,21 +1,27 @@
 <template>
-  <div class="galeria-grid" :class="gridClass" v-if="misImagenes.length > 0">
-
+  <div class="galeria-grid" :class="layoutClass" v-if="misImagenes.length > 0">
+    
+    <!-- Foto grande izquierda -->
     <div class="foto-grande">
-      <img :src="getImgUrl(0)" alt="Hotel Vista Principal">
+      <img :src="misImagenes[0]?.URL || misImagenes[0]" alt="Vista Principal">
     </div>
 
-    <!-- Segunda columna: Imágenes 2 y 3 -->
-    <div class="fotos-secundarias-col" v-if="misImagenes.length >= 2">
-      <img v-if="misImagenes[1]" :src="getImgUrl(1)" :class="{ 'rounded-tr': misImagenes.length <= 3 }">
-      <img v-if="misImagenes[2]" :src="getImgUrl(2)" :class="{ 'rounded-br': misImagenes.length <= 3 }">
+    <!-- 2 imágenes: solo una columna derecha apilada -->
+    <template v-if="misImagenes.length >= 2 && misImagenes.length <= 3">
+      <div class="fotos-secundarias-col">
+        <img v-if="misImagenes[1]" :src="misImagenes[1]?.URL || misImagenes[1]" class="top-right-img">
+        <img v-if="misImagenes[2]" :src="misImagenes[2]?.URL || misImagenes[2]" class="bottom-right-img">
+      </div>
+    </template>
+
+    <!-- 4-5 imágenes: grid 2x2 a la derecha -->
+    <div class="fotos-grid-derecha" v-if="misImagenes.length >= 4">
+      <img v-if="misImagenes[1]" :src="misImagenes[1]?.URL || misImagenes[1]">
+      <img v-if="misImagenes[2]" :src="misImagenes[2]?.URL || misImagenes[2]" class="top-right">
+      <img v-if="misImagenes[3]" :src="misImagenes[3]?.URL || misImagenes[3]">
+      <img v-if="misImagenes[4]" :src="misImagenes[4]?.URL || misImagenes[4]" class="bottom-right">
     </div>
 
-    <!-- Tercera columna: Imágenes 4 y 5 -->
-    <div class="fotos-secundarias-col" v-if="misImagenes.length >= 4">
-      <img v-if="misImagenes[3]" :src="getImgUrl(3)" class="rounded-tr">
-      <img v-if="misImagenes[4]" :src="getImgUrl(4)" class="rounded-br">
-    </div>
   </div>
 
   <div v-else class="sin-fotos">
@@ -35,47 +41,103 @@ const props = defineProps({
 
 const misImagenes = computed(() => props.imagenesBd);
 
-/**
- * Determina la clase de la cuadrícula según el número de imágenes
- */
-const gridClass = computed(() => {
-  const count = misImagenes.value.length;
-  if (count === 1) return 'cols-1';
-  if (count <= 3) return 'cols-2';
-  return 'cols-3';
+const layoutClass = computed(() => {
+  const n = misImagenes.value.length;
+  if (n === 1) return 'layout-1';
+  if (n <= 3) return 'layout-2';  // foto grande + columna derecha
+  return 'layout-5';              // foto grande + 2x2
 });
-
-/**
- * Extrae la URL de forma segura (soporta strings u objetos con url/URL)
- */
-function getImgUrl(index) {
-  const img = misImagenes.value[index];
-  if (!img) return '';
-  if (typeof img === 'string') return img;
-  return img.URL || img.url || '';
-}
 </script>
 
 <style scoped>
+/* =====================
+   BASE
+   ===================== */
 .galeria-grid {
   display: grid;
-  grid-template-rows: 1fr 1fr;
   gap: 8px;
-  height: 380px; /* Reduced height for a more compact look */
+  height: 380px;
   width: 100%;
   border-radius: 15px;
   overflow: hidden;
 }
 
-/* Columnas dinámicas */
-.galeria-grid.cols-1 { grid-template-columns: 1fr; }
-.galeria-grid.cols-2 { grid-template-columns: 2.2fr 1fr; }
-.galeria-grid.cols-3 { grid-template-columns: 2fr 1fr 1fr; }
+/* =====================
+   LAYOUT 1 FOTO
+   ===================== */
+.layout-1 {
+  grid-template-columns: 1fr;
+}
+.layout-1 .foto-grande img {
+  border-radius: 15px;
+}
 
+/* =====================
+   LAYOUT 2-3 FOTOS
+   foto grande | columna apilada
+   ===================== */
+.layout-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.fotos-secundarias-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+}
+
+.fotos-secundarias-col img {
+  width: 100%;
+  flex: 1;
+  object-fit: cover;
+}
+
+/* Si solo hay 1 imagen en la columna derecha, borde completo derecho */
+.fotos-secundarias-col img:only-child {
+  border-radius: 0 15px 15px 0;
+}
+.fotos-secundarias-col img.top-right-img {
+  border-radius: 0 15px 0 0;
+}
+.fotos-secundarias-col img.bottom-right-img {
+  border-radius: 0 0 15px 0;
+}
+
+/* =====================
+   LAYOUT 4-5 FOTOS
+   foto grande | 2x2
+   ===================== */
+.layout-5 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.fotos-grid-derecha {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 8px;
+  height: 100%;
+}
+
+.fotos-grid-derecha img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fotos-grid-derecha img.top-right {
+  border-radius: 0 15px 0 0;
+}
+.fotos-grid-derecha img.bottom-right {
+  border-radius: 0 0 15px 0;
+}
+
+/* =====================
+   FOTO GRANDE (compartida)
+   ===================== */
 .foto-grande {
-  grid-column: 1;
-  grid-row: 1 / 3;
-  /* ocupa las 2 filas */
+  height: 100%;
   overflow: hidden;
 }
 
@@ -86,29 +148,11 @@ function getImgUrl(index) {
   border-radius: 15px 0 0 15px;
 }
 
-.galeria-grid.cols-1 .foto-grande img {
-  border-radius: 15px;
-}
-
-.fotos-secundarias-col {
-  display: flex; /* Changed to flexbox for simpler vertical stacking */
-  flex-direction: column;
-  gap: 8px;
-  height: 100%;
-}
-
-.fotos-secundarias-col img {
-  width: 100%;
-  flex-grow: 1; /* Distribute available space equally in flex container */
-  object-fit: cover;
-}
-
-/* Clases de redondeo explícitas */
-.rounded-tr { border-radius: 0 15px 0 0 !important; }
-.rounded-br { border-radius: 0 0 15px 0 !important; }
-
+/* =====================
+   SIN FOTOS
+   ===================== */
 .sin-fotos {
-  height: 380px; /* Match the main grid height */
+  height: 380px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -117,16 +161,16 @@ function getImgUrl(index) {
   color: #999;
 }
 
+/* =====================
+   MOBILE
+   ===================== */
 @media (max-width: 768px) {
   .galeria-grid {
-    grid-template-columns: 1fr;
-    height: 200px; /* Reduced height for mobile */
+    grid-template-columns: 1fr !important;
+    height: 200px;
   }
-  .fotos-secundarias-col { display: none; }
-  .foto-grande {
-    grid-row: 1;
-    grid-column: 1;
-  }
-  .foto-grande img { border-radius: 12px; }
+  .fotos-secundarias-col,
+  .fotos-grid-derecha { display: none; }
+  .foto-grande img { border-radius: 12px !important; }
 }
 </style>
