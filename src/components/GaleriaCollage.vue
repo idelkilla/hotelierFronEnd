@@ -109,7 +109,7 @@ const layoutClass = computed(() => {
    foto grande | 2x2
    ===================== */
 .layout-5 {
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
 }
 
 .fotos-grid-derecha {
@@ -118,6 +118,7 @@ const layoutClass = computed(() => {
   grid-template-rows: 1fr 1fr;
   gap: 8px;
   height: 100%;
+  overflow: hidden;
 }
 
 .fotos-grid-derecha img {
