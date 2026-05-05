@@ -26,9 +26,10 @@ import GaleriaCollage from '../components/GaleriaCollage.vue'
 import DetallesHotel from '../components/DetallesHotel.vue'
 import Reviewssection from '../components/Reviewssection.vue'
 import FooterComponent from '../components/footer.vue'
+import { API } from '../services/api'
 
 const route = useRoute()
-const BASE = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api'
+const BASE = API
 
 const imagenesHotel = ref([])
 
