@@ -10,48 +10,6 @@
           :initial-huespedes="habitaciones"
           compact
         />
-        <div class="accommodation-tabs">
-          <div class="slider-background" :class="sliderClass"></div>
-
-          <button class="tab" :class="{ active: activeTab === 'all' }" @click="activeTab = 'all'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M7 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-              <path d="M22 17v-3h-20" />
-              <path d="M2 8v9" />
-              <path d="M12 14h10v-2a3 3 0 0 0 -3 -3h-7v5z" />
-            </svg>
-            Todos los hospedajes
-          </button>
-
-          <button class="tab" :class="{ active: activeTab === 'Hotel' }" @click="activeTab = 'Hotel'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M3 21l18 0" />
-              <path d="M9 8l1 0" />
-              <path d="M9 12l1 0" />
-              <path d="M9 16l1 0" />
-              <path d="M14 8l1 0" />
-              <path d="M14 12l1 0" />
-              <path d="M14 16l1 0" />
-              <path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16" />
-            </svg>
-            Hoteles
-          </button>
-
-          <button class="tab" :class="{ active: activeTab === 'Casa' }" @click="activeTab = 'Casa'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
-              <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
-              <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
-            </svg>
-            Casa
-          </button>
-        </div>
       </div>
     </div>
 
@@ -201,6 +159,39 @@
 </div>
       <!-- RESULTADOS -->
       <div class="listings-column">
+
+        <!-- TABS ahora viven aquí -->
+        <div class="accommodation-tabs">
+          <button class="tab" :class="{ active: activeTab === 'all' }" @click="activeTab = 'all'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+              <path d="M7 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/>
+              <path d="M22 17v-3h-20"/><path d="M2 8v9"/>
+              <path d="M12 14h10v-2a3 3 0 0 0 -3 -3h-7v5z"/>
+            </svg>
+            Todos los hospedajes
+          </button>
+
+          <button class="tab" :class="{ active: activeTab === 'Hotel' }" @click="activeTab = 'Hotel'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+              <path d="M3 21l18 0"/><path d="M9 8l1 0"/><path d="M9 12l1 0"/>
+              <path d="M9 16l1 0"/><path d="M14 8l1 0"/><path d="M14 12l1 0"/>
+              <path d="M14 16l1 0"/><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16"/>
+            </svg>
+            Hoteles
+          </button>
+
+          <button class="tab" :class="{ active: activeTab === 'Casa' }" @click="activeTab = 'Casa'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+              <path d="M5 12l-2 0l9 -9l9 9l-2 0"/>
+              <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"/>
+              <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"/>
+            </svg>
+            Casa
+          </button>
+        </div>
 
         <div v-if="isLoading" class="estado-busqueda">
           <p>Buscando hospedajes...</p>

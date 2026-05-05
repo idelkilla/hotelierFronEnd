@@ -1,7 +1,7 @@
 <template>
   <div class="main-container">
     <Header />
-    <BuscadorPrincipal />
+    <BuscadorPrincipal :is-detalle="true" />
 
     <div class="layout-detalle">
       <GaleriaCollage :imagenesBd="imagenesHotel" />
@@ -56,7 +56,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 90px;
+  padding-top: 70px;
   background-color: #ffffff;
 }
 

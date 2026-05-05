@@ -409,7 +409,7 @@ onUnmounted(() => window.removeEventListener('mousedown', handleOutsideClick))
 .search-container.compact-mode {
   background: transparent !important;
   padding: 0 !important;
-  margin: 0 0 0 auto !important; /* Alinea el componente a la derecha */
+  margin: 0 auto !important; /* Centra el componente */
   min-height: auto !important;
   box-shadow: none !important;
   width: 100% !important;

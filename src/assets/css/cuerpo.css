@@ -19,80 +19,68 @@ html {
     margin-top: 60px; /* Alineado con el alto del header (60px) */
 }
 
-/* ── SECCIÓN DE BÚSQUEDA ──────────────────────────────────── */
+/* =====================    BUSCADOR — centrado arriba    ===================== */
 .search-section-container {
     width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px 20px 0;
+    max-width: 900px;       /* centrado sobre el contenido */
+    margin: 0 auto 12px auto;
+    padding: 0 20px;
     box-sizing: border-box;
 }
 
-.search-bar-content {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    background-color: transparent;
-    padding: 0;
-    box-shadow: none;
-}
-
-/* ── TABS DE ALOJAMIENTO ──────────────────────────────────── */
+/* =====================    TABS — dentro de listings-column    ===================== */
 .accommodation-tabs {
     background-color: #e9f1f6;
     border-radius: 500px;
     display: flex;
-    position: relative;
-    padding: 4px;
-    margin: 15px 130px 10px auto;
-    width: fit-content;
+    padding: 5px;
     align-items: center;
-    margin-left: auto;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .tab {
-    flex: 2;
+    flex: 1;
     border: none;
     background: none;
-    padding: 10px 64px;
+    padding: 10px 16px;
     cursor: pointer;
-    font-size: 15px;
+    font-size: 14px;
     color: #113955;
     display: flex;
-    z-index: 1;
-    outline: none;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    white-space: nowrap;
+    gap: 8px;
     border-radius: 40px;
-    transition: all 0.2s;
+    transition: background 0.2s;
+    outline: none;
 }
 
 .tab.active {
-    background-color: #ffffff;
-    color: #113955;
+    background-color: #cbd9e6;
     font-weight: 700;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .tab:focus { outline: none; }
 .tab:active { outline: none; }
 
-/* ── LAYOUT PRINCIPAL ─────────────────────────────────────── */
+/* =====================    LAYOUT PRINCIPAL    ===================== */
 .main-content-layout {
+    display: flex;
+    gap: 24px;
     width: 100%;
     max-width: 1200px;
-    margin: 0 auto 60px;
+    margin: 0 auto;
     padding: 0 20px;
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 24px;
     box-sizing: border-box;
+    align-items: flex-start;  /* mapa y cards arrancan al mismo nivel */
 }
 
 /* ── COLUMNA DE FILTROS ───────────────────────────────────── */
 .filters-column {
+    width: 280px;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     font-family: sans-serif;
@@ -342,16 +330,19 @@ html {
 
 /* ── COLUMNA DE RESULTADOS ────────────────────────────────── */
 .listings-column {
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 12px;
 }
 
 .encontrdos {
     color: #113955;
     font-size: 16px;
     font-weight: 600;
-    margin: 0 0 16px 0;
+    margin-top: 20px;
+    margin-bottom: 15px;
 }
 
 .estado-busqueda {
