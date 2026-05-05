@@ -189,52 +189,40 @@ async function cargarTodo() {
   }
 
   try {
-    const [infoRes, serviciosRes, anfitrionRes] = await Promise.all([
-      fetch(`${BASE}/hospedaje/${id}`),
-      fetch(`${BASE}/hospedaje/${id}/servicios`),
-      fetch(`${BASE}/hospedaje/${id}/anfitrion`),
+    const [info, serviciosData, anfitrionData] = await Promise.all([
+      apiFetch(`/hospedaje/${id}`),
+      apiFetch(`/hospedaje/${id}/servicios`),
+      apiFetch(`/hospedaje/${id}/anfitrion`),
     ])
 
     // Info principal
-    if (infoRes.ok) hospedaje.value = await infoRes.json()
-    else console.error('Error al cargar info principal:', infoRes.status)
+    hospedaje.value = info
 
     // Servicios
-    if (serviciosRes.ok) servicios.value = await serviciosRes.json()
+    servicios.value = serviciosData
 
     // Anfitrión (puede no existir, no rompemos el render)
-    if (anfitrionRes.ok) {
-      const a = await anfitrionRes.json()
-      host.value = {
-        name:  `${a.nombre} ${a.apellidos ?? ''}`.trim(),
-        cargo: a.cargo ?? 'Anfitrión',
-        years: a.anios_en_plataforma ?? 1,
-        photo: `https://ui-avatars.com/api/?name=${encodeURIComponent(a.nombre)}&background=2c537a&color=fff&size=128`,
-      }
+    if (anfitrionData) {
+      host.value.name  = `${anfitrionData.nombre} ${anfitrionData.apellidos ?? ''}`.trim()
+      host.value.cargo = anfitrionData.cargo ?? 'Anfitrión'
+      host.value.years = anfitrionData.anios_en_plataforma ?? 1
+      host.value.photo = `https://ui-avatars.com/api/?name=${encodeURIComponent(host.value.name)}&background=2c537a&color=fff&size=128`
     }
 
     // Precio base: primera habitación disponible como referencia
     await cargarPrecioBase(id)
 
   } catch (e) {
-    console.error('Error cargando hospedaje:', e)
-  } finally {
-    loading.value = false
-  }
+    console.error('Error cargando hospedaje:', e.message)
+  } finally { loading.value = false }
 }
 
 async function cargarPrecioBase(id) {
   try {
     // Trae el precio mínimo de las habitaciones del hospedaje
-    const res = await fetch(
-      `${BASE}/hospedaje/${id}/disponibilidad` +
-      `?desde=${hoy()}&hasta=${manana()}`
-    )
-    if (res.ok) {
-      const rows = await res.json()
-      if (rows.length) {
-        precioBase.value = Number(rows[0].precio_efectivo)
-      }
+    const rows = await apiFetch(`/hospedaje/${id}/disponibilidad?desde=${hoy()}&hasta=${manana()}`)
+    if (rows.length) {
+      precioBase.value = Number(rows[0].precio_efectivo)
     }
   } catch { /* sin disponibilidad hoy, precio queda en 0 */ }
 }
@@ -248,16 +236,12 @@ watch([fechaInicio, fechaFin], async ([ini, fin]) => {
   if (isNaN(dIni.getTime()) || isNaN(dFin.getTime()) || dFin <= dIni) return
 
   const id = route.params.id
+  if (!id) return
   try {
-    const res = await fetch(
-      `${BASE}/hospedaje/${id}/disponibilidad?desde=${ini}&hasta=${fin}`
-    )
-    if (res.ok) {
-      const rows = await res.json()
-      if (rows.length) precioBase.value = Number(rows[0].precio_efectivo)
-    }
+    const rows = await apiFetch(`/hospedaje/${id}/disponibilidad?desde=${ini}&hasta=${fin}`)
+    if (rows.length) precioBase.value = Number(rows[0].precio_efectivo)
   } catch (e) {
-    console.error('Error disponibilidad:', e)
+    console.error('Error disponibilidad:', e.message)
   }
 })
 

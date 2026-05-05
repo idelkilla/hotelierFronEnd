@@ -35,13 +35,12 @@ const imagenesHotel = ref([])
 
 onMounted(async () => {
   const id = route.params.id
+  if (!id) return // No hacer fetch si no hay ID
   try {
-    const res = await fetch(`${BASE}/hospedaje/${id}/imagenes`)
-    if (!res.ok) throw new Error(`Error HTTP: ${res.status}`)
-    
-    const data = await res.json()
+    const data = await apiFetch(`/hospedaje/${id}/imagenes`)
     if (Array.isArray(data)) {
       imagenesHotel.value = data
+      console.log('✅ Imágenes cargadas:', data.length)
     } else {
       console.warn('El backend no devolvió un array de imágenes:', data)
     }
