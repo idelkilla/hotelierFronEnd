@@ -174,6 +174,7 @@ onMounted(ejecutarBusqueda);
 watch(() => route.query, ejecutarBusqueda, { deep: true });
 
 function aplicarFiltros(filtros) {
+  console.log('Filtros aplicados:', filtros);
   const query = { ...route.query };
 
   // Mapeo de filtros emitidos a parámetros de URL que entiende el backend

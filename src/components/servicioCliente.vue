@@ -1,6 +1,8 @@
 <template>
   <div class="page">
+    <Header />
     <main class="container">
+
       <section class="help-center">
         <h2>Centro de ayuda</h2>
         <p class="saludo">Hola, {{ user.name || 'Usuario' }}</p>
@@ -174,11 +176,12 @@
 </template>
 
 <script>
+import Header from './Header.vue'
 import SearchBox from './searchBox.vue'
 
 export default {
   name: 'AtencionAlCliente',
-  components: { SearchBox },
+  components: { Header, SearchBox },
 
   data() {
     return {

@@ -11,7 +11,7 @@
       <input
         type="text"
         v-model="searchByName"
-        placeholder="ej., Aerolínea"
+        placeholder=""
         class="name-search-input"
       />
     </div> 
@@ -191,44 +191,31 @@ watch(
   flex-shrink: 0;
   position: sticky;
   top: 110px; /* queda fijo bajo el header al hacer scroll */
-  margin-top: 160px; /* Baja la posición inicial de los filtros */
+  margin-top: 10px; /* Ajustado para que no se pierdan al inicio */
 }
 
 .filter-card-box {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #d1d5db;
   border-radius: 12px;
-  padding: 16px;
+  padding: 18px 20px;
 }
 
 .filter-card-title {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: bold;
   color: #113955;
-  margin: 0 0 12px;
+  margin: 0 0 14px 0;
 }
 
 .name-search-wrapper {
   display: flex;
   align-items: center;
-  gap: 12px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 10px 14px;
-  background: #fff;
-  transition: all 0.25s ease;
-}
-
-.name-search-wrapper:focus-within {
-  border-color: #113955;
-}
-
-.name-search-wrapper svg {
-  transition: stroke 0.2s ease;
-}
-
-.name-search-wrapper:focus-within svg {
-  stroke: #113955;
+  gap: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: white;
 }
 
 .name-search-input {
@@ -236,12 +223,7 @@ watch(
   outline: none;
   width: 100%;
   font-size: 14px;
-  color: #1a1a1a;
-  background: transparent;
-}
-
-.name-search-input::placeholder {
-  color: #9ca3af;
+  color: #333;
 }
 
 .filtro-card {
