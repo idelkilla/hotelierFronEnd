@@ -194,6 +194,56 @@ watch(
   margin-top: 160px; /* Baja la posición inicial de los filtros */
 }
 
+.filter-card-box {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.filter-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #113955;
+  margin: 0 0 12px;
+}
+
+.name-search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: #fff;
+  transition: all 0.25s ease;
+}
+
+.name-search-wrapper:focus-within {
+  border-color: #113955;
+}
+
+.name-search-wrapper svg {
+  transition: stroke 0.2s ease;
+}
+
+.name-search-wrapper:focus-within svg {
+  stroke: #113955;
+}
+
+.name-search-input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+  color: #1a1a1a;
+  background: transparent;
+}
+
+.name-search-input::placeholder {
+  color: #9ca3af;
+}
+
 .filtro-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;

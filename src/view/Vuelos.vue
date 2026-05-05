@@ -82,9 +82,11 @@
   /* No necesitamos display: flex o justify-content aquí, ya que el padre .vuelos-right-column ya alinea su contenido a la derecha */
 }
 /* Mover los tabs (Viaje redondo...) debajo de los inputs usando order */
+
 :deep(.vuelos-tabs) {
   order: 2; 
   margin: 10px 90px 15px; /* Márgenes reducidos para que los resultados de vuelos suban */
+  margin-bottom: 20px;
   background-color: #e9f1f6;
   border-radius: 500px;
   padding: 4px;
@@ -92,15 +94,18 @@
   border-bottom: none !important;
   display: flex;
   align-items: center;
+  border-bottom: none !important;
 }
 
 :deep(.vuelo-tab) {
   border-radius: 40px !important;
   padding: 10px 64px !important; /* Relleno idéntico al de cuerpo.css */
+  padding: 10px 32px !important; 
   border: none !important;
   background: none !important;
   color: #113955 !important;
   font-size: 15px !important; /* Tamaño de fuente idéntico al de cuerpo.css */
+  font-size: 14px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -132,8 +137,10 @@ import VuelosBuscar from"../components/VuelosSearch.vue";
 import FiltrosVuelos from"../components/FiltrosVuelos.vue";
 import OpcionesVuelos from '../components/OpcionesVuelos.vue';
 import { buscarVuelos } from '../services/vueloService';
+import { useRouter } from 'vue-router';
 
 const route = useRoute();
+const router = useRouter();
 const vuelosResultados = ref([]);
 const cargando = ref(false);
 
@@ -167,6 +174,21 @@ onMounted(ejecutarBusqueda);
 watch(() => route.query, ejecutarBusqueda, { deep: true });
 
 function aplicarFiltros(filtros) {
-  console.log('Filtros aplicados:', filtros);
+  const query = { ...route.query };
+
+  // Mapeo de filtros emitidos a parámetros de URL que entiende el backend
+  if (filtros.nombre) query.nombre = filtros.nombre;
+  else delete query.nombre;
+
+  if (filtros.aerolineas?.length) query.aerolineas = filtros.aerolineas.join(',');
+  else delete query.aerolineas;
+
+  if (filtros.escalas?.length) query.escalas = filtros.escalas[0];
+  else delete query.escalas;
+
+  if (filtros.claseId) query.clase = filtros.claseId;
+  if (filtros.tiempoMaximoHoras) query.tiempo_max = filtros.tiempoMaximoHoras;
+
+  router.push({ query });
 }
 </script>

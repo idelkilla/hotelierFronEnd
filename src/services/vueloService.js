@@ -2,7 +2,7 @@ import { apiGet } from './api'
 
 export const getFiltrosVuelos = (params = {}) => {
   const query = new URLSearchParams(params).toString()
-  return apiGet(`/filtros/vuelos${query ? '?' + query : ''}`)
+  return apiGet(`/vuelos/filtros${query ? '?' + query : ''}`)
 }
 
 export const buscarVuelos = (params = {}) => {
