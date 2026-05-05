@@ -468,6 +468,7 @@ const guardarEdicion = async () => {
       await apiFetch(`/hospedajes/${id}/habitaciones`, { //
         method: 'POST',
         body: JSON.stringify(nuevas.map(h => ({
+          id_hospedaje:       id,
           id_tipo_habitacion: h.id_tipo_habitacion,
           capacidad_adulto:   h.capacidad_adulto,
           capacidad_ninos:    h.capacidad_ninos,
