@@ -7,8 +7,8 @@
       <!-- Columna izquierda para los filtros -->
       <div class="filters-column">
         <FiltrosVuelos 
-          :id-origen="busqueda.idOrigen" 
-          :id-destino="busqueda.idDestino" 
+          :id-origen="busqueda.id_origen" 
+          :id-destino="busqueda.id_destino" 
           @filtros-cambiados="aplicarFiltros" 
         />
       </div>
@@ -17,10 +17,10 @@
       <div class="vuelos-right-column">
         <!-- El buscador de vuelos -->
         <div class="vuelos-search-wrapper">
-          <VuelosBuscar />
+          <VuelosBuscar :initial-destino="route.query.destino" />
         </div>
          <div class="vuelos-search-wrapper">
-          <OpcionesVuelos/>
+          <OpcionesVuelos :vuelos-data="vuelosResultados" :loading="cargando" />
         </div>
         <!-- Aquí irían los resultados de vuelos si los hubiera -->
       </div>
@@ -125,19 +125,48 @@
 </style>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import Header from "../components/Header.vue";
 import VuelosBuscar from"../components/VuelosSearch.vue";
 import FiltrosVuelos from"../components/FiltrosVuelos.vue";
 import OpcionesVuelos from '../components/OpcionesVuelos.vue';
+import { buscarVuelos } from '../services/vueloService';
+
+const route = useRoute();
+const vuelosResultados = ref([]);
+const cargando = ref(false);
 
 const busqueda = ref({
-  idOrigen: null,
-  idDestino: null
+  id_origen: route.query.id_origen || null,
+  id_destino: route.query.id_destino || null
 });
 
-const aplicarFiltros = (filtros) => {
+async function ejecutarBusqueda() {
+  // Sincronizar IDs para que el sidebar de filtros sepa qué buscar
+  busqueda.value.id_origen = route.query.id_origen || null;
+  busqueda.value.id_destino = route.query.id_destino || null;
+
+  // Solo buscar si hay al menos un origen o destino
+  if (!route.query.id_origen && !route.query.id_destino) return;
+
+  cargando.value = true;
+  try {
+    const data = await buscarVuelos(route.query);
+    vuelosResultados.value = data;
+  } catch (error) {
+    console.error('Error en búsqueda de vuelos:', error);
+  } finally {
+    cargando.value = false;
+  }
+}
+
+onMounted(ejecutarBusqueda);
+
+// Reaccionar a cambios en la URL (cuando el usuario hace clic en Buscar)
+watch(() => route.query, ejecutarBusqueda, { deep: true });
+
+function aplicarFiltros(filtros) {
   console.log('Filtros aplicados:', filtros);
-  // Lógica para filtrar los resultados de vuelos
-};
+}
 </script>

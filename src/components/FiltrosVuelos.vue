@@ -101,6 +101,7 @@
 
 <script setup>
 import { ref, watch, onMounted } from 'vue'
+import { getFiltrosVuelos } from '../services/vueloService'
 
 // ── Props opcionales: origen y destino para filtrar resultados ─────────────
 const props = defineProps({
@@ -109,9 +110,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['filtros-cambiados'])
-
-// Toma la URL del .env de Vite  →  VITE_API_URL=http://localhost:10000/api
-const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:10000/api'
 
 // ── Estado reactivo ────────────────────────────────────────────────────────
 const cargando          = ref(true)
@@ -139,12 +137,8 @@ async function cargarFiltros() {
     if (props.idOrigen)  params.set('id_origen',  props.idOrigen)
     if (props.idDestino) params.set('id_destino', props.idDestino)
 
-    const res = await fetch(`${API_BASE}/search/filtros/vuelos?${params}`, {
-      credentials: 'include',          // envía cookies si usas auth
-    })
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    const text = await res.text();
-    const data = JSON.parse(text);
+    // Usamos el servicio que ya tiene la ruta correcta /vuelos/filtros
+    const data = await getFiltrosVuelos(Object.fromEntries(params))
 
     aerolineas.value = (data.aerolineas ?? []).map(a => ({ ...a, seleccionada: false }))
 
