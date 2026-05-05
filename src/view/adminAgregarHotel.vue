@@ -437,65 +437,67 @@ const publicar = async () => {
   alerta.mensaje   = ''
 
   try {
-    // 1. Crear el hospedaje principal //
-    //    El backend se encarga de insertar en SERVICIO + UBICACION + HOSPEDAJE + HOSPEDAJE_SERVICIO
     const payload = {
-      // Datos del servicio/hospedaje
-      nombre:             form.nombre,
-      descripcion:        form.descripcion,
-      id_tipo_hospedaje:  form.id_tipo_hospedaje,
+      // ✅ DATOS BÁSICOS
+      nombre:             form.nombre.trim(),
+      descripcion:        form.descripcion.trim(),
+      id_tipo_hospedaje:  parseInt(form.id_tipo_hospedaje),
 
-      // Datos del Proveedor para el backend
-      nombre_legal:       form.nombre_legal,
-      rnc:                form.rnc,
-      id_tipo_proveedor:  form.id_tipo_proveedor,
+      // ✅ DATOS DEL PROVEEDOR
+      nombre_legal:       form.nombre_legal.trim(),
+      rnc:                form.rnc.trim(),
+      id_tipo_proveedor:  parseInt(form.id_tipo_proveedor),
 
-      // Políticas (tu backend decide cómo almacenarlas)
-      checkin:            form.checkin,
-      checkout:           form.checkout,
-      cancelacion:        form.cancelacion,
-      mascotas:           form.mascotas,
-      fumar:              form.fumar,
+      // ✅ POLÍTICAS
+      checkin:            form.checkin || '15:00',
+      checkout:           form.checkout || '11:00',
+      cancelacion:        form.cancelacion || 'flexible',
+      mascotas:           !!form.mascotas,
+      fumar:              !!form.fumar,
 
-      // Ubicación → UBICACION + HOSPEDAJE.ID_UBICACION
+      // ✅ UBICACIÓN
       ubicacion: {
-        nombre:     form.nombre_ubicacion || form.nombre,
-        latitud:    form.latitud,
-        longitud:   form.longitud,
-        id_ciudad:  form.id_ciudad,
+        nombre:     form.nombre_ubicacion?.trim() || form.nombre,
+        latitud:    parseFloat(form.latitud),
+        longitud:   parseFloat(form.longitud),
+        id_ciudad:  parseInt(form.id_ciudad),
       },
 
-      // Amenidades → HOSPEDAJE_SERVICIO
-      servicios_incluidos: form.servicios_incluidos,
+      // ✅ AMENIDADES
+      servicios_incluidos: form.servicios_incluidos.map(s => parseInt(s)),
     }
 
-    const hospedaje = await apiFetch('/hospedajes', { //
+    // 📌 DEBUG: Muestra qué se envía
+    console.log('📤 Enviando payload:', JSON.stringify(payload, null, 2))
+
+    const hospedaje = await apiFetch('/hospedajes', {
       method: 'POST',
-      body:   JSON.stringify(payload),
+      body: JSON.stringify(payload),
     })
+
     const idHospedaje = hospedaje.ID_HOSPEDAJE || hospedaje.id
 
-    // 2. Crear habitaciones → HABITACION (bulk)
-    if (habitaciones.value.length) { //
+    // ✅ Crear habitaciones
+    if (habitaciones.value.length) {
       await apiFetch(`/hospedajes/${idHospedaje}/habitaciones`, {
         method: 'POST',
-        body:   JSON.stringify(
+        body: JSON.stringify(
           habitaciones.value.map(h => ({
-            id_tipo_habitacion: h.id_tipo_habitacion,  // → HABITACION.ID_TIPO_HABITACION
-            capacidad_adulto:   h.capacidad_adulto,    // → HABITACION.CAPACIDAD_ADULTO
-            capacidad_ninos:    h.capacidad_ninos,     // → HABITACION.CAPACIDAD_NINOS
-            precio_noche:       h.precio_noche,        // → HABITACION.PRECIO_NOCHE
+            id_tipo_habitacion: parseInt(h.id_tipo_habitacion),
+            capacidad_adulto:   parseInt(h.capacidad_adulto),
+            capacidad_ninos:    parseInt(h.capacidad_ninos),
+            precio_noche:       parseFloat(h.precio_noche),
           }))
         ),
       })
     }
 
-    // 3. Subir imágenes → IMAGEN_HOSPEDAJE
+    // ✅ Subir imágenes
     for (const [orden, img] of imagenes.value.entries()) {
       const fd = new FormData()
-      fd.append('imagen',    img.file) //
-      fd.append('orden',     orden)              // → IMAGEN_HOSPEDAJE.ORDEN
-      fd.append('alt_text',  img.alt_text || '') // → IMAGEN_HOSPEDAJE.ALT_TEXT
+      fd.append('imagen', img.file)
+      fd.append('orden', orden)
+      fd.append('alt_text', img.alt_text || '')
       await apiFetch(`/hospedajes/${idHospedaje}/imagenes`, {
         method: 'POST',
         body:   fd,
@@ -506,6 +508,7 @@ const publicar = async () => {
     setTimeout(() => router.push(`/detalle-hospedaje/${idHospedaje}`), 1500)
 
   } catch (e) {
+    console.error('❌ Error:', e)
     mostrarAlerta('Error al publicar: ' + e.message)
   } finally {
     publicando.value = false
