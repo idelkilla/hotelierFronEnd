@@ -437,9 +437,9 @@ const validar = () => {
  */
 const publicar = async () => {
   const error = validar()
-  if (error) { 
+  if (error) {
     mostrarAlerta(error)
-    return 
+    return
   }
 
   publicando.value = true
@@ -492,15 +492,19 @@ const publicar = async () => {
     }
 
     // ✅ Imágenes
-    for (const [orden, img] of imagenes.value.entries()) {
-      const fd = new FormData()
-      fd.append('imagen', img.file)
-      fd.append('orden', orden)
-      fd.append('alt_text', img.alt_text || '')
-      await apiFetch(`/hospedajes/${idHospedaje}/imagenes`, {
-        method: 'POST',
-        body: fd,
-      })
+    if (imagenes.value.length > 0) {
+      console.log('📤 Subiendo imágenes...')
+
+      for (const [orden, img] of imagenes.value.entries()) {
+        const fd = new FormData()
+        fd.append('imagen', img.file)
+        fd.append('orden', orden)
+        fd.append('alt_text', img.alt_text || '')
+        await apiFetch(`/hospedajes/${idHospedaje}/imagenes`, {
+          method: 'POST',
+          body: fd,
+        })
+      }
     }
 
     mostrarAlerta('¡Propiedad publicada exitosamente!', 'exito')
@@ -508,13 +512,13 @@ const publicar = async () => {
 
   } catch (e) {
     console.error('❌ Error completo:', e)
-    
+
     // Mostrar detalles específicos si el backend los proporciona
     let mensajeError = e.message
     if (e.response?.detalles && Array.isArray(e.response.detalles)) {
       mensajeError = e.response.detalles.join('\n')
     }
-    
+
     mostrarAlerta('Error: ' + mensajeError)
   } finally {
     publicando.value = false
