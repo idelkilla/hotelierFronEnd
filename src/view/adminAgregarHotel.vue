@@ -406,12 +406,18 @@ const agregarHabitacion = () => {
 // ─── Validación ──────────────────────────────────────────────────
 const validar = () => {
   if (!form.nombre.trim())          return 'El nombre del hotel es requerido.'
-  if (!form.nombre_legal.trim())    return 'El nombre legal del proveedor es requerido.'
+  if (!form.nombre_legal.trim() || form.nombre_legal.trim().length < 5) return 'El nombre legal es requerido y debe tener al menos 5 caracteres.'
+
+  // ✅ VALIDAR RNC: Exactamente 12 dígitos
   if (!form.rnc.trim())             return 'El RNC es requerido.'
+  if (form.rnc.trim().length !== 12) return `El RNC debe tener exactamente 12 dígitos. Tienes ${form.rnc.trim().length}.`
+  if (!/^\d+$/.test(form.rnc))      return 'El RNC debe contener solo números.'
+
   if (!form.id_tipo_proveedor)      return 'Selecciona el tipo de proveedor.'
   if (!form.id_tipo_hospedaje)      return 'Selecciona el tipo de propiedad.'
   if (!form.id_ciudad)              return 'Selecciona una ciudad.'
   if (!form.latitud || !form.longitud) return 'La ubicación (lat/lng) es requerida.'
+  if (isNaN(form.latitud) || isNaN(form.longitud)) return 'Latitud y longitud deben ser números válidos.'
   if (habitaciones.value.length === 0) return 'Agrega al menos un tipo de habitación.'
   for (const [i, hab] of habitaciones.value.entries()) {
     if (!hab.id_tipo_habitacion)    return `La habitación #${i + 1} no tiene tipo seleccionado.`
@@ -431,44 +437,37 @@ const validar = () => {
  */
 const publicar = async () => {
   const error = validar()
-  if (error) { mostrarAlerta(error); return }
+  if (error) { 
+    mostrarAlerta(error)
+    return 
+  }
 
   publicando.value = true
-  alerta.mensaje   = ''
+  alerta.mensaje = ''
 
   try {
     const payload = {
-      // ✅ DATOS BÁSICOS
-      nombre:             form.nombre.trim(),
-      descripcion:        form.descripcion.trim(),
-      id_tipo_hospedaje:  parseInt(form.id_tipo_hospedaje),
-
-      // ✅ DATOS DEL PROVEEDOR
-      nombre_legal:       form.nombre_legal.trim(),
-      rnc:                form.rnc.trim(),
-      id_tipo_proveedor:  parseInt(form.id_tipo_proveedor),
-
-      // ✅ POLÍTICAS
-      checkin:            form.checkin || '15:00',
-      checkout:           form.checkout || '11:00',
-      cancelacion:        form.cancelacion || 'flexible',
-      mascotas:           !!form.mascotas,
-      fumar:              !!form.fumar,
-
-      // ✅ UBICACIÓN
+      nombre:              form.nombre.trim(),
+      descripcion:         form.descripcion.trim(),
+      id_tipo_hospedaje:   parseInt(form.id_tipo_hospedaje),
+      nombre_legal:        form.nombre_legal.trim(),
+      rnc:                 form.rnc.trim(), // ← Asegúrate que sea 12 dígitos
+      id_tipo_proveedor:   parseInt(form.id_tipo_proveedor),
+      checkin:             form.checkin || '15:00',
+      checkout:            form.checkout || '11:00',
+      cancelacion:         form.cancelacion || 'flexible',
+      mascotas:            !!form.mascotas,
+      fumar:               !!form.fumar,
       ubicacion: {
         nombre:     form.nombre_ubicacion?.trim() || form.nombre,
         latitud:    parseFloat(form.latitud),
         longitud:   parseFloat(form.longitud),
         id_ciudad:  parseInt(form.id_ciudad),
       },
-
-      // ✅ AMENIDADES
       servicios_incluidos: form.servicios_incluidos.map(s => parseInt(s)),
     }
 
-    // 📌 DEBUG: Muestra qué se envía
-    console.log('📤 Enviando payload:', JSON.stringify(payload, null, 2))
+    console.log('📤 Enviando:', JSON.stringify(payload, null, 2))
 
     const hospedaje = await apiFetch('/hospedajes', {
       method: 'POST',
@@ -477,7 +476,7 @@ const publicar = async () => {
 
     const idHospedaje = hospedaje.ID_HOSPEDAJE || hospedaje.id
 
-    // ✅ Crear habitaciones
+    // ✅ Habitaciones
     if (habitaciones.value.length) {
       await apiFetch(`/hospedajes/${idHospedaje}/habitaciones`, {
         method: 'POST',
@@ -492,7 +491,7 @@ const publicar = async () => {
       })
     }
 
-    // ✅ Subir imágenes
+    // ✅ Imágenes
     for (const [orden, img] of imagenes.value.entries()) {
       const fd = new FormData()
       fd.append('imagen', img.file)
@@ -500,7 +499,7 @@ const publicar = async () => {
       fd.append('alt_text', img.alt_text || '')
       await apiFetch(`/hospedajes/${idHospedaje}/imagenes`, {
         method: 'POST',
-        body:   fd,
+        body: fd,
       })
     }
 
@@ -508,8 +507,15 @@ const publicar = async () => {
     setTimeout(() => router.push(`/detalle-hospedaje/${idHospedaje}`), 1500)
 
   } catch (e) {
-    console.error('❌ Error:', e)
-    mostrarAlerta('Error al publicar: ' + e.message)
+    console.error('❌ Error completo:', e)
+    
+    // Mostrar detalles específicos si el backend los proporciona
+    let mensajeError = e.message
+    if (e.response?.detalles && Array.isArray(e.response.detalles)) {
+      mensajeError = e.response.detalles.join('\n')
+    }
+    
+    mostrarAlerta('Error: ' + mensajeError)
   } finally {
     publicando.value = false
   }
