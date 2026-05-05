@@ -43,7 +43,7 @@ const misImagenes = computed(() => props.imagenesBd);
   grid-template-columns: 2fr 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   gap: 8px;
-  height: 480px;
+  height: 380px; /* Reduced height for a more compact look */
   width: 100%;
   border-radius: 15px;
   overflow: hidden;
@@ -68,15 +68,15 @@ const misImagenes = computed(() => props.imagenesBd);
 }
 
 .fotos-secundarias-col {
-  display: grid;
-  grid-template-rows: 1fr 1fr;
+  display: flex; /* Changed to flexbox for simpler vertical stacking */
+  flex-direction: column;
   gap: 8px;
   height: 100%;
 }
 
 .fotos-secundarias-col img {
   width: 100%;
-  height: 100%;
+  flex-grow: 1; /* Distribute available space equally in flex container */
   object-fit: cover;
 }
 
@@ -89,7 +89,7 @@ const misImagenes = computed(() => props.imagenesBd);
 }
 
 .sin-fotos {
-  height: 480px;
+  height: 380px; /* Match the main grid height */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,7 +101,7 @@ const misImagenes = computed(() => props.imagenesBd);
 @media (max-width: 768px) {
   .galeria-grid {
     grid-template-columns: 1fr;
-    height: 250px;
+    height: 200px; /* Reduced height for mobile */
   }
   .fotos-secundarias-col { display: none; }
   .foto-grande {
