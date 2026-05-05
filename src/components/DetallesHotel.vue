@@ -107,10 +107,11 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import CalendarSelector from './CalendarSelector.vue'
 import GuestSelector from './GuestSelector.vue'
+import { API } from '../services/api'
 
 const props = defineProps({ hotel: Object })
 const route = useRoute()
-const BASE = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api'
+const BASE = API
 
 // ── Estado global ─────────────────────────────────────────────
 const loading    = ref(true)
