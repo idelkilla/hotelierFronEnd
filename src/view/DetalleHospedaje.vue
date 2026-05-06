@@ -52,7 +52,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 70px;
+  padding-top: 110px; /* Aumentado para liberar espacio del header */
   background-color: #ffffff;
 }
 
@@ -66,7 +66,7 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
-  .main-container { padding-top: 70px; }
+  .main-container { padding-top: 100px; }
   .layout-detalle { width: 95%; margin: 10px auto; gap: 15px; }
 }
 </style>

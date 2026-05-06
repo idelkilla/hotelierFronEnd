@@ -3,13 +3,12 @@
     <Transition name="ck-slide">
       <div v-if="visible" class="ck-overlay" @click.self="$emit('cerrar')">
         <div class="ck-modal">
-          <!-- ══ HEADER ══════════════════════════════════════════════════ -->
+          <!-- HEADER -->
           <div class="ck-header">
             <button class="ck-close" @click="$emit('cerrar')">
               <span class="material-symbols-outlined">close</span>
             </button>
             <span class="ck-header-title">Finalizar reserva</span>
-            <!-- Stepper -->
             <div class="ck-steps">
               <div
                 v-for="(s, i) in pasos"
@@ -31,11 +30,10 @@
             </div>
           </div>
 
-          <!-- ══ BODY ════════════════════════════════════════════════════ -->
+          <!-- BODY -->
           <div class="ck-body">
-            <!-- ── Columna izquierda ─────────────────────────────────── -->
+            <!-- Columna izquierda -->
             <div class="ck-left">
-              <!-- Política de cancelación -->
               <div class="ck-policy">
                 <span class="material-symbols-outlined">event_available</span>
                 <div>
@@ -50,8 +48,8 @@
                 </div>
               </div>
 
-              <!-- ════ PASO 0: Huésped ════════════════════════════════ -->
               <Transition name="ck-fade" mode="out-in">
+                <!-- PASO 0: Huésped -->
                 <section v-if="paso === 0" key="huesped" class="ck-section">
                   <h3 class="ck-section-title">¿Quién hará el check-in?</h3>
                   <p class="ck-hint">
@@ -122,7 +120,7 @@
                   </div>
                 </section>
 
-                <!-- ════ PASO 1: Pago ════════════════════════════════ -->
+                <!-- PASO 1: Pago -->
                 <section v-else-if="paso === 1" key="pago" class="ck-section">
                   <div class="ck-section-header">
                     <h3 class="ck-section-title">Detalles del pago</h3>
@@ -132,7 +130,6 @@
                     </span>
                   </div>
 
-                  <!-- Métodos de pago -->
                   <div class="ck-metodos">
                     <label
                       v-for="m in metodos"
@@ -146,7 +143,6 @@
                     </label>
                   </div>
 
-                  <!-- Formulario tarjeta -->
                   <div v-if="form.metodo === 'tarjeta'" class="ck-tarjeta">
                     <div class="ck-logos-tarjeta">
                       <span
@@ -267,7 +263,6 @@
                     </label>
                   </div>
 
-                  <!-- Otros métodos -->
                   <div v-else class="ck-metodo-alt">
                     <span class="material-symbols-outlined">open_in_new</span>
                     <p>
@@ -293,7 +288,7 @@
                   </div>
                 </section>
 
-                <!-- ════ PASO 2: Protección ══════════════════════════ -->
+                <!-- PASO 2: Protección -->
                 <section
                   v-else-if="paso === 2"
                   key="proteccion"
@@ -309,7 +304,6 @@
                   </p>
 
                   <div class="ck-proteccion-grid">
-                    <!-- Con protección -->
                     <div
                       v-if="planProteccion"
                       class="ck-proteccion-card"
@@ -338,28 +332,24 @@
                           <li>
                             <span class="material-symbols-outlined"
                               >check_circle</span
-                            >
-                            Hasta el 100% del costo por cancelación o check-out
+                            >Hasta el 100% del costo por cancelación o check-out
                             anticipado
                           </li>
                           <li>
                             <span class="material-symbols-outlined"
                               >check_circle</span
-                            >
-                            Hasta $200,000 para gastos médicos por plan
+                            >Hasta $200,000 para gastos médicos por plan
                           </li>
                           <li>
                             <span class="material-symbols-outlined"
                               >check_circle</span
-                            >
-                            Hasta $15,000 por plan por gastos derivados de un
+                            >Hasta $15,000 por plan por gastos derivados de un
                             retraso de viaje
                           </li>
                         </ul>
                       </div>
                     </div>
 
-                    <!-- Sin protección -->
                     <div
                       class="ck-proteccion-card"
                       :class="{ selected: form.idPlan === null }"
@@ -386,15 +376,13 @@
                           <li>
                             <span class="material-symbols-outlined"
                               >attach_money</span
-                            >
-                            Costos inesperados por cambios de última hora en el
+                            >Costos inesperados por cambios de última hora en el
                             viaje dentro de la cobertura
                           </li>
                           <li>
                             <span class="material-symbols-outlined"
                               >attach_money</span
-                            >
-                            Gastos de bolsillo en hotel o comidas por retrasos
+                            >Gastos de bolsillo en hotel o comidas por retrasos
                             en el viaje
                           </li>
                         </ul>
@@ -423,16 +411,14 @@
                 </section>
               </Transition>
 
-              <!-- Error global -->
               <div v-if="errorGlobal" class="ck-error-global">
                 <span class="material-symbols-outlined">error</span>
                 {{ errorGlobal }}
               </div>
             </div>
 
-            <!-- ── Sidebar derecho ────────────────────────────────────── -->
+            <!-- Sidebar derecho -->
             <aside class="ck-aside">
-              <!-- Imagen + nombre -->
               <div class="ck-aside-hotel">
                 <div class="ck-aside-img">
                   <img
@@ -449,24 +435,35 @@
                 </div>
                 <div class="ck-aside-info">
                   <p class="ck-aside-nombre">
-                    {{ habitacion?.nombre_hospedaje }}
+                    {{
+                      habitacion?.nombre_hospedaje ??
+                      habitacion?.NOMBRE_HOSPEDAJE ??
+                      '—'
+                    }}
                   </p>
-                  <p class="ck-aside-dir">{{ habitacion?.direccion }}</p>
-                  <div class="ck-aside-rating" v-if="habitacion?.calificacion">
+                  <p class="ck-aside-dir">
+                    {{ habitacion?.direccion ?? habitacion?.DIRECCION ?? '' }}
+                  </p>
+                  <div
+                    class="ck-aside-rating"
+                    v-if="habitacion?.calificacion ?? habitacion?.CALIFICACION"
+                  >
                     <span class="ck-rating-badge">{{
-                      habitacion.calificacion
+                      habitacion.calificacion ?? habitacion.CALIFICACION
                     }}</span>
                     <span>{{
                       habitacion.label_calificacion ?? 'Magnífica'
                     }}</span>
                     <span class="ck-aside-opiniones"
-                      >{{ habitacion.opiniones }} opiniones</span
+                      >{{
+                        habitacion.opiniones ?? habitacion.OPINIONES
+                      }}
+                      opiniones</span
                     >
                   </div>
                 </div>
               </div>
 
-              <!-- Fechas -->
               <div class="ck-aside-fechas">
                 <div>
                   <p class="ck-aside-label">Check-in</p>
@@ -486,11 +483,10 @@
                 <div class="ck-aside-sep"></div>
                 <div>
                   <p class="ck-aside-label">Noches</p>
-                  <p class="ck-aside-val">{{ noches }}</p>
+                  <p class="ck-aside-val">{{ nochesReal }}</p>
                 </div>
               </div>
 
-              <!-- Tipo habitación + servicios -->
               <div class="ck-aside-hab" v-if="habitacion">
                 <p class="ck-aside-tipo">
                   {{ habitacion.TIPO_HABITACION ?? habitacion.tipo_habitacion }}
@@ -511,12 +507,12 @@
 
               <div class="ck-aside-divider"></div>
 
-              <!-- Desglose de precios -->
               <div class="ck-aside-precios">
                 <h4 class="ck-aside-precios-title">Detalles del precio</h4>
                 <div class="ck-precio-fila">
                   <span
-                    >{{ noches }} noche{{ noches !== 1 ? 's' : '' }} × ${{
+                    >{{ nochesReal }} noche{{ nochesReal !== 1 ? 's' : '' }} ×
+                    ${{
                       Number(habitacion?.PRECIO_NOCHE).toLocaleString()
                     }}</span
                   >
@@ -565,7 +561,6 @@
                 </p>
               </div>
 
-              <!-- Disponibilidad -->
               <div
                 class="ck-aside-aviso"
                 v-if="
@@ -588,33 +583,29 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { apiFetch } from '../services/api'
 
-// ── Props ─────────────────────────────────────────────────────────────────────
 const props = defineProps({
   visible: { type: Boolean, default: false },
-  habitacion: { type: Object, default: null }, // objeto hab del grid
+  habitacion: { type: Object, default: null },
   fechaInicio: { type: String, default: '' },
   fechaFin: { type: String, default: '' },
   noches: { type: Number, default: 0 },
-  tipoPago: { type: String, default: 'ahora' }, // 'ahora' | 'despues'
+  tipoPago: { type: String, default: 'ahora' },
 })
 
 const emit = defineEmits(['cerrar', 'reservaConfirmada'])
 
-// ── Estado ────────────────────────────────────────────────────────────────────
 const paso = ref(0)
 const cargando = ref(false)
 const errorGlobal = ref('')
 const planProteccion = ref(null)
 
 const pasos = ['Huésped', 'Pago', 'Protección']
-
 const metodos = [
   { id: 'tarjeta', nombre: 'Tarjeta', logo: '💳' },
   { id: 'paypal', nombre: 'PayPal', logo: '🅿️' },
   { id: 'affirm', nombre: 'Affirm', logo: '✦' },
   { id: 'applepay', nombre: 'Apple Pay', logo: '🍎' },
 ]
-
 const logosTarjeta = ['AMEX', 'Diners', 'Discover', 'JCB', 'MC', 'VISA']
 
 const form = ref({
@@ -632,16 +623,26 @@ const form = ref({
     codigo_postal: '',
     ano_exp: '',
   },
-  idPlan: undefined, // undefined = sin seleccionar aún
+  idPlan: undefined,
 })
-
 const errors = ref({})
 
-// ── Cálculos ──────────────────────────────────────────────────────────────────
+// ── Noches: usa prop si > 0, si no calcula desde fechas ──────────────────────
+const nochesReal = computed(() => {
+  if (props.noches && props.noches > 0) return props.noches
+  if (!props.fechaInicio || !props.fechaFin) return 0
+  const msDay = 1000 * 60 * 60 * 24
+  const d1 = new Date(props.fechaInicio + 'T00:00:00')
+  const d2 = new Date(props.fechaFin + 'T00:00:00')
+  const diff = Math.round((d2 - d1) / msDay)
+  return diff > 0 ? diff : 0
+})
+
+// ── Cálculos ─────────────────────────────────────────────────────────────────
 const precioNoche = computed(() =>
   parseFloat(props.habitacion?.PRECIO_NOCHE ?? 0),
 )
-const subtotal = computed(() => precioNoche.value * props.noches)
+const subtotal = computed(() => precioNoche.value * nochesReal.value)
 const montoImpuestos = computed(() =>
   parseFloat((subtotal.value * 0.18).toFixed(2)),
 )
@@ -695,7 +696,6 @@ function fechaFormateada(str) {
   })
 }
 
-// ── Carga inicial ─────────────────────────────────────────────────────────────
 onMounted(async () => {
   try {
     const planes = await apiFetch('/reservas/planes-proteccion')
@@ -771,13 +771,11 @@ function validarPaso0() {
     !errors.value.nombre && !errors.value.apellidos && !errors.value.telefono
   )
 }
-
 function validarPaso1() {
-  if (form.value.metodo !== 'tarjeta') return true
-
-  ;['nombreTarjeta', 'numeroTarjeta', 'mesExp', 'cvv', 'codigoPostal'].forEach(
-    validarCampo,
-  )
+  if (form.value.metodo !== 'tarjeta')
+    return true[
+      ('nombreTarjeta', 'numeroTarjeta', 'mesExp', 'cvv', 'codigoPostal')
+    ].forEach(validarCampo)
   return (
     !errors.value.nombreTarjeta &&
     !errors.value.numeroTarjeta &&
@@ -786,7 +784,6 @@ function validarPaso1() {
     !errors.value.codigoPostal
   )
 }
-
 function irPaso(n) {
   errorGlobal.value = ''
   if (n === 1 && !validarPaso0()) return
@@ -794,24 +791,20 @@ function irPaso(n) {
   paso.value = n
 }
 
-// ── Formateo de inputs ────────────────────────────────────────────────────────
 function formatearTarjeta() {
   let v = form.value.tarjeta.numero.replace(/\D/g, '').slice(0, 16)
   form.value.tarjeta.numero = v.match(/.{1,4}/g)?.join(' ') ?? v
 }
-
 function formatearFechaExp() {
   let v = form.value.tarjeta.mes_exp.replace(/\D/g, '').slice(0, 4)
   if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2)
   form.value.tarjeta.mes_exp = v
   if (v.length === 5) {
-    const [m, a] = v.split('/')
-    form.value.tarjeta.mes_exp = v
+    const [, a] = v.split('/')
     form.value.tarjeta.ano_exp = a
   }
 }
 
-// ── Confirmar ─────────────────────────────────────────────────────────────────
 async function confirmar() {
   if (form.value.idPlan === undefined) {
     errorGlobal.value = 'Selecciona una opción de protección para continuar.'
@@ -825,7 +818,7 @@ async function confirmar() {
       id_habitacion: props.habitacion?.ID_HABITACION,
       fecha_inicio: props.fechaInicio,
       fecha_fin: props.fechaFin,
-      noches: props.noches,
+      noches: nochesReal.value,
       tipo_pago: props.tipoPago,
       huesped: {
         nombre: form.value.nombre,
@@ -849,12 +842,10 @@ async function confirmar() {
       },
       proteccion: { id_plan: form.value.idPlan },
     }
-
     const resp = await apiFetch('/reservas/checkout', {
       method: 'POST',
       body: JSON.stringify(payload),
     })
-
     emit('reservaConfirmada', resp)
   } catch (err) {
     errorGlobal.value =
@@ -867,7 +858,7 @@ async function confirmar() {
 </script>
 
 <style scoped>
-/* ── Variables ─────────────────────────────────────────────────────────────── */
+/* ── Variables ────────────────────────────────────────────────────────────── */
 :root {
   --azul: #113956;
   --azul-clr: #1e5276;
@@ -875,33 +866,38 @@ async function confirmar() {
   --rojo: #c0392b;
 }
 
-/* ── Overlay ────────────────────────────────────────────────────────────────── */
+/* ── Overlay ──────────────────────────────────────────────────────────────── */
 .ck-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  z-index: 1100;
-  padding: 20px 16px;
+  z-index: 9999;
+  padding: 80px 16px 20px 16px;
   overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE y Edge */
 }
 
-/* ── Modal ──────────────────────────────────────────────────────────────────── */
+/* ── Modal — FIXED: altura limitada, body scrollable ─────────────────────── */
 .ck-modal {
   background: #fff;
   border-radius: 16px;
   width: 100%;
   max-width: 960px;
+  /* Altura máxima para que el header siempre sea visible */
+  max-height: calc(100vh - 40px);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.22);
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
-/* ── Header ─────────────────────────────────────────────────────────────────── */
+/* ── Header — no crece ni encoge ─────────────────────────────────────────── */
 .ck-header {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -982,17 +978,29 @@ async function confirmar() {
   color: #2a7a4b;
 }
 
-/* ── Body ───────────────────────────────────────────────────────────────────── */
+/* ── Body — ocupa el espacio restante y permite scroll interno ────────────── */
 .ck-body {
   display: grid;
   grid-template-columns: 1fr 340px;
+  /* Clave: min-height:0 para que el grid respete el overflow del padre */
   min-height: 0;
+  flex: 1;
+  overflow: hidden;
 }
 
-/* ── Left ───────────────────────────────────────────────────────────────────── */
+/* Ocultar barra de desplazamiento para Chrome, Safari y Opera */
+.ck-overlay::-webkit-scrollbar,
+.ck-left::-webkit-scrollbar,
+.ck-aside::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Left ────────────────────────────────────────────────────────────────── */
 .ck-left {
   padding: 24px;
   overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE y Edge */
 }
 
 /* Política */
@@ -1046,7 +1054,6 @@ async function confirmar() {
 .req {
   color: #c0392b;
 }
-
 .ck-secure {
   display: flex;
   align-items: center;
@@ -1058,7 +1065,7 @@ async function confirmar() {
   font-size: 15px;
 }
 
-/* Grid campos */
+/* Grids */
 .ck-grid2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1139,7 +1146,7 @@ async function confirmar() {
   font-size: 14px;
 }
 
-/* Métodos de pago */
+/* Métodos pago */
 .ck-metodos {
   display: flex;
   flex-direction: column;
@@ -1173,7 +1180,6 @@ async function confirmar() {
   font-size: 18px;
 }
 
-/* Tarjeta */
 .ck-tarjeta {
   padding: 16px;
   background: #f9f9f9;
@@ -1197,7 +1203,6 @@ async function confirmar() {
   background: #fff;
 }
 
-/* Checkbox */
 .ck-checkbox {
   display: flex;
   align-items: center;
@@ -1233,7 +1238,6 @@ async function confirmar() {
   font-weight: 700;
 }
 
-/* Metodo alt */
 .ck-metodo-alt {
   display: flex;
   align-items: center;
@@ -1283,7 +1287,6 @@ async function confirmar() {
   border-color: #113956;
   box-shadow: 0 0 0 2px rgba(17, 57, 86, 0.12);
 }
-
 .ck-proto-radio .material-symbols-outlined {
   color: #113956;
   font-size: 20px;
@@ -1342,7 +1345,7 @@ async function confirmar() {
   color: #e67e22;
 }
 
-/* Navegación */
+/* Nav */
 .ck-nav {
   display: flex;
   justify-content: space-between;
@@ -1388,7 +1391,6 @@ async function confirmar() {
   color: #113956;
 }
 
-/* Error global */
 .ck-error-global {
   display: flex;
   align-items: center;
@@ -1402,7 +1404,7 @@ async function confirmar() {
   margin-top: 16px;
 }
 
-/* ── Aside ───────────────────────────────────────────────────────────────────── */
+/* ── Aside ───────────────────────────────────────────────────────────────── */
 .ck-aside {
   border-left: 1px solid #eee;
   padding: 24px 20px;
@@ -1411,8 +1413,9 @@ async function confirmar() {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE y Edge */
 }
-
 .ck-aside-hotel {
   display: flex;
   flex-direction: column;
@@ -1452,7 +1455,11 @@ async function confirmar() {
   border-radius: 4px;
   letter-spacing: 0.5px;
 }
-
+.ck-aside-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 .ck-aside-nombre {
   font-size: 14px;
   font-weight: 700;
@@ -1462,9 +1469,8 @@ async function confirmar() {
 .ck-aside-dir {
   font-size: 12px;
   color: #888;
-  margin: 2px 0 0;
+  margin: 0;
 }
-
 .ck-aside-rating {
   display: flex;
   align-items: center;
@@ -1600,7 +1606,7 @@ async function confirmar() {
   font-size: 16px;
 }
 
-/* ── Animaciones ────────────────────────────────────────────────────────────── */
+/* ── Animaciones ─────────────────────────────────────────────────────────── */
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -1654,7 +1660,7 @@ async function confirmar() {
   opacity: 0;
 }
 
-/* ── Responsive ─────────────────────────────────────────────────────────────── */
+/* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .ck-body {
     grid-template-columns: 1fr;

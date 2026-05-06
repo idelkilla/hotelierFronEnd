@@ -44,7 +44,7 @@
 .vuelos-main-content-layout {
   width: 100%;
   max-width: 1300px;
-  margin: 60px auto 0; /* Alineado exacto con el alto del header (60px) */
+  margin: 110px auto 0; /* Aumentado para evitar que el header lo tape */
   padding: 0 20px;
   display: flex;
   gap: 24px; /* Espacio entre las columnas */
@@ -85,7 +85,7 @@
 
 :deep(.vuelos-tabs) {
   order: 2; 
-  margin: 10px 90px 15px; /* Márgenes reducidos para que los resultados de vuelos suban */
+  margin: 5px 90px 15px; /* Reducido para que la sección sea menos alta */
   margin-bottom: 20px;
   background-color: #e9f1f6;
   border-radius: 500px;
