@@ -8,6 +8,9 @@
       </p>
     </div>
 
+    <div v-if="loading" class="loading-state">Buscando los mejores vuelos...</div>
+    <div v-else-if="!vuelos.length" class="empty-state">No se encontraron vuelos para tu selección.</div>
+
     <div class="vuelos-lista">
       <div
         v-for="(vuelo, index) in vuelos"
@@ -621,6 +624,43 @@
 <script setup>
 import { ref, computed } from 'vue';
 
+const props = defineProps({
+  vuelosData: { type: Array, default: () => [] },
+  loading: { type: Boolean, default: false }
+});
+
+const vuelos = computed(() => {
+  return props.vuelosData.map(v => ({
+    // Mapeo de columnas de base de datos a interfaz
+    id: v.ID_VUELO,
+    horaSalida: new Date(v.FECHA_SALIDA).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    horaLlegada: new Date(v.FECHA_LLEGADA).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    diasExtra: calcularDiasExtra(v.FECHA_SALIDA, v.FECHA_LLEGADA),
+    origen: v.iata_origen || v.origen,
+    destino: v.iata_destino || v.destino,
+    ciudadOrigen: v.origen,
+    ciudadDestino: v.destino,
+    fechaSalida: new Date(v.FECHA_SALIDA).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }),
+    fechaLlegada: new Date(v.FECHA_LLEGADA).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }),
+    aerolinea: v.aerolinea,
+    codigoVuelo: v.NUMERO_VUELO,
+    duracion: `${Math.floor(v.DURACION_MINUTOS / 60)}h ${v.DURACION_MINUTOS % 60}m`,
+    escalas: 0,
+    precio: v.PRECIO,
+    clase: v.clase,
+    // Mock de info extendida (puedes añadir esto a la DB luego)
+    avion: 'Airbus / Boeing',
+    servicios: [{ icon: '📶', nombre: 'Wifi' }, { icon: '🔌', nombre: 'Enchufe' }],
+    oferta: null
+  }));
+});
+
+const calcularDiasExtra = (s, l) => {
+  const ds = new Date(s).getDate();
+  const dl = new Date(l).getDate();
+  return dl > ds ? dl - ds : 0;
+};
+
 const modalVuelo   = ref(null);
 const paso         = ref('detalle');   // 'detalle' | 'reserva'
 const pasoReserva  = ref(0);           // 0 pasajero · 1 preferencias · 2 pago · 3 confirmación
@@ -725,57 +765,10 @@ const avanzarPasoReserva = () => {
     pasoReserva.value = 3;
   }
 };
-
-const vuelos = ref([
-  {
-    horaSalida: '10:01 a.m.', horaLlegada: '1:00 p.m.', diasExtra: 1,
-    origen: 'Santiago d... (STI)', destino: 'Estambul (IST)',
-    ciudadOrigen: 'Santiago de los Caballeros', ciudadDestino: 'Estambul',
-    fechaSalida: 'vie., 15 may.', fechaLlegada: 'sáb., 16 may.',
-    aerolinea: 'Aerolíneas múltiples', codigoVuelo: 'AA1917',
-    duracion: '19 h 59 min', escalas: 1, escalaDetalle: '5 h 48 min en JFK',
-    precio: 1528, esOferta: true, logo: null, oferta: null,
-    avion: 'Boeing 737-800', clase: 'Económica', distancia: '750 mi',
-    servicios: [{ icon: '📶', nombre: 'Wifi' }, { icon: '🔌', nombre: 'Enchufe' }, { icon: '🎬', nombre: 'Entretenimiento' }],
-  },
-  {
-    horaSalida: '8:11 a.m.', horaLlegada: '1:00 p.m.', diasExtra: 1,
-    origen: 'Santiago d... (STI)', destino: 'Estambul (IST)',
-    ciudadOrigen: 'Santiago de los Caballeros', ciudadDestino: 'Estambul',
-    fechaSalida: 'vie., 15 may.', fechaLlegada: 'sáb., 16 may.',
-    aerolinea: 'Aerolíneas múltiples', codigoVuelo: 'B61234',
-    duracion: '21 h 49 min', escalas: 1, escalaDetalle: '7 h 50 min en JFK',
-    precio: 1528, esOferta: false, logo: null, oferta: null,
-    avion: 'Airbus A320', clase: 'Económica', distancia: '820 mi',
-    servicios: [{ icon: '📶', nombre: 'Wifi' }, { icon: '🔌', nombre: 'Enchufe' }],
-  },
-  {
-    horaSalida: '1:37 p.m.', horaLlegada: '2:10 p.m.', diasExtra: 1,
-    origen: 'Santiago d... (STI)', destino: 'Estambul (IST)',
-    ciudadOrigen: 'Santiago de los Caballeros', ciudadDestino: 'Estambul',
-    fechaSalida: 'vie., 15 may.', fechaLlegada: 'sáb., 16 may.',
-    aerolinea: 'Aerolíneas múltiples', codigoVuelo: 'TK001',
-    duracion: '17 h 33 min', escalas: 1, escalaDetalle: '4 h 14 min en BOS',
-    precio: 1894, esOferta: false, logo: null,
-    oferta: 'Reserva este vuelo con un hotel y obtén 4 noches de hospedaje gratis',
-    avion: 'Boeing 777', clase: 'Económica', distancia: '910 mi',
-    servicios: [{ icon: '📶', nombre: 'Wifi' }, { icon: '🎬', nombre: 'Entretenimiento' }],
-  },
-  {
-    horaSalida: '10:01 a.m.', horaLlegada: '1:00 p.m.', diasExtra: 1,
-    origen: 'Santiago (STI)', destino: 'Estambul (IST)',
-    ciudadOrigen: 'Santiago de los Caballeros', ciudadDestino: 'Estambul',
-    fechaSalida: 'vie., 15 may.', fechaLlegada: 'sáb., 16 may.',
-    aerolinea: 'JetBlue Airways', codigoVuelo: 'JB509',
-    duracion: '19 h 59 min', escalas: 1, escalaDetalle: '5 h 48 min en JFK',
-    precio: 1528, esOferta: false, logo: null, oferta: null,
-    avion: 'Airbus A321', clase: 'Económica', distancia: '750 mi',
-    servicios: [{ icon: '📶', nombre: 'Wifi' }, { icon: '🔌', nombre: 'Enchufe' }, { icon: '🎬', nombre: 'Entretenimiento' }],
-  },
-]);
 </script>
 
 <style scoped>
+.loading-state, .empty-state { padding: 40px; text-align: center; color: #64748b; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1; }
 /* ── Base lista de vuelos (sin cambios) ─────────────────────────────────── */
 .vuelos-resultados { display: flex; flex-direction: column; gap: 16px; width: 100%; }
 .resultados-header { margin-bottom: 4px; }

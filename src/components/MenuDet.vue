@@ -1,49 +1,82 @@
 <template>
-   <div class="search-section-container">
-      <div class="search-bar-content">
-        <FormSearch
-          :initial-destino="searchDestino"
-          :initial-entrada="searchEntrada"
-          :initial-salida="searchSalida"
-          :initial-huespedes="habitaciones"
-          compact
-        />
+  <div class="search-section-container">
+    <div class="search-bar-content">
+      <FormSearch
+        :initial-destino="searchDestino"
+        :initial-entrada="searchEntrada"
+        :initial-salida="searchSalida"
+        :initial-huespedes="habitaciones"
+        compact
+        :is-habitaciones="isHabitaciones"
+      />
 
-        <div class="accommodation-tabs">
-          <div class="slider-background" :class="sliderClass"></div>
+      <!-- Barra ver propiedades — solo en detalle -->
+      <div v-if="isDetalle && !isHabitaciones" class="detalle-subbar">
+        <button class="btn-volver" @click="$router.back()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+          </svg>
+          Ver todas las propiedades
+        </button>
 
-          <button class="tab" :class="{ active: activeTab === 'all' }" @click="activeTab = 'all'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-              <path d="M7 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/>
-              <path d="M22 17v-3h-20"/><path d="M2 8v9"/>
-              <path d="M12 14h10v-2a3 3 0 0 0 -3 -3h-7v5z"/>
+        <div class="detalle-actions">
+          <button class="btn-accion">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+              <polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/>
             </svg>
-            Todos los hospedajes
+            Compartir
           </button>
-
-          <button class="tab" :class="{ active: activeTab === 'Hotel' }" @click="activeTab = 'Hotel'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-              <path d="M3 21l18 0"/><path d="M9 8l1 0"/><path d="M9 12l1 0"/>
-              <path d="M9 16l1 0"/><path d="M14 8l1 0"/><path d="M14 12l1 0"/>
-              <path d="M14 16l1 0"/><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16"/>
+          <button class="btn-accion" :class="{ guardado: isSaved }" @click="isSaved = !isSaved">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+              :fill="isSaved ? '#e00' : 'none'" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"/>
             </svg>
-            Hoteles
-          </button>
-
-          <button class="tab" :class="{ active: activeTab === 'Casa' }" @click="activeTab = 'Casa'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-              <path d="M5 12l-2 0l9 -9l9 9l-2 0"/>
-              <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"/>
-              <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"/>
-            </svg>
-            Casa
+            {{ isSaved ? 'Guardado' : 'Guardar' }}
           </button>
         </div>
       </div>
+
+      <!-- Tabs — solo en resultados -->
+      <div v-if="!isDetalle && !isHabitaciones" class="accommodation-tabs">
+        <div class="slider-background" :class="sliderClass"></div>
+
+        <button class="tab" :class="{ active: activeTab === 'all' }" @click="activeTab = 'all'">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M7 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/>
+            <path d="M22 17v-3h-20"/><path d="M2 8v9"/>
+            <path d="M12 14h10v-2a3 3 0 0 0 -3 -3h-7v5z"/>
+          </svg>
+          Todos los hospedajes
+        </button>
+
+        <button class="tab" :class="{ active: activeTab === 'Hotel' }" @click="activeTab = 'Hotel'">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M3 21l18 0"/><path d="M9 8l1 0"/><path d="M9 12l1 0"/>
+            <path d="M9 16l1 0"/><path d="M14 8l1 0"/><path d="M14 12l1 0"/>
+            <path d="M14 16l1 0"/><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16"/>
+          </svg>
+          Hoteles
+        </button>
+
+        <button class="tab" :class="{ active: activeTab === 'Casa' }" @click="activeTab = 'Casa'">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M5 12l-2 0l9 -9l9 9l-2 0"/>
+            <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"/>
+            <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"/>
+          </svg>
+          Casa
+        </button>
+      </div>
+
     </div>
+  </div>
 </template>
 
 <script setup>
@@ -51,266 +84,158 @@ import { ref, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import FormSearch from './FormSearch.vue';
 
+const props = defineProps({
+  isDetalle: {
+    type: Boolean,
+    default: false
+  },
+  isHabitaciones: {
+    type: Boolean,
+    default: false
+  }
+});
+
 const route = useRoute();
+const isSaved = ref(false);
 
 const searchDestino = ref(route.query.destino || '');
 const searchEntrada = ref(route.query.entrada || '');
-const searchSalida = ref(route.query.salida || '');
-const habitaciones = ref(
-  route.query.huespedes ? JSON.parse(route.query.huespedes) : [{ adultos: 2, ninos: 0, edadesNinos: [] }]
+const searchSalida  = ref(route.query.salida  || '');
+const habitaciones  = ref(
+  route.query.huespedes
+    ? JSON.parse(route.query.huespedes)
+    : [{ adultos: 2, ninos: 0, edadesNinos: [] }]
 );
 const activeTab = ref('all');
 
-// Vigilamos los cambios en la URL para sincronizar el buscador
 watch(() => route.query, (q) => {
   searchDestino.value = q.destino || '';
   searchEntrada.value = q.entrada || '';
-  searchSalida.value = q.salida || '';
-  if (q.huespedes) {
-    habitaciones.value = JSON.parse(q.huespedes);
-  }
+  searchSalida.value  = q.salida  || '';
+  if (q.huespedes) habitaciones.value = JSON.parse(q.huespedes);
 }, { deep: true });
 
 const sliderClass = computed(() => `pos-${activeTab.value}`);
 </script>
 
 <style scoped>
-
-/* --- RESTO DEL CÓDIGO (Sin cambios de lógica) --- */
-.main-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #ffffff;
-    width: 100%;
-    padding-bottom: 100px;
-    margin-top: 70px;
-    padding-top: 90px; 
-}
-
-.input-group svg.icon, 
-.input-group .icon {
-    width: 28px !important;
-    height: 28px !important;
-    min-width: 28px !important;
-    margin-right: 12px !important;
-    display: block !important;
-}
-
-.input-group svg.icon path {
-    stroke-width: 1.5; 
-}
-
 .search-section-container {
-    width: 80%; 
-    max-width: 80%; 
-    margin-top: 4px;
-    margin-left: auto;
-    margin-right: auto;
-    font-family: 'Inter', 'Pli', sans-serif;
-    font-weight: bold;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .search-bar-content {
-    display: flex;
-    flex-direction: column;
-    background-color: transparent;
-    padding: 0; 
-    box-shadow: none; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: transparent;
+  padding: 0;
+  box-shadow: none;
 }
 
-.search-box-icon {
-    width: 10px; 
-    height: 10px;
-    color: #1a4f78;
-    margin-right: 12px;
-    flex-shrink: 0;
+/* =====================
+   BARRA DETALLE
+   ===================== */
+.detalle-subbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 25px;
+  padding: 0 0 4px 0;
+  width: 100%;
 }
 
-.search-inputs-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid #dddddd; 
-    border-radius: 8px; 
-    overflow: hidden; 
-    margin-bottom: 0;
-    padding: 0;
+.btn-volver {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #113955;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background 0.15s;
 }
 
-.dropdown-container {
-    position: relative;
-    flex-grow: 1; 
+.btn-volver:hover {
+  background: #f0f0f0;
+  text-decoration: underline;
 }
 
-.dropdown-container:after {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 15%;
-    height: 70%;
-    width: 1px;
-    background-color: #dddddd;
-    overflow: hidden;
-    z-index: 10;
+.detalle-actions {
+  display: flex;
+  gap: 8px;
 }
 
-
-
-
-
-.input-row {
-    display: flex;
-    align-items: center;
-    font-weight: bold;
-    color: #113955;
+.btn-accion {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
 }
 
-.input-row input {
-    border: none;
-    outline: none;
-    width: 100%;
-    font-size: 16px;
-    font-weight: bold;
-    color: #113955;
-    background: transparent;
-    padding-left: 2px;
+.btn-accion:hover {
+  background: #f5f5f5;
+  border-color: #bbb;
 }
 
-.input-row input::-webkit-inner-spin-button,
-.input-row input::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+.btn-accion.guardado {
+  color: #e00;
+  border-color: #e00;
 }
 
-
-
-
-
-.input-group {
-    flex-grow: 1; 
-    display: flex;
-    align-items: center;
-    padding: 5px 10px; 
-    border-radius: 0; 
-    cursor: pointer;
-    position: relative;
-    transition: background-color 0.1s;
-}
-
-.input-group:hover {
-    background-color: #f8f8f8;
-}
-
-.date-input::after, .guests-input::after {
-    content: ''; 
-    position: absolute;
-    right: 0;
-    top: 15%;
-    height: 70%;
-    width: 1px;
-    background-color: #eee;
-}
-
-.input-group .icon {
-    width: 20px;
-    height: 20px;
-    color: #333;
-    margin-right: 10px;
-}
-
-.input-text-area {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.2;
-    width: 100%; 
-    padding-top:6px;
-}
-
-.input-text-area label {
-    font-size: 12px;
-    color: #888;
-    font-weight: 500;
-}
-
-.input-text-area input {
-    border: none;
-    outline: none;
-    font-size: 14px;
-    font-weight: bold;
-    color: #333;
-    width: 100%;
-    background: none;
-padding-top:2px ;
-}
-
-.input-text-area input::placeholder {
-    color: #333; 
-    font-weight: bold;
-}
-
-.search-button {
-    background-color: #1a4f78; 
-    color: white;
-    padding: 12px 27px;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    margin-left: 0; 
-    border-radius: 0 8px 8px 0; 
-    height: 70px; 
-    flex-shrink: 0; 
-    
-}
-
-.search-button:hover {
-    background-color: #113955;
-}
-
+/* =====================
+   TABS
+   ===================== */
 .accommodation-tabs {
-    background-color: #e9f1f6;
-    border-radius: 500px;
-    display: flex;
-    position: relative;
-    padding: 6px;
-    margin: 25px auto;
-    width: 80%;
-    max-width: 800px;
-    align-items: center;
+  background-color: #e9f1f6;
+  border-radius: 500px;
+  display: flex;
+  position: relative;
+  padding: 6px;
+  margin: 32px auto 0 auto;
+  width: 100%;
+  align-items: center;
 }
 
 .tab {
-    flex: 1;
-    border: none;
-    background: none;
-    padding: 12px 20px;
-    cursor: pointer;
-    font-size: 16px;
-    color: #113955;
-    display: flex;
-    z-index: 1;
-    outline: none;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 15px;
+  color: #113955;
+  display: flex;
+  z-index: 1;
+  outline: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 40px;
+  transition: background 0.2s;
 }
 
 .tab.active {
-    background-color: #cbd9e6; 
-    color: #113955; 
-    font-weight: 700;
-    border-radius: 40px; 
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
+  background-color: #cbd9e6;
+  color: #113955;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.tab:focus {
-    outline: none;
-}
-
-.tab:active {
-    outline: none;
-}
-
+.tab:focus, .tab:active { outline: none; }
 </style>

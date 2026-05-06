@@ -62,7 +62,13 @@ const routes = [
       { path: '', redirect: { name: 'AdminDashboard' } },
       { path: 'dashboard', name: 'AdminDashboard', component: AdminDashboard, meta: { requiresAdmin: true } },
       { path: 'hospedajes/:vista?', name: 'AdminHospedajes', component: AdminHospedajes, meta: { requiresAdmin: true } },
-      { path: 'usuarios/:pathMatch(.*)*', name: 'AdminUsuarios', component: AdminUsuarios, meta: { requiresAdmin: true } },
+      { 
+        path: 'usuarios/:pathMatch(.*)*', 
+        name: 'AdminUsuarios', 
+        component: AdminUsuarios, 
+        meta: { requiresAdmin: true },
+        props: route => ({ tipo: route.query.tipo || 'todos' })
+      },
       { path: 'reservas', name: 'AdminReservas', component: AdminReservas, meta: { requiresAdmin: true } },
       { path: 'configuracion', name: 'AdminConfiguracion', component: AdminConfiguracion, meta: { requiresAdmin: true } },
     ]

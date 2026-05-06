@@ -12,8 +12,8 @@
       <h2 class="subtitulo">Servicios</h2>
       <div class="servicios-grid">
         <div class="servicio" v-for="s in servicios" :key="s.nombre">
-          <span class="material-symbols-outlined">check_circle</span>
-          {{ s.nombre }}
+          <span class="material-symbols-outlined servicio-icono">{{ iconoServicio(s.nombre) }}</span>
+          <span class="servicio-nombre">{{ s.nombre }}</span>
         </div>
         <!-- fallback si no hay servicios en BD -->
         <p v-if="!servicios.length" class="sin-datos">Sin servicios registrados</p>
@@ -32,68 +32,35 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Card reserva -->
-    <div class="card-reserva">
-      <div class="precio-noche">
-        <span class="monto">${{ precioBase }}</span>
-        <span class="etiqueta">/noche</span>
-      </div>
-
-      <div class="inputs-fecha date-field" ref="dateFieldRef">
-        <div class="campo" @click="abrirCalendario('inicio')">
-          <label>CHECK-IN</label>
-          <input type="text" readonly :value="checkInDisplay"
-                 placeholder="Añadir fecha" class="readonly-input" />
-        </div>
-        <div class="campo" @click="abrirCalendario('fin')">
-          <label>CHECK-OUT</label>
-          <input type="text" readonly :value="checkOutDisplay"
-                 placeholder="Añadir fecha" class="readonly-input" />
-        </div>
-      </div>
-
-      <CalendarSelector
-        v-if="mostrarCalendario"
-        :model-value="{
-          start: (campoEditando === 'inicio' ? fechaInicio : fechaFin)
-                 ? new Date((campoEditando === 'inicio' ? fechaInicio : fechaFin) + 'T00:00:00')
-                 : null,
-          end: null
-        }"
-        :range="false"
-        @update:dates="onDatesSelected"
-        @close="mostrarCalendario = false"
+      <HabitacionesSelector
+        :fecha-inicio="fechaInicio"
+        :fecha-fin="fechaFin"
+        :resumen-huespedes="resumenHuespedes"
+        :noches="noches"
+        @abrir-calendario="abrirCalendario"
+        @seleccionar-habitacion="onSeleccionarHabitacion"
       />
 
-      <div class="campo-personas" id="guest-field">
-        <label>HUÉSPEDES</label>
-        <div class="personas-input-wrapper" @click="toggleHuespedes">
-          <span class="material-symbols-outlined personas-icon">person</span>
-          <input type="text" readonly :value="resumenHuespedes"
-                 class="readonly-input-personas" />
-          <span class="material-symbols-outlined dropdown-icon">expand_more</span>
-        </div>
-        <GuestSelector v-if="mostrarHuespedes"
-                       v-model="habitacionesGuest"
-                       @close="mostrarHuespedes = false" />
-      </div>
-
-      <div class="desglose">
-        <div class="linea">
-          <span>${{ precioBase }} x {{ noches }} noche{{ noches !== 1 ? 's' : '' }}</span>
-          <span>${{ totalPrecio }}</span>
-        </div>
-        <hr />
-        <div class="linea total">
-          <span>Total</span>
-          <span>${{ totalPrecio }}</span>
-        </div>
-      </div>
-
-      <button class="btn-reservar">Reservar</button>
+      <ReviewsSection :hospedaje-id="hospedaje.id" />
     </div>
+
+    <!-- Selectores flotantes -->
+    <CalendarSelector
+      v-if="mostrarCalendario"
+      :model-value="{
+        start: (campoEditando === 'inicio' ? fechaInicio : fechaFin)
+               ? new Date((campoEditando === 'inicio' ? fechaInicio : fechaFin) + 'T00:00:00')
+               : null,
+        end: null
+      }"
+      :range="false"
+      @update:dates="onDatesSelected"
+      @close="mostrarCalendario = false"
+    />
+    <GuestSelector v-if="mostrarHuespedes"
+                   v-model="habitacionesGuest"
+                   @close="mostrarHuespedes = false" />
   </div>
 
   <!-- Loading -->
@@ -107,14 +74,17 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import CalendarSelector from './CalendarSelector.vue'
 import GuestSelector from './GuestSelector.vue'
+import HabitacionesSelector from './HabitacionesSelector.vue'
+import ReviewsSection from '../components/Reviewssection.vue'
+import { API, apiFetch } from '../services/api'
 
 const props = defineProps({ hotel: Object })
 const route = useRoute()
-const BASE = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api'
+const BASE = API
 
 // ── Estado global ─────────────────────────────────────────────
 const loading    = ref(true)
-const hospedaje  = ref({})
+const hospedaje  = ref({ nombre: '', ciudad: '', pais: '', descripcion: '' })
 const servicios  = ref([])
 const host       = ref({ name: '', photo: '', cargo: '', years: 0 })
 const precioBase = ref(0)
@@ -135,8 +105,8 @@ const resumenHuespedes = computed(() => {
 
 // ── Calendario ────────────────────────────────────────────────
 const mostrarCalendario = ref(false)
-const fechaInicio       = ref('')
-const fechaFin          = ref('')
+const fechaInicio       = ref(route.query.entrada || '')
+const fechaFin          = ref(route.query.salida || '')
 const campoEditando     = ref('inicio')
 const dateFieldRef      = ref(null)
 
@@ -179,42 +149,44 @@ const totalPrecio = computed(() =>
   noches.value > 0 ? precioBase.value * noches.value : 0
 )
 
+function onSeleccionarHabitacion(hab) {
+  // Por ahora solo un log, después aquí va el flujo de reserva
+  console.log('Habitación seleccionada:', hab)
+  alert(`Reservando: ${hab.TIPO_HABITACION} - $${hab.PRECIO_NOCHE}/noche`)
+}
+
 // ── Fetch desde la BD ─────────────────────────────────────────
 async function cargarTodo() {
   const id = route.params.id
+  if (!id) {
+    console.error('No se encontró el ID en la ruta')
+    return
+  }
+
   try {
-    const [infoRes, serviciosRes, anfitrionRes] = await Promise.all([
-      fetch(`${BASE}/hospedaje/${id}`),
-      fetch(`${BASE}/hospedaje/${id}/servicios`),
-      fetch(`${BASE}/hospedaje/${id}/anfitrion`),
+    const info = await apiFetch(`/hospedaje/${id}`)
+    hospedaje.value = info
+
+    const [serviciosData, anfitrionData] = await Promise.allSettled([
+      apiFetch(`/hospedaje/${id}/servicios`),
+      apiFetch(`/hospedaje/${id}/anfitrion`),
     ])
 
-    // Info principal
-    if (infoRes.ok) {
-      hospedaje.value = await infoRes.json()
+    if (serviciosData.status === 'fulfilled') {
+      servicios.value = serviciosData.value
     }
 
-    // Servicios
-    if (serviciosRes.ok) {
-      servicios.value = await serviciosRes.json()
+    if (anfitrionData.status === 'fulfilled' && anfitrionData.value) {
+      const a = anfitrionData.value
+      host.value.name  = `${a.nombre} ${a.apellidos ?? ''}`.trim()
+      host.value.cargo = a.cargo ?? 'Anfitrión'
+      host.value.years = a.anios_en_plataforma ?? 1
+      host.value.photo = `https://ui-avatars.com/api/?name=${encodeURIComponent(host.value.name)}&background=2c537a&color=fff&size=128`
     }
 
-    // Anfitrión (puede no existir, no rompemos el render)
-    if (anfitrionRes.ok) {
-      const a = await anfitrionRes.json()
-      host.value = {
-        name:  `${a.nombre} ${a.apellidos ?? ''}`.trim(),
-        cargo: a.cargo ?? 'Anfitrión',
-        years: a.anios_en_plataforma ?? 1,
-        photo: `https://ui-avatars.com/api/?name=${encodeURIComponent(a.nombre)}&background=2c537a&color=fff&size=128`,
-      }
-    }
-
-    // Precio base: primera habitación disponible como referencia
     await cargarPrecioBase(id)
-
   } catch (e) {
-    console.error('Error cargando hospedaje:', e)
+    console.error('Error cargando hospedaje:', e.message)
   } finally {
     loading.value = false
   }
@@ -222,18 +194,40 @@ async function cargarTodo() {
 
 async function cargarPrecioBase(id) {
   try {
-    // Trae el precio mínimo de las habitaciones del hospedaje
-    const res = await fetch(
-      `${BASE}/hospedaje/${id}/disponibilidad` +
-      `?desde=${hoy()}&hasta=${manana()}`
-    )
-    if (res.ok) {
-      const rows = await res.json()
-      if (rows.length) {
-        precioBase.value = Number(rows[0].precio_efectivo)
-      }
+    // Intenta con los próximos 30 días para tener más chances de encontrar precio
+    const desde = hoy()
+    const hasta = (() => {
+      const d = new Date(); d.setDate(d.getDate() + 30)
+      return d.toISOString().split('T')[0]
+    })()
+    const rows = await apiFetch(`/hospedaje/${id}/disponibilidad?desde=${desde}&hasta=${hasta}`)
+    if (rows && rows.length) {
+      // Toma el precio mínimo disponible
+      precioBase.value = Math.min(...rows.map(r => Number(r.precio_efectivo)))
+    } else {
+      // Fallback: busca precio base directo de habitaciones
+      const info = await apiFetch(`/hospedaje/${id}/habitaciones-base`)
+      if (info && info.length) precioBase.value = Number(info[0].precio_noche)
     }
-  } catch { /* sin disponibilidad hoy, precio queda en 0 */ }
+  } catch (e) {
+    console.warn('Sin precio disponible:', e.message)
+  }
+}
+
+function iconoServicio(nombre) {
+  const n = nombre.toLowerCase()
+  if (n.includes('piscina') || n.includes('alberca')) return 'pool'
+  if (n.includes('wifi') || n.includes('internet'))   return 'wifi'
+  if (n.includes('desayuno') || n.includes('comida')) return 'restaurant'
+  if (n.includes('gimnasio') || n.includes('gym'))    return 'fitness_center'
+  if (n.includes('estacionamiento') || n.includes('parking')) return 'local_parking'
+  if (n.includes('aire') || n.includes('ac'))         return 'ac_unit'
+  if (n.includes('traslado') || n.includes('aeropuerto')) return 'flight_takeoff'
+  if (n.includes('playa'))                            return 'beach_access'
+  if (n.includes('spa'))                              return 'spa'
+  if (n.includes('bar'))                              return 'local_bar'
+  if (n.includes('habitacion') || n.includes('servicio 24')) return 'room_service'
+  return 'check'
 }
 
 // Recarga precio cuando el usuario elige fechas
@@ -245,16 +239,12 @@ watch([fechaInicio, fechaFin], async ([ini, fin]) => {
   if (isNaN(dIni.getTime()) || isNaN(dFin.getTime()) || dFin <= dIni) return
 
   const id = route.params.id
+  if (!id) return
   try {
-    const res = await fetch(
-      `${BASE}/hospedaje/${id}/disponibilidad?desde=${ini}&hasta=${fin}`
-    )
-    if (res.ok) {
-      const rows = await res.json()
-      if (rows.length) precioBase.value = Number(rows[0].precio_efectivo)
-    }
+    const rows = await apiFetch(`/hospedaje/${id}/disponibilidad?desde=${ini}&hasta=${fin}`)
+    if (rows.length) precioBase.value = Number(rows[0].precio_efectivo)
   } catch (e) {
-    console.error('Error disponibilidad:', e)
+    console.error('Error disponibilidad:', e.message)
   }
 })
 

@@ -10,48 +10,6 @@
           :initial-huespedes="habitaciones"
           compact
         />
-        <div class="accommodation-tabs">
-          <div class="slider-background" :class="sliderClass"></div>
-
-          <button class="tab" :class="{ active: activeTab === 'all' }" @click="activeTab = 'all'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M7 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-              <path d="M22 17v-3h-20" />
-              <path d="M2 8v9" />
-              <path d="M12 14h10v-2a3 3 0 0 0 -3 -3h-7v5z" />
-            </svg>
-            Todos los hospedajes
-          </button>
-
-          <button class="tab" :class="{ active: activeTab === 'Hotel' }" @click="activeTab = 'Hotel'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M3 21l18 0" />
-              <path d="M9 8l1 0" />
-              <path d="M9 12l1 0" />
-              <path d="M9 16l1 0" />
-              <path d="M14 8l1 0" />
-              <path d="M14 12l1 0" />
-              <path d="M14 16l1 0" />
-              <path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16" />
-            </svg>
-            Hoteles
-          </button>
-
-          <button class="tab" :class="{ active: activeTab === 'Casa' }" @click="activeTab = 'Casa'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
-              <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
-              <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
-            </svg>
-            Casa
-          </button>
-        </div>
       </div>
     </div>
 
@@ -202,6 +160,39 @@
       <!-- RESULTADOS -->
       <div class="listings-column">
 
+        <!-- TABS ahora viven aquí -->
+        <div class="accommodation-tabs">
+          <button class="tab" :class="{ active: activeTab === 'all' }" @click="activeTab = 'all'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+              <path d="M7 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/>
+              <path d="M22 17v-3h-20"/><path d="M2 8v9"/>
+              <path d="M12 14h10v-2a3 3 0 0 0 -3 -3h-7v5z"/>
+            </svg>
+            Todos los hospedajes
+          </button>
+
+          <button class="tab" :class="{ active: activeTab === 'Hotel' }" @click="activeTab = 'Hotel'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+              <path d="M3 21l18 0"/><path d="M9 8l1 0"/><path d="M9 12l1 0"/>
+              <path d="M9 16l1 0"/><path d="M14 8l1 0"/><path d="M14 12l1 0"/>
+              <path d="M14 16l1 0"/><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16"/>
+            </svg>
+            Hoteles
+          </button>
+
+          <button class="tab" :class="{ active: activeTab === 'Casa' }" @click="activeTab = 'Casa'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+              <path d="M5 12l-2 0l9 -9l9 9l-2 0"/>
+              <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"/>
+              <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"/>
+            </svg>
+            Casa
+          </button>
+        </div>
+
         <div v-if="isLoading" class="estado-busqueda">
           <p>Buscando hospedajes...</p>
         </div>
@@ -298,7 +289,7 @@ const router = useRouter()
 const searchByName = ref('')
 import { apiPost } from '../services/api'
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
+const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api'
 
 // ── Parámetros de la URL ──────────────────────────────────────────────────────
 const searchDestino = ref(route.query.destino || '')
@@ -441,6 +432,7 @@ async function ejecutarBusqueda() {
   hoteles.value = []
 
   const destino = route.query.destino || ''
+  const idUbicacionQuery = route.query.id_ubicacion || ''
   const fechaInicio = route.query.entrada || ''
   const fechaFin = route.query.salida || ''
   const habs = route.query.huespedes
@@ -453,15 +445,10 @@ async function ejecutarBusqueda() {
   searchSalida.value = fechaFin
   habitaciones.value = habs
 
+  // Validación básica de fechas si están presentes
   if (fechaInicio && fechaFin && fechaFin !== 'FLEXIBLE') {
     const dIni = new Date(fechaInicio)
     const dFin = new Date(fechaFin)
-
-    if (isNaN(dIni.getTime()) || isNaN(dFin.getTime())) {
-      errorMsg.value = 'Formato de fecha inválido'
-      isLoading.value = false
-      return
-    }
     if (dFin <= dIni) {
       errorMsg.value = 'La fecha de salida debe ser posterior a la de entrada'
       isLoading.value = false
@@ -469,18 +456,39 @@ async function ejecutarBusqueda() {
     }
   }
 
-  console.log('EJECUTANDO BÚSQUEDA CON:', { destino, fechaInicio, fechaFin, habs })
-
   try {
     const data = await apiPost('/search/hospedaje', {
-      destino: destino,
+      destino: destino || '',
+      id_ubicacion: idUbicacionQuery,
       fecha_inicio: fechaInicio || null,
       fecha_fin: (fechaFin && fechaFin !== 'FLEXIBLE') ? fechaFin : null,
       habitaciones: habs,
     })
 
-    console.log('HOTELES RECIBIDOS:', data.length, data)
-    hoteles.value = data.map(h => ({ ...h, currentImg: 0, isFavorite: false }))
+    // Normalizar la respuesta: Algunos backends devuelven { data: [...] } o [...]
+    const rawResults = Array.isArray(data) ? data : (data?.data || [])
+    
+    hoteles.value = rawResults.map(h => {
+      // Normalizar claves de Mayúsculas (Postgres) a Minúsculas (Frontend)
+      const normalized = {}
+      Object.keys(h).forEach(key => {
+        normalized[key.toLowerCase()] = h[key]
+      })
+
+      return {
+        ...normalized,
+        // Re-asignar ID si viene como id_servicio
+        id_servicio: normalized.id_servicio || normalized.id,
+        currentImg: 0,
+        isFavorite: false,
+        // Asegurar que amenidades sea un array
+        amenidades: Array.isArray(normalized.amenidades) ? normalized.amenidades : [],
+        // Procesar imágenes
+        imagenes: Array.isArray(normalized.imagenes) && normalized.imagenes.length > 0 
+          ? normalized.imagenes 
+          : (normalized.imagen_portada ? [normalized.imagen_portada] : [])
+      }
+    })
 
   } catch (err) {
     console.error('ERROR FETCH:', err)

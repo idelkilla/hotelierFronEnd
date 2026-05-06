@@ -4,7 +4,7 @@
 //   e.g. https://hotelierbackend-1.onrender.com
 // All routes below add /api/... themselves.
 
-const BASE = (import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com')
+const BASE = (import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api')
   .trim()
   .replace(/\/+$/, '')          // strip trailing slash
   .replace(/\/api$/i, '')       // strip accidental /api suffix
@@ -14,11 +14,17 @@ export const API      = `${BASE}/api`  // https://hotelierbackend-1.onrender.com
 
 export async function apiFetch(path, options = {}) {
   const token = localStorage.getItem('user_token')
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...options.headers,
+  const headers = { ...options.headers }
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
   }
+
+  // Solo agregamos JSON si no es FormData y no se ha especificado otro tipo
+  if (!(options.body instanceof FormData) && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json'
+  }
+
   const res = await fetch(`${API}${path}`, {
     ...options,
     headers,

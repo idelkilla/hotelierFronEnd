@@ -1,5 +1,6 @@
 <template>
   <div class="filtros-autos">
+<<<<<<< HEAD
 
     <!-- Botón visible solo en mobile -->
     <button class="filtros-toggle-btn" @click="drawerAbierto = true">
@@ -8,6 +9,14 @@
         <line x1="4" y1="6" x2="20" y2="6"/>
         <line x1="7" y1="12" x2="17" y2="12"/>
         <line x1="10" y1="18" x2="14" y2="18"/>
+=======
+    <div class="filter-card-box">
+    <p class="filter-card-title">Busca por nombre</p>
+    <div class="name-search-wrapper">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" 
+        fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+>>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
       </svg>
       Filtros
       <span v-if="cantidadFiltros > 0" class="filtros-badge">{{ cantidadFiltros }}</span>

@@ -88,7 +88,7 @@ const props = defineProps({
   isMobile: { type: Boolean, default: false } // Nueva prop
 });
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
+const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api'
 
 const emit = defineEmits(["close"]);
 const menuRef = ref(null);

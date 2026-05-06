@@ -7,7 +7,7 @@
         <input 
           type="text" 
           :value="destinoActivo ? busquedaDestino : labelUbicacion" 
-          @input="e => { busquedaDestino = e.target.value; fetchUbicaciones() }" 
+          @input="e => { busquedaDestino = e.target.value }" 
           @focus="abrirMenu"
           @blur="cerrarConRetraso"
           placeholder="Destino" 
@@ -48,7 +48,7 @@ import { ref, watch } from 'vue';
 const props = defineProps(['modelValue'])
 const emit = defineEmits(['update:modelValue', 'focus'])
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com'
+const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api'
 const sugerencias = ref([])
 const mostrarDropdown = ref(false)
 const loadingUbicaciones = ref(false)
@@ -57,45 +57,57 @@ const selectedUbicacion = ref(null)
 const labelUbicacion = ref('')
 const destinoActivo = ref(false)
 const busquedaDestino = ref(props.modelValue || '')
+const debounceTimer = ref(null)
 
-// Sincronizar estado interno si modelValue cambia desde fuera (ej. reset del formulario)
 watch(() => props.modelValue, (newVal) => {
   if (!destinoActivo.value) {
     busquedaDestino.value = newVal || ''
   }
 })
 
+watch(busquedaDestino, (newVal) => {
+  clearTimeout(debounceTimer.value)
+  
+  if (!newVal.trim()) {
+    sugerencias.value = []
+    busquedaRealizada.value = false
+    loadingUbicaciones.value = false
+    return
+  }
+
+  loadingUbicaciones.value = true
+  debounceTimer.value = setTimeout(() => {
+    fetchUbicaciones()
+  }, 300)
+})
+
 const cerrarConRetraso = () => {
-  // El retraso permite que el evento @mousedown de la sugerencia se ejecute antes de que desaparezca el div
   setTimeout(() => { mostrarDropdown.value = false }, 200)
 }
 
 const abrirMenu = () => {
   mostrarDropdown.value = true
   emit('focus')
-  fetchUbicaciones()
+  if (busquedaDestino.value.trim()) fetchUbicaciones()
 }
 
 async function fetchUbicaciones() {
-  destinoActivo.value = true
-  mostrarDropdown.value = true
-  loadingUbicaciones.value = true
-  
   try {
-    const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${encodeURIComponent(busquedaDestino.value)}`)
+    const query = encodeURIComponent(busquedaDestino.value.trim())
+    const res = await fetch(`${API_URL}/api/search/ubicaciones?q=${query}`)
+    
+    if (!res.ok) throw new Error(`Error HTTP ${res.status}`)
+    
     const data = await res.json()
-
-    sugerencias.value = data.map(item => {
-      // Construimos una etiqueta que incluya Pais si existe, sin importar el ID
-      const partes = [item.ubicacion, item.ciudad, item.pais].filter(part => part && part.trim() !== '');
-      return {
-        ...item,
-        label: partes.join(', ')
-      }
-    })
+    sugerencias.value = data.map(item => ({
+      ...item,
+      label: [item.ubicacion, item.ciudad, item.pais]
+        .filter(part => part && part.trim())
+        .join(', ')
+    }))
     busquedaRealizada.value = true
   } catch (err) {
-    console.error("Error al buscar:", err)
+    console.error("Error:", err)
     sugerencias.value = []
   } finally {
     loadingUbicaciones.value = false
@@ -103,27 +115,19 @@ async function fetchUbicaciones() {
 }
 
 function getIcon(loc) {
-  // Ahora el icono viene directamente desde la base de datos
-  if (loc.icono) return loc.icono;
-
-  // Fallback por si la base de datos no tiene el valor definido
-  const nombre = (loc.ubicacion || '').toLowerCase();
-  if (nombre.includes('aeropuerto')) return 'local_airport';
-  if (nombre.includes('hotel')) return 'apartment';
-  return 'location_on';
+  if (loc.icono) return loc.icono
+  const nombre = (loc.ubicacion || '').toLowerCase()
+  return nombre.includes('aeropuerto') ? 'local_airport' : 'location_on'
 }
 
 function seleccionarUbicacion(loc) {
   selectedUbicacion.value = loc
-  // Usamos 'ubicacion' porque así viene en tu JSON del backend
-  labelUbicacion.value = `${loc.ubicacion}, ${loc.ciudad}` 
+  labelUbicacion.value = `${loc.ubicacion}, ${loc.ciudad}`
   busquedaDestino.value = `${loc.ubicacion}, ${loc.ciudad}`
-  
   destinoActivo.value = false
   mostrarDropdown.value = false
   emit('update:modelValue', busquedaDestino.value)
 }
 
-// Método expuesto para que el padre pueda cerrarlo desde fuera
 defineExpose({ cerrar: () => mostrarDropdown.value = false })
 </script>

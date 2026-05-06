@@ -6,17 +6,26 @@
     <div class="vuelos-main-content-layout">
       <!-- Columna izquierda para los filtros -->
       <div class="filters-column">
-        <FiltrosVuelos />
+        <FiltrosVuelos 
+          :id-origen="busqueda.id_origen" 
+          :id-destino="busqueda.id_destino" 
+          @filtros-cambiados="aplicarFiltros" 
+        />
       </div>
 
       <!-- Columna derecha para el buscador y resultados -->
       <div class="vuelos-right-column">
         <!-- El buscador de vuelos -->
+<<<<<<< HEAD
         <div class="vuelos-search-wrapper search-top-layer">
           <VuelosBuscar />
+=======
+        <div class="vuelos-search-wrapper">
+          <VuelosBuscar :initial-destino="route.query.destino" />
+>>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
         </div>
          <div class="vuelos-search-wrapper">
-          <OpcionesVuelos/>
+          <OpcionesVuelos :vuelos-data="vuelosResultados" :loading="cargando" />
         </div>
         <!-- Aquí irían los resultados de vuelos si los hubiera -->
       </div>
@@ -86,9 +95,11 @@
 }
 
 /* Mover los tabs (Viaje redondo...) debajo de los inputs usando order */
+
 :deep(.vuelos-tabs) {
   order: 2; 
   margin: 10px 90px 15px; /* Márgenes reducidos para que los resultados de vuelos suban */
+  margin-bottom: 20px;
   background-color: #e9f1f6;
   border-radius: 500px;
   padding: 4px;
@@ -96,15 +107,26 @@
   border-bottom: none !important;
   display: flex;
   align-items: center;
+  border-bottom: none !important;
 }
 
 :deep(.vuelo-tab) {
   border-radius: 40px !important;
+<<<<<<< HEAD
   padding: 10px 64px !important;
   border: none !important;
   background: none !important;
   color: #113955 !important;
   font-size: 15px !important;
+=======
+  padding: 10px 64px !important; /* Relleno idéntico al de cuerpo.css */
+  padding: 10px 32px !important; 
+  border: none !important;
+  background: none !important;
+  color: #113955 !important;
+  font-size: 15px !important; /* Tamaño de fuente idéntico al de cuerpo.css */
+  font-size: 14px !important;
+>>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -174,10 +196,70 @@
 </style>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import Header from "../components/Header.vue";
 import VuelosBuscar from"../components/VuelosSearch.vue";
 import FiltrosVuelos from"../components/FiltrosVuelos.vue";
 import OpcionesVuelos from '../components/OpcionesVuelos.vue';
+<<<<<<< HEAD
 import FooterComponent from '../components/footer.vue'
+=======
+import { buscarVuelos } from '../services/vueloService';
+import { useRouter } from 'vue-router';
+
+const route = useRoute();
+const router = useRouter();
+const vuelosResultados = ref([]);
+const cargando = ref(false);
+
+const busqueda = ref({
+  id_origen: route.query.id_origen || null,
+  id_destino: route.query.id_destino || null
+});
+
+async function ejecutarBusqueda() {
+  // Sincronizar IDs para que el sidebar de filtros sepa qué buscar
+  busqueda.value.id_origen = route.query.id_origen || null;
+  busqueda.value.id_destino = route.query.id_destino || null;
+
+  // Solo buscar si hay al menos un origen o destino
+  if (!route.query.id_origen && !route.query.id_destino) return;
+
+  cargando.value = true;
+  try {
+    const data = await buscarVuelos(route.query);
+    vuelosResultados.value = data;
+  } catch (error) {
+    console.error('Error en búsqueda de vuelos:', error);
+  } finally {
+    cargando.value = false;
+  }
+}
+
+onMounted(ejecutarBusqueda);
+
+// Reaccionar a cambios en la URL (cuando el usuario hace clic en Buscar)
+watch(() => route.query, ejecutarBusqueda, { deep: true });
+
+function aplicarFiltros(filtros) {
+  console.log('Filtros aplicados:', filtros);
+  const query = { ...route.query };
+
+  // Mapeo de filtros emitidos a parámetros de URL que entiende el backend
+  if (filtros.nombre) query.nombre = filtros.nombre;
+  else delete query.nombre;
+
+  if (filtros.aerolineas?.length) query.aerolineas = filtros.aerolineas.join(',');
+  else delete query.aerolineas;
+
+  if (filtros.escalas?.length) query.escalas = filtros.escalas[0];
+  else delete query.escalas;
+
+  if (filtros.claseId) query.clase = filtros.claseId;
+  if (filtros.tiempoMaximoHoras) query.tiempo_max = filtros.tiempoMaximoHoras;
+
+  router.push({ query });
+}
+>>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
 </script>

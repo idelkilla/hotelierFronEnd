@@ -1,23 +1,25 @@
 <template>
   <div class="main-container">
     <Header />
-    <BuscadorPrincipal />
+    <BuscadorPrincipal :is-detalle="true" />
 
     <div class="layout-detalle">
       <GaleriaCollage :imagenesBd="imagenesHotel" />
     </div>
     <div class="layout-detalle" style="gap: 0">
-  <DetallesHotel />
-</div>
-
-<div class="layout-detalle">
-      <Reviewssection />   <!-- ← aquí -->
+      <DetallesHotel />
     </div>
+<<<<<<< HEAD
 <FooterComponent />
+=======
+
+    <FooterComponent />
+>>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
   </div>
 </template>
 
 <script setup>
+<<<<<<< HEAD
 import { ref } from 'vue';
 import Header from "../components/Header.vue";
 import BuscadorPrincipal from "../components/MenuDet.vue";
@@ -25,15 +27,37 @@ import GaleriaCollage from "../components/GaleriaCollage.vue";
 import DetallesHotel from "../components/DetallesHotel.vue";
 import Reviewssection from "../components/Reviewssection.vue";
 import FooterComponent from '../components/footer.vue'
+=======
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import Header from '../components/Header.vue'
+import BuscadorPrincipal from '../components/MenuDet.vue'
+import GaleriaCollage from '../components/GaleriaCollage.vue'
+import DetallesHotel from '../components/DetallesHotel.vue'
+import FooterComponent from '../components/footer.vue'
+import { API, apiFetch } from '../services/api'
+>>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
 
-// Imágenes de prueba — reemplazar con fetch cuando esté el backend
-const imagenesHotel = ref([
-  'https://images.pexels.com/photos/271639/pexels-photo-271639.jpeg',
-  'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg',
-  'https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg',
-  'https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg',
-  'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg',
-])
+const route = useRoute()
+const BASE = API
+
+const imagenesHotel = ref([])
+
+onMounted(async () => {
+  const id = route.params.id
+  if (!id) return 
+  try {
+    const data = await apiFetch(`/hospedaje/${id}/imagenes`)
+    if (Array.isArray(data)) {
+      imagenesHotel.value = data
+      console.log('✅ Imágenes cargadas:', data.length)
+    } else {
+      console.warn('El backend no devolvió un array de imágenes:', data)
+    }
+  } catch (e) {
+    console.error('Fallo al conectar con el backend (Imágenes):', e.message)
+  }
+})
 </script>
 
 <style scoped>
@@ -42,7 +66,7 @@ const imagenesHotel = ref([
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 90px;
+  padding-top: 70px;
   background-color: #ffffff;
 }
 

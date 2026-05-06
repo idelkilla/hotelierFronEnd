@@ -100,25 +100,25 @@
       <div class="usr-subtabs">
         <button
           :class="['usr-stab', { active: filtroTipo === 'todos' }]"
-          @click="filtroTipo = 'todos'"
+          @click="cambiarFiltro('todos')"
         >
           Todos
         </button>
         <button
           :class="['usr-stab', { active: filtroTipo === 'empleado' }]"
-          @click="filtroTipo = 'empleado'"
+          @click="cambiarFiltro('empleado')"
         >
           Empleados
         </button>
         <button
           :class="['usr-stab', { active: filtroTipo === 'cliente' }]"
-          @click="filtroTipo = 'cliente'"
+          @click="cambiarFiltro('cliente')"
         >
           Clientes
         </button>
         <button
           :class="['usr-stab', { active: filtroTipo === 'miembro' }]"
-          @click="filtroTipo = 'miembro'"
+          @click="cambiarFiltro('miembro')"
         >
           Miembros
         </button>
@@ -161,6 +161,7 @@
             v-model="busqueda"
             type="text"
             placeholder="Buscar por nombre, correo o ID..."
+            @input="handleSearch"
           />
         </div>
 
@@ -227,6 +228,9 @@
                   <button class="usr-btn-edit" @click="abrirEdicion(u)">
                     <i class="fas fa-pen"></i> Editar
                   </button>
+                  <button class="usr-btn-delete" @click="eliminarUsuario(u.id)">
+                    <i class="fas fa-trash"></i>
+                  </button>
                 </td>
               </tr>
               <tr v-if="!usuariosFiltrados.length">
@@ -248,8 +252,12 @@ import { useRoute, useRouter } from 'vue-router'
 import AgregarEmpleadoForm from '../components/AdminAgregarEmpleado.vue'
 import AgregarClienteForm from '../components/AdminAgregarCliente.vue'
 import AgregarMiembroForm from '../components/AdminAgregarMiembro.vue'
-import EditarUsuarioPanel from '../components/adminEditarUsuario.vue'
+import AdminEditarUsuario from '../components/adminEditarUsuario.vue'
 import { apiFetch } from '../services/api'
+
+const props = defineProps({
+  tipo: { type: String, default: 'todos' }
+})
 
 const route = useRoute()
 const router = useRouter()
@@ -261,14 +269,13 @@ const filtroTipo = ref('todos')
 const busqueda = ref('')
 const usuarios = ref([])
 const editando = ref(null)
-const catalogos = reactive({ puestos: [], cargos: [], nivelMembresia: [] })
+const catalogos = reactive({ puestos: [], nivelMembresia: [] })
 
 const guardando = ref(false)
 const cargandoLista = ref(false)
 const cargandoDetalle = ref(false)
 const alerta = reactive({ mensaje: '', tipo: 'error' })
 
-// Refs a los sub-formularios
 const empleadoRef = ref(null)
 const clienteRef = ref(null)
 const miembroRef = ref(null)
@@ -283,22 +290,7 @@ const labelGuardar = computed(() => {
   return map[subtab.value] || 'Guardar'
 })
 
-const usuariosFiltrados = computed(() => {
-  let list = usuarios.value
-  if (filtroTipo.value !== 'todos') {
-    list = list.filter((u) => u.tipo.toLowerCase() === filtroTipo.value)
-  }
-  if (busqueda.value.trim()) {
-    const q = busqueda.value.toLowerCase()
-    list = list.filter(
-      (u) =>
-        u.nombre.toLowerCase().includes(q) ||
-        (u.correo || '').toLowerCase().includes(q) ||
-        String(u.id).includes(q),
-    )
-  }
-  return list
-})
+const usuariosFiltrados = computed(() => usuarios.value)
 
 // ── Helpers ──────────────────────────────────────────────────────
 const mostrarAlerta = (mensaje, tipo = 'error') => {
@@ -321,6 +313,7 @@ const iniciales = (nombre = '') =>
 const avatarBg = (tipo) =>
   ({ Empleado: '#E6F1FB', Cliente: '#EEEDFE', Miembro: '#E1F5EE' })[tipo] ||
   '#F1EFE8'
+
 const avatarColor = (tipo) =>
   ({ Empleado: '#0C447C', Cliente: '#3C3489', Miembro: '#085041' })[tipo] ||
   '#444441'
@@ -357,7 +350,10 @@ const syncRoute = () => {
   const path = route.path
   if (path.includes('/consultar')) {
     vista.value = 'consultar'
-    if (usuarios.value.length === 0) cargarListadoSilencioso()
+    filtroTipo.value = route.query.tipo || props.tipo || 'todos'
+    if (usuarios.value.length === 0) {
+      cargarListado()
+    }
   } else {
     vista.value = 'agregar'
     if (path.includes('/cliente')) subtab.value = 'cliente'
@@ -366,33 +362,73 @@ const syncRoute = () => {
   }
 }
 
-watch(() => route.path, syncRoute, { immediate: true })
+watch(filtroTipo, (newVal) => {
+  if (vista.value === 'consultar') {
+    cargarListado()
+  }
+})
+
+watch(() => route.fullPath, syncRoute, { immediate: true })
 
 const navegar = (v, s = null) => {
   let path = '/admin/usuarios'
   if (v === 'consultar') {
-    router.push(`${path}/consultar`)
+    router.push({ path: `${path}/consultar`, query: { tipo: filtroTipo.value } })
   } else {
     router.push(`${path}/agregar/${s || subtab.value}`)
   }
+}
+
+const cambiarFiltro = (t) => {
+  filtroTipo.value = t
+  router.push({ path: route.path, query: { tipo: t } })
 }
 
 // ── Consultar listado unificado ──────────────────────────────────
 const cargarListado = async () => {
   editando.value = null
   cargandoLista.value = true
-  await cargarListadoSilencioso()
-}
-
-const cargarListadoSilencioso = async () => {
   try {
-    const res = await apiFetch('/usuarios')
+    const tipoParam = filtroTipo.value !== 'todos' ? `?tipo=${filtroTipo.value}` : ''
+    console.log(`📡 Cargando: /usuarios${tipoParam}`)
+    
+    const res = await apiFetch(`/usuarios${tipoParam}`)
     usuarios.value = Array.isArray(res) ? res : []
+    
+    console.log(`✅ Usuarios cargados: ${usuarios.value.length}`)
   } catch (e) {
+    console.error('❌ Error cargando usuarios:', e)
     mostrarAlerta('Error cargando usuarios: ' + e.message)
   } finally {
     cargandoLista.value = false
   }
+}
+
+// ── Búsqueda ──────────────────────────────────────────────────────
+const buscarUsuarios = async () => {
+  if (!busqueda.value.trim()) {
+    return cargarListado()
+  }
+  try {
+    const q = encodeURIComponent(busqueda.value.trim())
+    const tipoParam = filtroTipo.value !== 'todos' ? `&tipo=${filtroTipo.value}` : ''
+    const url = `/usuarios/buscar?q=${q}${tipoParam}`
+    
+    console.log(`📡 Buscando: ${url}`)
+    const res = await apiFetch(url)
+    usuarios.value = Array.isArray(res) ? res : []
+    
+    console.log(`✅ Resultados: ${usuarios.value.length}`)
+  } catch (e) {
+    console.error('❌ Error en búsqueda:', e)
+    mostrarAlerta('Error en búsqueda: ' + e.message)
+  }
+}
+
+let searchTimer = null
+const handleSearch = () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(buscarUsuarios, 400)
 }
 
 // ── Abrir edición ────────────────────────────────────────────────
@@ -400,9 +436,16 @@ const abrirEdicion = async (u) => {
   editando.value = u
   cargandoDetalle.value = true
   try {
-    const det = await apiFetch(`/usuarios/${u.id}?tipo=${u.tipo.toLowerCase()}`)
+    const tipoParam = u.tipo.toLowerCase() !== 'usuario' ? `?tipo=${u.tipo.toLowerCase()}` : ''
+    const url = `/usuarios/${u.id}${tipoParam}`
+    
+    console.log(`📡 Cargando detalle: ${url}`)
+    const det = await apiFetch(url)
     editando.value = { ...u, ...det }
+    
+    console.log(`✅ Detalle cargado`)
   } catch (e) {
+    console.error('❌ Error cargando detalle:', e)
     mostrarAlerta('Error cargando detalle: ' + e.message)
   } finally {
     cargandoDetalle.value = false
@@ -414,10 +457,24 @@ const onGuardado = async () => {
   await cargarListado()
   editando.value = null
 }
+
 const onEliminado = async () => {
   mostrarAlerta('Usuario eliminado.', 'exito')
   await cargarListado()
   editando.value = null
+}
+
+const eliminarUsuario = async (id) => {
+  if (!confirm('¿Eliminar este usuario?')) return
+  
+  try {
+    await apiFetch(`/usuarios/${id}`, { method: 'DELETE' })
+    mostrarAlerta('Usuario eliminado.', 'exito')
+    await cargarListado()
+  } catch (e) {
+    console.error('❌ Error eliminando:', e)
+    mostrarAlerta('Error al eliminar: ' + e.message)
+  }
 }
 
 // ── Catálogos ────────────────────────────────────────────────────
@@ -427,13 +484,18 @@ onMounted(async () => {
       apiFetch('/catalogos/puestos'),
       apiFetch('/catalogos/niveles-membresia'),
     ])
-    catalogos.puestos = puestos
-    catalogos.nivelMembresia = niveles
+    catalogos.puestos = puestos || []
+    catalogos.nivelMembresia = niveles || []
   } catch (e) {
+    console.error('❌ Error cargando catálogos:', e)
     mostrarAlerta('Error cargando catálogos: ' + e.message)
   }
+  
+  // Cargar usuarios iniciales
+  cargarListado()
 })
 </script>
+
 
 <style scoped>
 .usr-page {
@@ -563,6 +625,24 @@ onMounted(async () => {
   border-color: #265073;
 }
 
+.usr-action-buttons {
+  display: flex;
+  gap: 8px;
+}
+.usr-btn-delete {
+  background: #fff;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.usr-btn-delete:hover {
+  background: #fef2f2;
+}
 /* ── Alerta ── */
 .usr-alerta {
   display: flex;
