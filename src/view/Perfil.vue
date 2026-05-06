@@ -34,7 +34,7 @@
             :key="item.key"
             class="travel-nav-card"
             :class="{ 'is-active': activeSection === item.key }"
-            @click="activeSection = item.key"
+            @click="cambiarSeccion(item.key)"
           >
             <div class="travel-nav-icon" v-html="item.svg"></div>
             <div class="travel-nav-content">
@@ -516,6 +516,40 @@
         </div>
 
         <!-- ═══════════════════════════════════════
+             SECCIÓN: MIS FAVORITOS
+        ════════════════════════════════════════════ -->
+        <div v-else-if="activeSection === 'favoritos'" class="section-wrap">
+          <h1 class="section-title">Mis Favoritos</h1>
+          <p class="info-desc">Hospedajes que has guardado para tus próximos viajes.</p>
+
+          <div v-if="cargandoFav" class="fav-status">Cargando tus favoritos...</div>
+          <div v-else-if="favoritos.length === 0" class="fav-empty-state">
+            <div class="fav-empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#265073" stroke-width="1.2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            </div>
+            <p>No tienes favoritos guardados todavía.</p>
+            <button class="btn-confirm" style="width:auto; padding:10px 24px;" @click="$router.push('/')">Explorar hospedajes</button>
+          </div>
+
+          <div v-else class="fav-grid">
+            <div v-for="fav in favoritos" :key="fav.id" class="fav-card" @click="irADetalle(fav.id)">
+              <div class="fav-card-img">
+                <img :src="fav.imagen || 'https://images.unsplash.com/photo-1566073771259-6a8506099945'" alt="Hospedaje" />
+                <button class="btn-fav-remove" @click.stop="quitarFavorito(fav.id)" title="Quitar de favoritos">✕</button>
+              </div>
+              <div class="fav-card-body">
+                <span class="fav-tag">{{ fav.tipo || 'Hospedaje' }}</span>
+                <h3 class="fav-name">{{ fav.nombre }}</h3>
+                <p class="fav-loc">{{ fav.ciudad }}, {{ fav.pais }}</p>
+                <div class="fav-footer">
+                  <span class="fav-price">${{ Math.round(fav.precio) }} <small>/ noche</small></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════
              SECCIÓN: NOTIFICACIONES
         ════════════════════════════════════════════ -->
         <div v-else-if="activeSection === 'notificaciones'" class="section-wrap">
@@ -983,11 +1017,13 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import Header from '../components/Header.vue'
 import footer from '../components/footer.vue'
-import { apiGet, apiPost, apiPut, apiDelete } from '../services/api'
+import { apiGet, apiPut, apiDelete } from '../services/api'
 
 const activeSection = ref('perfil')
+const router = useRouter()
 
 const mostrarModal  = ref(false)
 const tipoModal     = ref('')
@@ -1005,6 +1041,7 @@ const modalTitles = {
 
 const navItems = [
   { key: 'perfil',         label: 'Perfil',                   sub: 'Ingresa tus datos personales y documentos de viaje', svg: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>` },
+  { key: 'favoritos',      label: 'Mis Favoritos',            sub: 'Consulta tus hospedajes guardados',                  svg: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>` },
   { key: 'notificaciones', label: 'Notificaciones',            sub: 'Elige las notificaciones que quieres recibir',       svg: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>` },
   { key: 'formas-pago',    label: 'Formas de pago',            sub: 'Consulta las formas de pago guardadas',              svg: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>` },
   { key: 'cupones',        label: 'Cupones',                   sub: 'Consulta los cupones disponibles',                   svg: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>` },
@@ -1062,6 +1099,41 @@ const formTemp = reactive({
   documento_numero: '', documento_emision: '', documento_expiracion: '', documento_emisor: '',
   id_pais: '', id_ciudad: '', id_ubicacion: ''
 })
+
+// ── Lógica de Favoritos ───────────────────────────────────────
+const favoritos = ref([])
+const cargandoFav = ref(false)
+
+async function cambiarSeccion(key) {
+  activeSection.value = key
+  if (key === 'favoritos') {
+    await fetchFavoritos()
+  }
+}
+
+async function fetchFavoritos() {
+  try {
+    cargandoFav.value = true
+    // Consultamos al endpoint GET /api/favoritos
+    const data = await apiGet('/favoritos')
+    // El backend ya devuelve los campos normalizados: 
+    // id, nombre, ciudad, pais, descripcion, imagen, precio, tipo
+    favoritos.value = data
+  } catch (e) {
+    console.error('Error al cargar favoritos:', e)
+  } finally { cargandoFav.value = false }
+}
+
+async function quitarFavorito(id) {
+  try {
+    // Eliminamos desde el perfil usando el ID del hospedaje
+    await apiDelete(`/favoritos/${id}`)
+    favoritos.value = favoritos.value.filter(f => f.id !== id)
+  } catch (e) { 
+    alert('No se pudo quitar de favoritos. Intenta de nuevo.') 
+  }
+}
+function irADetalle(id) { router.push(`/hospedaje/${id}`) }
 
 const errores = reactive({})
 
@@ -1598,3 +1670,49 @@ function confirmarCerrarSesion() {
 </script>
 
 <style scoped src="../assets/css/Perfil.css"></style>
+
+<style scoped>
+/* Estilos para la cuadrícula de favoritos dentro de Perfil */
+.fav-status { padding: 40px 0; text-align: center; color: #666; font-size: 14px; }
+.fav-empty-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 60px 20px; text-align: center; color: #555;
+}
+.fav-empty-icon { width: 60px; height: 60px; margin-bottom: 15px; opacity: 0.5; }
+.fav-empty-state p { margin-bottom: 20px; font-size: 15px; }
+
+.fav-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px; margin-top: 10px;
+}
+.fav-card {
+  background: #fff; border: 1px solid #eee; border-radius: 12px;
+  overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+}
+.fav-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+
+.fav-card-img { position: relative; height: 160px; width: 100%; }
+.fav-card-img img { width: 100%; height: 100%; object-fit: cover; }
+.btn-fav-remove {
+  position: absolute; top: 10px; right: 10px; width: 28px; height: 28px;
+  border-radius: 50%; border: none; background: rgba(255,255,255,0.9);
+  color: #265073; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 12px; transition: background 0.2s;
+}
+.btn-fav-remove:hover { background: #fff; color: #e05555; }
+
+.fav-card-body { padding: 15px; display: flex; flex-direction: column; gap: 4px; }
+.fav-tag {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;
+  color: #2D9596; font-weight: 700; margin-bottom: 2px;
+}
+.fav-name { font-size: 17px; font-weight: 600; color: #265073; margin: 0; line-height: 1.3; }
+.fav-loc { font-size: 13px; color: #777; margin: 0; }
+.fav-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; }
+.fav-price { font-size: 15px; font-weight: 700; color: #265073; }
+.fav-price small { font-size: 11px; color: #888; font-weight: 400; }
+
+@media (max-width: 600px) {
+  .fav-grid { grid-template-columns: 1fr; }
+}
+</style>
