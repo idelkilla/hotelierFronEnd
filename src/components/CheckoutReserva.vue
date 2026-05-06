@@ -772,10 +772,13 @@ function validarPaso0() {
   )
 }
 function validarPaso1() {
-  if (form.value.metodo !== 'tarjeta')
-    return true[
-      ('nombreTarjeta', 'numeroTarjeta', 'mesExp', 'cvv', 'codigoPostal')
-    ].forEach(validarCampo)
+  // Si no pagas con tarjeta, no validamos esos campos
+  if (form.value.metodo !== 'tarjeta') return true
+
+  ;['nombreTarjeta', 'numeroTarjeta', 'mesExp', 'cvv', 'codigoPostal'].forEach(
+    validarCampo,
+  )
+
   return (
     !errors.value.nombreTarjeta &&
     !errors.value.numeroTarjeta &&

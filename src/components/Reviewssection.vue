@@ -55,32 +55,42 @@
         class="review-card"
       >
         <div class="review-score-badge">
-     <div class="badge-num">{{ ((review.CALIFICACION ?? review.calificacion) * 2).toFixed(0) }}</div>
-     <div class="badge-sub">/10</div>
-   </div>
-   <div class="review-body">
-     <p class="review-rating-word">{{ palabraPorCalificacion(review.CALIFICACION ?? review.calificacion ?? review.rating) }}</p>
-     <p class="review-text" :class="{ expanded: review.expanded }">
-       {{ review.COMENTARIO ?? review.comentario ?? review.text }}
-     </p>
-     <button
-       v-if="(review.COMENTARIO ?? review.comentario ?? review.text ?? '').length > 160"
-       class="read-more"
-       @click="review.expanded = !review.expanded"
-     >
-       {{ review.expanded ? 'Ver menos' : 'Ver más' }}
-     </button>
-     <div class="reviewer-row">
-       <div class="reviewer-avatar">
-         {{ (review.nombre ?? 'H').slice(0,2).toUpperCase() }}
-       </div>
-       <div>
-         <p class="reviewer-name">{{ review.nombre_cliente ?? review.name ?? 'Huésped verificado' }}</p>
-         <p class="reviewer-meta">{{ review.fecha ?? review.date ?? '' }} · <span class="verified-tag">✓ Verificada</span></p>
-       </div>
-     </div>
-   </div>
+          <div class="badge-num">
+            {{ ((review.CALIFICACION ?? review.calificacion) * 2).toFixed(0) }}
+          </div>
+          <div class="badge-sub">/10</div>
+        </div>
+        <div class="review-body">
+          <p class="review-rating-word">
+            {{ palabraPorCalificacion(review.CALIFICACION ?? review.calificacion ?? review.rating) }}
+          </p>
+          <p class="review-text" :class="{ expanded: review.expanded }">
+            {{ review.COMENTARIO ?? review.comentario ?? review.text }}
+          </p>
+          <button
+            v-if="(review.COMENTARIO ?? review.comentario ?? review.text ?? '').length > 160"
+            class="read-more"
+            @click="review.expanded = !review.expanded"
+          >
+            {{ review.expanded ? 'Ver menos' : 'Ver más' }}
+          </button>
+          <div class="reviewer-row">
+            <div class="reviewer-avatar">
+              {{ (review.nombre ?? 'H').slice(0, 2).toUpperCase() }}
+            </div>
+            <div>
+              <p class="reviewer-name">
+                {{ review.nombre_cliente ?? review.name ?? 'Huésped verificado' }}
+              </p>
+              <p class="reviewer-meta">
+                {{ review.fecha ?? review.date ?? '' }} ·
+                <span class="verified-tag">✓ Verificada</span>
+              </p>
+            </div>
+          </div>
+        </div>
       </article>
+
     </div>
 
     <!-- Ver todas -->
@@ -229,7 +239,7 @@ function palabraPorCalificacion(r) {
 async function cargarResenas() {
   if (!props.hospedajeId) return
   try {
-    const data = await apiFetch(`/hospedajes/${props.hospedajeId}/resenas`)
+    const data = await apiFetch(`/hospedaje/${props.hospedajeId}/resenas`)
 
     // Backend puede devolver:
     // - array directo
