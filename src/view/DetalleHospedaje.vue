@@ -10,21 +10,17 @@
       <DetallesHotel />
     </div>
 
-    <div class="layout-detalle">
-      <Reviewssection />
-    </div>
     <FooterComponent />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import Header from '../components/Header.vue'
 import BuscadorPrincipal from '../components/MenuDet.vue'
 import GaleriaCollage from '../components/GaleriaCollage.vue'
 import DetallesHotel from '../components/DetallesHotel.vue'
-import Reviewssection from '../components/Reviewssection.vue'
 import FooterComponent from '../components/footer.vue'
 import { API, apiFetch } from '../services/api'
 
@@ -35,7 +31,7 @@ const imagenesHotel = ref([])
 
 onMounted(async () => {
   const id = route.params.id
-  if (!id) return // No hacer fetch si no hay ID
+  if (!id) return 
   try {
     const data = await apiFetch(`/hospedaje/${id}/imagenes`)
     if (Array.isArray(data)) {

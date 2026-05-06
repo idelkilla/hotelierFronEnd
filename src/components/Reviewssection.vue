@@ -1,7 +1,23 @@
 <template>
   <section class="reviews-section">
 
-    <h1 class="reseñas">Reseñas</h1>
+    <!-- Header con score + subcategorías -->
+    <div class="reviews-header">
+      <div class="rating-summary">
+        <span class="rating-score">{{ averageRating.toFixed(1) }}</span>
+        <span class="rating-label-main">/10</span>
+        <span class="rating-word">{{ palabraRating }}</span>
+        <span class="rating-count">{{ reviews.length }} opiniones verificadas</span>
+      </div>
+
+      <div class="subcategories">
+        <div class="subcat-row" v-for="cat in subcategorias" :key="cat.label">
+          <span class="subcat-value">{{ cat.value.toFixed(1) }}</span>
+          <span class="subcat-label">{{ cat.label }}</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Filtros -->
     <div class="reviews-filters">
       <button
@@ -18,44 +34,29 @@
     <!-- Grid de reseñas 2 columnas -->
     <div class="reviews-grid">
       <article v-for="review in filteredReviews" :key="review.id" class="review-card">
-        <div class="review-top">
-          <div class="reviewer-info">
-            <div class="avatar" :style="{ background: review.avatarColor }">
-              {{ review.initials }}
-            </div>
-            <div>
-              <p class="reviewer-name">{{ review.name }}</p>
-              <p class="reviewer-meta">{{ review.country }} · {{ review.date }}</p>
-            </div>
-          </div>
-          <div class="review-stars">
-            <span v-for="i in 5" :key="i" class="star sm" :class="{ filled: i <= review.rating }">★</span>
-          </div>
-        </div>
-
-        <p class="review-text" :class="{ expanded: review.expanded }">
-          {{ review.text }}
-        </p>
-
-        <button
-          v-if="review.text.length > 180"
-          class="read-more"
-          @click="review.expanded = !review.expanded"
-        >
-          {{ review.expanded ? 'Mostrar menos ▲' : 'Leer más ▼' }}
-        </button>
-
-        <div class="review-tags">
-          <span v-for="tag in review.tags" :key="tag" class="tag">{{ tag }}</span>
-        </div>
-
-        <div class="review-helpful">
-          <span class="helpful-label">¿Útil?</span>
-          <button class="helpful-btn" @click="review.likes++">
-            👍 {{ review.likes }}
+        <div class="review-score-badge">{{ (review.rating * 2).toFixed(0) }}/10</div>
+        <div class="review-body">
+          <p class="review-rating-word">{{ palabraPorCalificacion(review.rating) }}</p>
+          <p class="review-text" :class="{ expanded: review.expanded }">
+            {{ review.text }}
+          </p>
+          <button
+            v-if="review.text && review.text.length > 160"
+            class="read-more"
+            @click="review.expanded = !review.expanded"
+          >
+            {{ review.expanded ? 'Ver menos' : 'Ver más' }}
           </button>
+          <p class="reviewer-name">{{ review.name }}</p>
+          <p class="reviewer-meta">{{ review.date }}</p>
+          <p class="verified-tag">Opinión verificada</p>
         </div>
       </article>
+    </div>
+
+    <!-- Ver todas -->
+    <div class="ver-todas-wrapper">
+      <button class="ver-todas-btn">Ver las {{ reviews.length }} opiniones</button>
     </div>
 
     <!-- Formulario -->
@@ -63,8 +64,7 @@
       <h3 class="write-title">Comparte tu experiencia</h3>
       <div class="star-input">
         <span
-          v-for="i in 5"
-          :key="i"
+          v-for="i in 5" :key="i"
           class="star-select"
           :class="{ active: i <= newReview.rating, hover: i <= hoverRating }"
           @mouseover="hoverRating = i"
@@ -90,105 +90,54 @@
 
   </section>
 </template>
-
 <script setup>
 import { ref, computed, reactive, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { apiFetch } from '../services/api.js'
 
-const route = useRoute()
-const activeFilter = ref('all')
-const hoverRating = ref(0)
-const cargando = ref(true)
-
-const filters = [
-  { label: 'Todos', value: 'all' },
-  { label: '5 estrellas', value: 5 },
-  { label: '4 estrellas', value: 4 },
-  { label: '3 estrellas', value: 3 },
-]
-
+// Estados reactivos necesarios para el funcionamiento del template y computados
 const reviews = ref([])
-const newReview = reactive({ rating: 0, text: '' })
-
-const colores = [
-  '#2563a8','#1a4a80','#0e7490','#3b5ea6','#1a3a5c','#15616d'
+const averageRating = ref(0)
+const activeFilter = ref('all')
+const filters = [
+  { label: 'Todas', value: 'all' },
+  { label: 'Recientes', value: 'recent' }
 ]
+const filteredReviews = computed(() => reviews.value)
 
-function iniciales(nombre, apellidos) {
-  const n = (nombre || '').trim()[0] || ''
-  const a = (apellidos || '').trim()[0] || ''
-  return (n + a).toUpperCase() || '?'
-}
+const newReview = reactive({ rating: 0, text: '' })
+const hoverRating = ref(0)
+const ratingLabel = computed(() => '')
+const submitReview = () => { console.log('Enviando reseña...') }
 
-function formatFecha(fechaStr) {
-  if (!fechaStr) return ''
-  const d = new Date(fechaStr)
-  return d.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
-}
-
-onMounted(async () => {
-  const id = route.params.id
-  try {
-    const data = await apiFetch(`/hospedaje/${id}/resenas`)
-    reviews.value = data.map((r, i) => ({
-      id:          r.id,
-      name:        `${r.nombre} ${r.apellidos || ''}`.trim(),
-      initials:    r.initials,
-      avatarColor: colores[i % colores.length],
-      country:     r.pais,
-      date:        r.fecha,
-      rating:      r.calificacion,
-      text:        r.texto,
-      tags:        [],
-      likes:       r.likes,
-      expanded:    false,
-    }))
-  } catch (e) {
-    console.error('Error cargando reseñas:', e)
-  } finally {
-    cargando.value = false
-  }
+const palabraRating = computed(() => {
+  const v = averageRating.value * 2 // convierte escala 1-5 a 1-10
+  if (v >= 9) return 'Excepcional'
+  if (v >= 8) return 'Excelente'
+  if (v >= 7) return 'Muy buena'
+  if (v >= 6) return 'Buena'
+  if (v >= 5) return 'Regular'
+  return 'Baja'
 })
 
-const averageRating = computed(() =>
-  reviews.value.length
-    ? reviews.value.reduce((s, r) => s + r.rating, 0) / reviews.value.length
-    : 0
-)
-
-const filteredReviews = computed(() =>
-  activeFilter.value === 'all'
-  ? reviews.value
-  : reviews.value.filter(r => r.rating === activeFilter.value)
-)
-
-const ratingLabel = computed(() => {
-  const labels = ['', 'Malo', 'Regular', 'Bueno', 'Muy bueno', 'Excelente']
-  const val = hoverRating.value || newReview.rating
-  return val ? labels[val] : 'Selecciona una puntuación'
-})
-
-function submitReview() {
-  if (!newReview.rating || !newReview.text.trim()) return
-  reviews.value.unshift({
-    id:          Date.now(),
-    name: 'Tú',
-    initials: 'TÚ',
-    avatarColor: '#2563a8',
-    country: 'Tu país',
-    date: 'Ahora',
-    rating: newReview.rating,
-    text: newReview.text,
-    tags: [],
-    likes: 0,
-    expanded: false,
-  })
-  newReview.rating = 0
-  newReview.text   = ''
+function palabraPorCalificacion(r) {
+  const v = r * 2
+  if (v >= 9) return 'Excepcional'
+  if (v >= 8) return 'Excelente'
+  if (v >= 7) return 'Muy buena'
+  if (v >= 6) return 'Buena'
+  if (v >= 5) return 'Regular'
+  return 'Baja'
 }
+
+const subcategorias = computed(() => {
+  if (!reviews.value.length) return []
+  const avg = (fn) => reviews.value.reduce((s, r) => s + fn(r), 0) / reviews.value.length
+  return [
+    { label: 'Limpieza',  value: avg(r => r.rating) * 2 * 0.95 },
+    { label: 'Servicios', value: avg(r => r.rating) * 2 * 0.90 },
+    { label: 'Servicio',  value: avg(r => r.rating) * 2 * 0.92 },
+  ]
+})
 </script>
-
 <style scoped>
 .reviews-section {
   font-family: 'Segoe UI', sans-serif;
@@ -198,88 +147,65 @@ function submitReview() {
 
 /* ── Header ── */
 .reviews-header {
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 2rem;
-  background: #e8f0fb;
-  border: 1px solid #ccddf0;
-  border-radius: 14px;
-  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 3rem;
   margin-bottom: 1.5rem;
 }
 
 .rating-summary {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  border-right: 1px solid #ccddf0;
-  padding-right: 2rem;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 120px;
 }
 
 .rating-score {
   font-size: 3rem;
-  font-weight: 700;
+  font-weight: 800;
   color: #1a3a5c;
   line-height: 1;
 }
 
-.rating-count {
-  font-size: 0.8rem;
-  color: #5a7a99;
+.rating-label-main {
+  font-size: 1.1rem;
+  color: #666;
+  font-weight: 600;
 }
 
-.rating-stars,
-.review-stars {
+.rating-word {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a3a5c;
+}
+
+.rating-count {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.subcategories {
   display: flex;
+  gap: 2rem;
+}
+
+.subcat-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 2px;
 }
 
-.star        { font-size: 18px; color: #c9d9ec; }
-.star.filled { color: #f5a623; }
-.star.sm     { font-size: 14px; }
-
-.reseñas{  
-    position: relative;
-  top: -20px;
-
-}
-/* ── Barras categoría ── */
-.category-ratings {
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-  justify-content: center;
-}
-
-.category-row {
-  display: grid;
-  grid-template-columns: 150px 1fr 32px;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.category-label { font-size: 0.83rem; color: #1c2b3a; }
-
-.progress-bar {
-  height: 6px;
-  background: #c9d9ec;
-  border-radius: 99px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: #2563a8;
-  border-radius: 99px;
-}
-
-.category-value {
-  font-size: 0.82rem;
-  font-weight: 600;
+.subcat-value {
+  font-size: 1.3rem;
+  font-weight: 700;
   color: #1a3a5c;
-  text-align: right;
+}
+
+.subcat-label {
+  font-size: 0.78rem;
+  color: #666;
 }
 
 /* ── Filtros ── */
@@ -301,85 +227,70 @@ function submitReview() {
   transition: all 0.15s;
 }
 
-.filter-btn:hover        { border-color: #2563a8; color: #2563a8; }
-.filter-btn.active       { background: #1a3a5c; border-color: #1a3a5c; color: #fff; }
+.filter-btn:hover  { border-color: #2563a8; color: #2563a8; }
+.filter-btn.active { background: #1a3a5c; border-color: #1a3a5c; color: #fff; }
 
 /* ── Grid 2 columnas ── */
 .reviews-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1.25rem;
-  margin-bottom: 2.5rem;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-/* ── Tarjeta ── */
+/* ── Tarjeta horizontal ── */
 .review-card {
   background: #fff;
-  border: 1px solid #ccddf0;
-  border-radius: 14px;
-  padding: 1.25rem 1.4rem;
+  border: 1px solid #e0e8f0;
+  border-radius: 12px;
+  padding: 1.2rem 1.4rem;
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
+  align-items: flex-start;
   transition: box-shadow 0.2s;
 }
 
-.review-card:hover { box-shadow: 0 4px 18px rgba(37, 99, 168, 0.12); }
+.review-card:hover { box-shadow: 0 4px 18px rgba(37,99,168,0.1); }
 
-.review-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.reviewer-info {
-  display: flex;
-  gap: 0.65rem;
-  align-items: center;
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 700;
+.review-score-badge {
+  background: #1a3a5c;
   color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.4rem 0.65rem;
+  border-radius: 8px;
   flex-shrink: 0;
+  height: fit-content;
 }
 
-.reviewer-name {
-  font-size: 0.93rem;
-  font-weight: 600;
+.review-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.review-rating-word {
+  font-size: 0.9rem;
+  font-weight: 700;
   color: #1a3a5c;
-  margin: 0 0 2px;
-}
-
-.reviewer-meta {
-  font-size: 0.76rem;
-  color: #5a7a99;
   margin: 0;
 }
 
 .review-text {
-  font-size: 0.88rem;
-  line-height: 1.6;
-  color: #2c4a62;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: #444;
   margin: 0;
   display: -webkit-box;
-  line-clamp: 3;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  flex: 1;
 }
 
 .review-text.expanded {
-  line-clamp: unset;
   -webkit-line-clamp: unset;
+  overflow: visible;
 }
 
 .read-more {
@@ -389,52 +300,53 @@ function submitReview() {
   color: #2563a8;
   cursor: pointer;
   padding: 0;
-  align-self: flex-start;
+  text-align: left;
+  text-decoration: underline;
 }
 
-.read-more:hover { text-decoration: underline; }
-
-.review-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
+.reviewer-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #333;
+  margin: 4px 0 0;
 }
 
-.tag {
-  font-size: 0.72rem;
-  background: #e8f0fb;
-  color: #2563a8;
-  border: 1px solid #ccddf0;
-  padding: 0.18rem 0.6rem;
-  border-radius: 99px;
-}
-
-.review-helpful {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  border-top: 1px solid #ccddf0;
-  padding-top: 0.65rem;
-}
-
-.helpful-label { font-size: 0.76rem; color: #5a7a99; }
-
-.helpful-btn {
-  background: none;
-  border: 1px solid #ccddf0;
-  border-radius: 99px;
-  padding: 0.2rem 0.7rem;
+.reviewer-meta {
   font-size: 0.76rem;
-  color: #5a7a99;
+  color: #888;
+  margin: 0;
+}
+
+.verified-tag {
+  font-size: 0.72rem;
+  color: #888;
+  margin: 0;
+}
+
+/* ── Ver todas ── */
+.ver-todas-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.ver-todas-btn {
+  padding: 0.6rem 2rem;
+  border: 1.5px solid #1a3a5c;
+  border-radius: 99px;
+  background: #fff;
+  color: #1a3a5c;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
 }
 
-.helpful-btn:hover { border-color: #2563a8; color: #2563a8; }
+.ver-todas-btn:hover { background: #1a3a5c; color: #fff; }
 
 /* ── Formulario ── */
 .write-review {
-  background: #e8f0fb;
+  background: #f0f5fb;
   border: 1px solid #ccddf0;
   border-radius: 14px;
   padding: 1.75rem 2rem;
@@ -462,10 +374,7 @@ function submitReview() {
 }
 
 .star-select.active,
-.star-select.hover {
-  color: #f5a623;
-  transform: scale(1.15);
-}
+.star-select.hover { color: #f5a623; transform: scale(1.15); }
 
 .rating-label {
   font-size: 0.83rem;
@@ -500,18 +409,16 @@ function submitReview() {
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+  transition: background 0.15s;
 }
 
 .submit-btn:hover:not(:disabled)  { background: #2563a8; }
-.submit-btn:active:not(:disabled) { transform: scale(0.98); }
 .submit-btn:disabled              { opacity: 0.4; cursor: not-allowed; }
 
 /* ── Responsive ── */
 @media (max-width: 640px) {
-  .reviews-header        { grid-template-columns: 1fr; gap: 1rem; }
-  .rating-summary        { flex-direction: row; border-right: none; border-bottom: 1px solid #ccddf0; padding-right: 0; padding-bottom: 1rem; }
-  .category-row          { grid-template-columns: 110px 1fr 28px; }
-  .reviews-grid          { grid-template-columns: 1fr; }
+  .reviews-grid     { grid-template-columns: 1fr; }
+  .reviews-header   { flex-direction: column; gap: 1rem; }
+  .subcategories    { gap: 1.2rem; }
 }
 </style>

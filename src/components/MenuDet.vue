@@ -7,10 +7,11 @@
         :initial-salida="searchSalida"
         :initial-huespedes="habitaciones"
         compact
+        :is-habitaciones="isHabitaciones"
       />
 
       <!-- Barra ver propiedades — solo en detalle -->
-      <div v-if="isDetalle" class="detalle-subbar">
+      <div v-if="isDetalle && !isHabitaciones" class="detalle-subbar">
         <button class="btn-volver" @click="$router.back()">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -40,7 +41,7 @@
       </div>
 
       <!-- Tabs — solo en resultados -->
-      <div v-if="!isDetalle" class="accommodation-tabs">
+      <div v-if="!isDetalle && !isHabitaciones" class="accommodation-tabs">
         <div class="slider-background" :class="sliderClass"></div>
 
         <button class="tab" :class="{ active: activeTab === 'all' }" @click="activeTab = 'all'">
@@ -85,6 +86,10 @@ import FormSearch from './FormSearch.vue';
 
 const props = defineProps({
   isDetalle: {
+    type: Boolean,
+    default: false
+  },
+  isHabitaciones: {
     type: Boolean,
     default: false
   }
@@ -157,6 +162,7 @@ const sliderClass = computed(() => `pos-${activeTab.value}`);
   border-radius: 8px;
   transition: background 0.15s;
 }
+
 
 .detalle-actions {
   display: flex;

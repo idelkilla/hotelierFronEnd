@@ -12,8 +12,8 @@
       <h2 class="subtitulo">Servicios</h2>
       <div class="servicios-grid">
         <div class="servicio" v-for="s in servicios" :key="s.nombre">
-          <span class="material-symbols-outlined">check_circle</span>
-          {{ s.nombre }}
+          <span class="material-symbols-outlined servicio-icono">{{ iconoServicio(s.nombre) }}</span>
+          <span class="servicio-nombre">{{ s.nombre }}</span>
         </div>
         <!-- fallback si no hay servicios en BD -->
         <p v-if="!servicios.length" class="sin-datos">Sin servicios registrados</p>
@@ -32,68 +32,35 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Card reserva -->
-    <div class="card-reserva">
-      <div class="precio-noche">
-        <span class="monto">${{ precioBase }}</span>
-        <span class="etiqueta">/noche</span>
-      </div>
-
-      <div class="inputs-fecha date-field" ref="dateFieldRef">
-        <div class="campo" @click="abrirCalendario('inicio')">
-          <label>CHECK-IN</label>
-          <input type="text" readonly :value="checkInDisplay"
-                 placeholder="Añadir fecha" class="readonly-input" />
-        </div>
-        <div class="campo" @click="abrirCalendario('fin')">
-          <label>CHECK-OUT</label>
-          <input type="text" readonly :value="checkOutDisplay"
-                 placeholder="Añadir fecha" class="readonly-input" />
-        </div>
-      </div>
-
-      <CalendarSelector
-        v-if="mostrarCalendario"
-        :model-value="{
-          start: (campoEditando === 'inicio' ? fechaInicio : fechaFin)
-                 ? new Date((campoEditando === 'inicio' ? fechaInicio : fechaFin) + 'T00:00:00')
-                 : null,
-          end: null
-        }"
-        :range="false"
-        @update:dates="onDatesSelected"
-        @close="mostrarCalendario = false"
+      <HabitacionesSelector
+        :fecha-inicio="fechaInicio"
+        :fecha-fin="fechaFin"
+        :resumen-huespedes="resumenHuespedes"
+        :noches="noches"
+        @abrir-calendario="abrirCalendario"
+        @seleccionar-habitacion="onSeleccionarHabitacion"
       />
 
-      <div class="campo-personas" id="guest-field">
-        <label>HUÉSPEDES</label>
-        <div class="personas-input-wrapper" @click="toggleHuespedes">
-          <span class="material-symbols-outlined personas-icon">person</span>
-          <input type="text" readonly :value="resumenHuespedes"
-                 class="readonly-input-personas" />
-          <span class="material-symbols-outlined dropdown-icon">expand_more</span>
-        </div>
-        <GuestSelector v-if="mostrarHuespedes"
-                       v-model="habitacionesGuest"
-                       @close="mostrarHuespedes = false" />
-      </div>
-
-      <div class="desglose">
-        <div class="linea">
-          <span>${{ precioBase }} x {{ noches }} noche{{ noches !== 1 ? 's' : '' }}</span>
-          <span>${{ totalPrecio }}</span>
-        </div>
-        <hr />
-        <div class="linea total">
-          <span>Total</span>
-          <span>${{ totalPrecio }}</span>
-        </div>
-      </div>
-
-      <button class="btn-reservar">Reservar</button>
+      <ReviewsSection />
     </div>
+
+    <!-- Selectores flotantes -->
+    <CalendarSelector
+      v-if="mostrarCalendario"
+      :model-value="{
+        start: (campoEditando === 'inicio' ? fechaInicio : fechaFin)
+               ? new Date((campoEditando === 'inicio' ? fechaInicio : fechaFin) + 'T00:00:00')
+               : null,
+        end: null
+      }"
+      :range="false"
+      @update:dates="onDatesSelected"
+      @close="mostrarCalendario = false"
+    />
+    <GuestSelector v-if="mostrarHuespedes"
+                   v-model="habitacionesGuest"
+                   @close="mostrarHuespedes = false" />
   </div>
 
   <!-- Loading -->
@@ -107,6 +74,8 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import CalendarSelector from './CalendarSelector.vue'
 import GuestSelector from './GuestSelector.vue'
+import HabitacionesSelector from './HabitacionesSelector.vue'
+import ReviewsSection from './ReviewsSection.vue'
 import { API, apiFetch } from '../services/api'
 
 const props = defineProps({ hotel: Object })
@@ -136,8 +105,8 @@ const resumenHuespedes = computed(() => {
 
 // ── Calendario ────────────────────────────────────────────────
 const mostrarCalendario = ref(false)
-const fechaInicio       = ref('')
-const fechaFin          = ref('')
+const fechaInicio       = ref(route.query.entrada || '')
+const fechaFin          = ref(route.query.salida || '')
 const campoEditando     = ref('inicio')
 const dateFieldRef      = ref(null)
 
@@ -179,6 +148,12 @@ const noches = computed(() => {
 const totalPrecio = computed(() =>
   noches.value > 0 ? precioBase.value * noches.value : 0
 )
+
+function onSeleccionarHabitacion(hab) {
+  // Por ahora solo un log, después aquí va el flujo de reserva
+  console.log('Habitación seleccionada:', hab)
+  alert(`Reservando: ${hab.TIPO_HABITACION} - $${hab.PRECIO_NOCHE}/noche`)
+}
 
 // ── Fetch desde la BD ─────────────────────────────────────────
 async function cargarTodo() {
@@ -237,6 +212,22 @@ async function cargarPrecioBase(id) {
   } catch (e) {
     console.warn('Sin precio disponible:', e.message)
   }
+}
+
+function iconoServicio(nombre) {
+  const n = nombre.toLowerCase()
+  if (n.includes('piscina') || n.includes('alberca')) return 'pool'
+  if (n.includes('wifi') || n.includes('internet'))   return 'wifi'
+  if (n.includes('desayuno') || n.includes('comida')) return 'restaurant'
+  if (n.includes('gimnasio') || n.includes('gym'))    return 'fitness_center'
+  if (n.includes('estacionamiento') || n.includes('parking')) return 'local_parking'
+  if (n.includes('aire') || n.includes('ac'))         return 'ac_unit'
+  if (n.includes('traslado') || n.includes('aeropuerto')) return 'flight_takeoff'
+  if (n.includes('playa'))                            return 'beach_access'
+  if (n.includes('spa'))                              return 'spa'
+  if (n.includes('bar'))                              return 'local_bar'
+  if (n.includes('habitacion') || n.includes('servicio 24')) return 'room_service'
+  return 'check'
 }
 
 // Recarga precio cuando el usuario elige fechas
