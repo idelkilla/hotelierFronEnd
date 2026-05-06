@@ -123,7 +123,6 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { apiFetch } from '../services/api'
 import MenuDet from './MenuDet.vue'
-import { ref, computed, watch, onMounted } from 'vue'
 
 const props = defineProps({
   fechaInicio: { type: String, default: '' },
@@ -138,6 +137,15 @@ const route = useRoute()
 const loading = ref(true)
 const habitaciones = ref([])
 const tipoActivo = ref('Todos')
+
+const huespedesParsed = computed(() => {
+  try {
+    return JSON.parse(route.query.huespedes || '[]')
+  } catch (e) {
+    console.error('Error parsing huespedes from route query:', e)
+    return [{ adultos: 2, ninos: 0, edadesNinos: [] }]
+  }
+})
 
 // ── Tipos disponibles para filtrar ───────────────────────────
 const tiposDisponibles = computed(() => [
