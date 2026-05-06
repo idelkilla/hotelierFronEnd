@@ -286,6 +286,7 @@ async function submitReview() {
 
   if (!token) {
     console.warn('❌ No token found. Redirecting to login...')
+    errorMessage.value = 'Tu sesión ha expirado o no has iniciado sesión. Redirigiendo...'
     setTimeout(() => window.location.href = '/login', 1500)
     return
   }

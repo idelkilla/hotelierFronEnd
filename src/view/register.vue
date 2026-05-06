@@ -165,7 +165,7 @@ const handleRegister = async () => {
       router.push(res.data.user.role === 'admin' ? '/admin' : '/home')
     }
   } catch (err) {
-    error.value = err.response?.data?.message || 'Error al registrarse'
+    error.value = err.response?.data?.detail || err.response?.data?.message || 'Error al registrarse'
   } finally {
     isLoading.value = false
   }
