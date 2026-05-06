@@ -46,7 +46,7 @@
         <div class="search-fields-dynamic">
 
           <!-- Destino -->
-          <div class="dynamic-field-wrapper" id="destination-wrapper" style="position: relative;">
+          <div v-if="!isHabitaciones" class="dynamic-field-wrapper" id="destination-wrapper" style="position: relative;">
             <div class="field-group border-style">
               <label>¿A dónde quieres ir?</label>
               <div class="input-with-icon" :class="{ 'has-chip': selectedUbicacion && destinoActivo }">
@@ -102,7 +102,7 @@
           </div>
 
           <!-- Botón buscar -->
-          <div class="search-button-container">
+          <div v-if="!isHabitaciones" class="search-button-container">
             <BuscarButton @click="handleSearch" />
           </div>
 
@@ -177,6 +177,7 @@ const props = defineProps({
   initialEntrada: String,
   initialSalida: String,
   initialHuespedes: Array,
+  isHabitaciones: Boolean, // Nueva prop para controlar la visibilidad
 });
 
 const router  = useRouter()
@@ -405,11 +406,9 @@ onUnmounted(() => window.removeEventListener('mousedown', handleOutsideClick))
 <style scoped>
 @import '../assets/css/FormSearch.css';
 
-/* Estilos para el modo compacto (usado en Cuerpo.vue) */
 .search-container.compact-mode {
   background: transparent !important;
-  padding: 0 !important;
-  margin: 0 auto !important; /* Centra el componente */
+  padding: 0 !important; /* Centra el componente */
   min-height: auto !important;
   box-shadow: none !important;
   width: 100% !important;

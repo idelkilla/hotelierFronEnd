@@ -52,7 +52,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 110px; /* Aumentado para liberar espacio del header */
+  padding-top: 80px; /* Espacio justo para el header fijo */
   background-color: #ffffff;
 }
 
