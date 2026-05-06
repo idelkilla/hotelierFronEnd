@@ -29,7 +29,7 @@
             </svg>
             Compartir
           </button>
-          <button class="btn-accion" :class="{ guardado: isSaved }" @click="isSaved = !isSaved">
+          <button class="btn-accion" :class="{ guardado: isSaved }" @click="toggleGuardar">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
               :fill="isSaved ? '#e00' : 'none'" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
@@ -80,19 +80,14 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import FormSearch from './FormSearch.vue';
+import { apiFetch } from '../services/api';
 
 const props = defineProps({
-  isDetalle: {
-    type: Boolean,
-    default: false
-  },
-  isHabitaciones: {
-    type: Boolean,
-    default: false
-  }
+  isDetalle: { type: Boolean, default: false },
+  isHabitaciones: { type: Boolean, default: false }
 });
 
 const route = useRoute();
@@ -116,6 +111,43 @@ watch(() => route.query, (q) => {
 }, { deep: true });
 
 const sliderClass = computed(() => `pos-${activeTab.value}`);
+
+// ── Favoritos ─────────────────────────────────────────────────
+// Verifica si el hospedaje actual ya está en favoritos al cargar
+onMounted(async () => {
+  if (!props.isDetalle) return
+  const id = route.params.id
+  if (!id) return
+  try {
+    const res = await apiFetch(`/favoritos/check/${id}`)
+    isSaved.value = res.esFavorito
+  } catch { /* sin sesión, queda en false */ }
+})
+
+// También re-verifica si el usuario navega a otro detalle sin recargar
+watch(() => route.params.id, async (id) => {
+  if (!props.isDetalle || !id) return
+  try {
+    const res = await apiFetch(`/favoritos/check/${id}`)
+    isSaved.value = res.esFavorito
+  } catch { isSaved.value = false }
+})
+
+async function toggleGuardar() {
+  const id = route.params.id
+  if (!id) return
+  try {
+    if (isSaved.value) {
+      await apiFetch(`/favoritos/${id}`, { method: 'DELETE' })
+      isSaved.value = false
+    } else {
+      await apiFetch(`/favoritos/${id}`, { method: 'POST' })
+      isSaved.value = true
+    }
+  } catch {
+    alert('Inicia sesión para guardar favoritos')
+  }
+}
 </script>
 
 <style scoped>

@@ -3,13 +3,7 @@
     <div class="info-hotel">
       <h1 class="nombre-hotel">{{ hospedaje.nombre }}</h1>
       <!-- Botón favorito -->
-<button class="btn-favorito" @click="toggleFavorito">
-  <span class="material-symbols-outlined"
-        :style="{ fontVariationSettings: esFavorito ? `'FILL' 1` : `'FILL' 0` }">
-    favorite
-  </span>
-  {{ esFavorito ? 'Guardado' : 'Guardar' }}
-</button>
+
       <div class="rating-ubicacion">
         <span class="ubicacion">{{ hospedaje.ciudad }}, {{ hospedaje.pais }}</span>
       </div>
@@ -291,7 +285,6 @@ async function verificarFavorito() {
     esFavorito.value = res.esFavorito
   } catch { /* no autenticado, ok */ }
 }
-
 async function toggleFavorito() {
   const id = route.params.id
   if (!id) return
@@ -304,7 +297,9 @@ async function toggleFavorito() {
       esFavorito.value = true
     }
   } catch (e) {
-    alert('Debes iniciar sesión para guardar favoritos')
+    if (e.message === 'No autenticado') {
+      alert('Inicia sesión para guardar favoritos')
+    }
   }
 }
 </script>

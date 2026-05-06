@@ -443,42 +443,64 @@
               </div>
             </div>
             <div class="details-grid">
-              <button class="detail-card" @click="abrirModal('aeropuerto')">
-                <div class="detail-card-text">
-                  <span class="detail-title">Seguridad del aeropuerto</span>
-                  <span class="detail-sub">Números de TSA PreCheck y DHS TRIP (Redress)</span>
-                </div>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-              </button>
-              <button class="detail-card" @click="abrirModal('documentacion')">
-                <div class="detail-card-text">
-                  <span class="detail-title">Documentos de viaje</span>
-                  <span class="detail-sub">{{ perfil.DOCUMENTACION?.NUMERO_DOCUMENTACION ? 'Pasaporte registrado' : 'Pasaporte / ID' }}</span>
-                </div>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-              </button>
-              <button class="detail-card" @click="abrirModal('biometricos')">
-                <div class="detail-card-text">
-                  <span class="detail-title">Datos biográficos & Salud</span>
-                  <span class="detail-sub">Tipo de sangre, estatura, peso, ocupación</span>
-                </div>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-              </button>
-              <button class="detail-card">
-                <div class="detail-card-text">
-                  <span class="detail-title">Preferencias de vuelo</span>
-                  <span class="detail-sub">Preferencia de asiento y aeropuerto más cercano</span>
-                </div>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-              </button>
-              <button class="detail-card">
-                <div class="detail-card-text">
-                  <span class="detail-title">Programas de lealtad</span>
-                  <span class="detail-sub">Viajero frecuente y membresías</span>
-                </div>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-              </button>
-            </div>
+  <button class="detail-card" @click="abrirModal('aeropuerto')">
+    <div class="detail-card-text">
+      <span class="detail-title">Seguridad del aeropuerto</span>
+      <span class="detail-sub">
+        {{ perfil.num_viajero_conocido || perfil.num_dhs_trip
+            ? [perfil.num_viajero_conocido ? 'TSA: ' + perfil.num_viajero_conocido : '',
+               perfil.num_dhs_trip ? 'DHS: ' + perfil.num_dhs_trip : '']
+               .filter(Boolean).join(' · ')
+            : 'Números de TSA PreCheck y DHS TRIP (Redress)' }}
+      </span>
+    </div>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+
+  <button class="detail-card" @click="abrirModal('documentacion')">
+    <div class="detail-card-text">
+      <span class="detail-title">Documentos de viaje</span>
+      <span class="detail-sub">
+        {{ perfil.DOCUMENTACION?.NUMERO_DOCUMENTACION
+            ? 'Pasaporte: ' + perfil.DOCUMENTACION.NUMERO_DOCUMENTACION +
+              (perfil.DOCUMENTACION.FECHA_EXPIRACION ? ' · Vence ' + perfil.DOCUMENTACION.FECHA_EXPIRACION : '')
+            : 'Pasaporte / ID' }}
+      </span>
+    </div>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+
+  <button class="detail-card" @click="abrirModal('biometricos')">
+    <div class="detail-card-text">
+      <span class="detail-title">Datos biográficos & Salud</span>
+      <span class="detail-sub">
+        {{ [
+              perfil.SANGRE    ? 'Sangre: ' + perfil.SANGRE : '',
+              perfil.ESTATURA  ? 'Estatura: ' + perfil.ESTATURA + ' cm' : '',
+              perfil.PESO      ? 'Peso: ' + perfil.PESO + ' kg' : '',
+              perfil.OCUPACION ? perfil.OCUPACION : ''
+           ].filter(Boolean).join(' · ') || 'Tipo de sangre, estatura, peso, ocupación' }}
+      </span>
+    </div>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+
+  <button class="detail-card">
+    <div class="detail-card-text">
+      <span class="detail-title">Preferencias de vuelo</span>
+      <span class="detail-sub">Preferencia de asiento y aeropuerto más cercano</span>
+    </div>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+
+  <button class="detail-card">
+    <div class="detail-card-text">
+      <span class="detail-title">Programas de lealtad</span>
+      <span class="detail-sub">Viajero frecuente y membresías</span>
+    </div>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</div>
           </div>
 
           <div class="info-block">
@@ -1528,9 +1550,13 @@ function actualizarEstadoLocal() {
     loginItems.value[0].value = formTemp.email
   } else if (t === 'aeropuerto') {
     perfil.num_viajero_conocido = formTemp.num_viajero_conocido; perfil.num_dhs_trip = formTemp.num_dhs_trip
-  } else if (t === 'biometricos') {
-    perfil.SANGRE = formTemp.sangre; perfil.ESTATURA = formTemp.estatura; perfil.PESO = formTemp.peso
-    perfil.OCUPACION = formTemp.ocupacion; perfil.NACIONALIDAD = formTemp.nacionalidad; perfil.ESTADO_CIVIL = formTemp.estado_civil
+} else if (t === 'biometricos') {
+    perfil.SANGRE       = formTemp.sangre
+    perfil.ESTATURA     = formTemp.estatura
+    perfil.PESO         = formTemp.peso
+    perfil.OCUPACION    = formTemp.ocupacion
+    perfil.NACIONALIDAD = formTemp.nacionalidad
+    perfil.ESTADO_CIVIL = formTemp.estado_civil
   } else if (t === 'documentacion') {
     perfil.DOCUMENTACION.NUMERO_DOCUMENTACION = formTemp.documento_numero
     perfil.DOCUMENTACION.FECHA_EMISION        = formTemp.documento_emision
@@ -1544,7 +1570,15 @@ async function fetchUserData() {
     const data = await apiGet('/perfil/profile')
     const { DOCUMENTACION, ...rest } = data
     Object.assign(perfil, rest)
-    if (data.nombre) perfil.nombre_completo = data.nombre
+
+    if (data.nombre)       perfil.nombre_completo = data.nombre
+    if (data.SANGRE)       perfil.SANGRE          = data.SANGRE
+    if (data.ESTATURA)     perfil.ESTATURA        = data.ESTATURA
+    if (data.PESO)         perfil.PESO            = data.PESO
+    if (data.OCUPACION)    perfil.OCUPACION       = data.OCUPACION
+    if (data.NACIONALIDAD) perfil.NACIONALIDAD    = data.NACIONALIDAD
+    if (data.ESTADO_CIVIL) perfil.ESTADO_CIVIL    = data.ESTADO_CIVIL
+
     if (DOCUMENTACION) Object.assign(perfil.DOCUMENTACION, DOCUMENTACION)
     loginItems.value[0].value = perfil.email
   } catch (error) {
