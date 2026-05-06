@@ -86,14 +86,10 @@
                   <div class="ck-grid-tel">
                     <div class="ck-field">
                       <label>Código de país <span class="req">*</span></label>
-                      <select v-model="form.codigoPais">
-                        <option value="+1">🇺🇸 USA +1</option>
-                        <option value="+1-809">🇩🇴 RD +1-809</option>
-                        <option value="+52">🇲🇽 MX +52</option>
-                        <option value="+34">🇪🇸 ES +34</option>
-                        <option value="+57">🇨🇴 CO +57</option>
-                        <option value="+54">🇦🇷 AR +54</option>
-                      </select>
+                      <AppSelect
+                        v-model="form.codigoPais"
+                        :options="opcionesCodigoPais"
+                      />
                     </div>
                     <div class="ck-field" :class="{ error: errors.telefono }">
                       <label>Teléfono <span class="req">*</span></label>
@@ -139,7 +135,7 @@
                     >
                       <input type="radio" v-model="form.metodo" :value="m.id" />
                       <span class="ck-metodo-label">{{ m.nombre }}</span>
-                      <span class="ck-metodo-logo">{{ m.logo }}</span>
+                      <span class="ck-metodo-logo" v-html="m.logo"></span>
                     </label>
                   </div>
 
@@ -582,6 +578,7 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { apiFetch } from '../services/api'
+import AppSelect from './AppSelect.vue'
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
@@ -600,11 +597,52 @@ const errorGlobal = ref('')
 const planProteccion = ref(null)
 
 const pasos = ['Huésped', 'Pago', 'Protección']
+
+const opcionesCodigoPais = [
+  { value: '+1', label: '🇺🇸 USA +1' },
+  { value: '+1-809', label: '🇩🇴 RD +1-809' },
+  { value: '+52', label: '🇲🇽 MX +52' },
+  { value: '+34', label: '🇪🇸 ES +34' },
+  { value: '+57', label: '🇨🇴 CO +57' },
+  { value: '+54', label: '🇦🇷 AR +54' },
+]
+
 const metodos = [
-  { id: 'tarjeta', nombre: 'Tarjeta', logo: '💳' },
-  { id: 'paypal', nombre: 'PayPal', logo: '🅿️' },
-  { id: 'affirm', nombre: 'Affirm', logo: '✦' },
-  { id: 'applepay', nombre: 'Apple Pay', logo: '🍎' },
+  {
+    id: 'tarjeta',
+    nombre: 'Tarjeta',
+    logo: `<svg width="38" height="24" viewBox="0 0 38 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="38" height="24" rx="4" fill="#1A1F71"/>
+      <text x="5" y="16" font-family="Arial" font-size="11" font-weight="700" fill="white" letter-spacing="0.5">VISA</text>
+    </svg>`,
+  },
+  {
+    id: 'paypal',
+    nombre: 'PayPal',
+    logo: `<svg width="72" height="20" viewBox="0 0 72 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="15" font-family="Arial" font-size="15" font-weight="700" fill="#003087">Pay</text>
+      <text x="26" y="15" font-family="Arial" font-size="15" font-weight="700" fill="#009CDE">Pal</text>
+    </svg>`,
+  },
+  {
+    id: 'affirm',
+    nombre: 'Affirm',
+    logo: `<svg width="62" height="20" viewBox="0 0 62 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="62" height="20" rx="4" fill="#060809"/>
+      <text x="8" y="14" font-family="Arial" font-size="11" font-weight="700" fill="white" letter-spacing="0.3">affirm</text>
+    </svg>`,
+  },
+  {
+    id: 'applepay',
+    nombre: 'Apple Pay',
+    logo: `<svg width="52" height="24" viewBox="0 0 52 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="52" height="24" rx="4" fill="#000"/>
+      <svg x="5" y="3" width="18" height="18" viewBox="0 0 814 1000">
+        <path fill="white" d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 790.7 0 663 0 541.8c0-207.5 135.4-317.3 269-317.3 70.1 0 128.4 46.4 172.5 46.4 42.8 0 109.6-49 192.1-49 30.8 0 134.2 2.6 198.3 99zM549.6 65.1c31.5-38.2 54.3-91.7 54.3-145.2 0-7.7-.6-15.4-2-22.4-51.7 2-112.9 34.3-149.8 77.1-28.9 33.1-56.6 86.6-56.6 140.8 0 8.3 1.3 16.6 2 19.2 3.2.6 8.3 1.3 13.4 1.3 46.4 0 103.1-31.5 138.7-70.8z"/>
+      </svg>
+      <text x="27" y="16" font-family="-apple-system, Arial" font-size="9" font-weight="600" fill="white">Pay</text>
+    </svg>`,
+  },
 ]
 const logosTarjeta = ['AMEX', 'Diners', 'Discover', 'JCB', 'MC', 'VISA']
 
