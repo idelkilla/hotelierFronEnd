@@ -143,6 +143,11 @@
           </button>
         </div>
       </template>
+
+      <!-- Mensaje de error si falla la publicación -->
+      <div v-if="errorMessage" class="error-msg-box">
+        <span>✕</span> {{ errorMessage }}
+      </div>
     </div>
   </section>
 </template>
@@ -159,6 +164,7 @@ const props = defineProps({
 const reviews = ref([])
 const submitting = ref(false)
 const submitSuccess = ref(false)
+const errorMessage = ref('')
 const activeFilter = ref('all')
 const hoverRating = ref(0)
 
@@ -285,6 +291,7 @@ async function submitReview() {
   }
 
   submitting.value = true
+  errorMessage.value = ''
   try {
     const payload = {
       calificacion: newReview.rating,
@@ -310,11 +317,15 @@ async function submitReview() {
     newReview.text = ''
     setTimeout(() => (submitSuccess.value = false), 4000)
   } catch (e) {
-    console.error('❌ Error publicando reseña:', {
-      message: e.message,
-      status: e.response?.status,
-      data: e.response?.data
-    })
+    // Si es 403, probablemente es porque el usuario es Admin y no tiene perfil de Cliente
+    if (e.message.includes('403')) {
+      errorMessage.value = 'Solo los perfiles de cliente pueden publicar reseñas.'
+    } else {
+      errorMessage.value = e.message || 'Error al publicar la reseña.'
+    }
+    
+    console.error('❌ Error publicando reseña:', e.message)
+    setTimeout(() => (errorMessage.value = ''), 5000)
   } finally {
     submitting.value = false
   }

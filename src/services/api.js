@@ -42,9 +42,10 @@ export async function apiFetch(path, options = {}) {
 
     console.log(`📊 Response status: ${res.status} ${res.statusText}`)
 
-    // ✅ Si la petición fue rechazada por autenticación Y teníamos token, redirigir
-    if ((res.status === 401 || res.status === 403) && token) {
-      console.warn('⚠️ Token rechazado por servidor. Sesión expirada.')
+    // ✅ Solo redirigir en 401 (No autenticado). 
+    // El 403 (Prohibido) debe manejarse como un error de permiso sin cerrar sesión.
+    if (res.status === 401 && token) {
+      console.warn('⚠️ Sesión inválida o expirada. Redirigiendo a login.')
       localStorage.removeItem('user_token')
       localStorage.removeItem('user_role')
       localStorage.removeItem('user_name')
