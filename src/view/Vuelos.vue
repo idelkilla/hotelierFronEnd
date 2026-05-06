@@ -2,9 +2,7 @@
   <div class="vuelos-view-wrapper">
     <Header />
     
-    <!-- Nuevo contenedor para el layout de dos columnas -->
     <div class="vuelos-main-content-layout">
-      <!-- Columna izquierda para los filtros -->
       <div class="filters-column">
         <FiltrosVuelos 
           :id-origen="busqueda.id_origen" 
@@ -13,16 +11,17 @@
         />
       </div>
 
-      <!-- Columna derecha para el buscador y resultados -->
       <div class="vuelos-right-column">
+<<<<<<< HEAD
         <!-- El buscador de vuelos -->
+=======
+>>>>>>> 25e2efbbea94fd3fdcc03124745f6221802e0781
         <div class="vuelos-search-wrapper">
           <VuelosBuscar :initial-destino="route.query.destino" />
         </div>
          <div class="vuelos-search-wrapper">
           <OpcionesVuelos :vuelos-data="vuelosResultados" :loading="cargando" />
         </div>
-        <!-- Aquí irían los resultados de vuelos si los hubiera -->
       </div>
     </div>
   </div>
@@ -30,70 +29,58 @@
 </template>
 
 <style scoped>
-/* Contenedor principal de la vista de Vuelos */
 .vuelos-view-wrapper {
-  background-color:#ffffff!important; /* Fondo blanco para toda la pantalla */
+  background-color:#ffffff!important;
   min-height: 100vh;
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centra el contenido para que no esté pegado a la izquierda */
+  align-items: center;
   padding-top: 0; 
 }
 
-/* Nuevo layout de dos columnas para filtros y buscador */
 .vuelos-main-content-layout {
   width: 100%;
   max-width: 1300px;
-  margin: 60px auto 0; /* Alineado exacto con el alto del header (60px) */
+  margin: 80px auto 0;
   padding: 0 20px;
   display: flex;
-  gap: 24px; /* Espacio entre las columnas */
-  align-items: flex-start; /* Alinea las columnas en la parte superior */
+  gap: 24px;
+  align-items: flex-start;
 }
 
 .filters-column {
-  margin-top: 30px; /* Ajustado para alinear con el inicio de los resultados de vuelos */
+  margin-top: 30px;
 }
 
-
-/* Estilos profundos para VuelosSearch sin tocar su código original */
 :deep(.vuelos-search) {
   width: 100%;
-  max-width: 950px; /* Lo hace más pequeño/compacto */
+  max-width: 950px;
   display: flex;
   flex-direction: column;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
 }
-/* Estilos para la columna derecha (buscador y resultados) */
 .vuelos-right-column {
-  flex-grow: 1; /* Ocupa el espacio restante */
-  display: flex; /* Para alinear el buscador dentro */
-  flex-direction: column; /* Si hay más elementos, se apilarán */
-  align-items: flex-end; /* Alinea el contenido de esta columna a la derecha */
-  /* No necesitamos justify-content aquí, ya que align-items en flex-direction: column hace lo mismo para el eje transversal */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
-/* Contenedor para el buscador de vuelos dentro de la columna derecha */
 .vuelos-search-wrapper {
-  width: 100%; /* Ocupa todo el ancho de la columna derecha */
-  /* No necesitamos padding o margin-top aquí, ya que el padre .vuelos-main-content-layout los maneja */
-  /* No necesitamos display: flex o justify-content aquí, ya que el padre .vuelos-right-column ya alinea su contenido a la derecha */
+  width: 100%;
 }
 
-/* Asegura que el buscador y sus menús (calendario, direcciones) queden siempre por delante */
 .search-top-layer {
   position: relative;
   z-index: 100;
 }
 
-/* Mover los tabs (Viaje redondo...) debajo de los inputs usando order */
-
 :deep(.vuelos-tabs) {
   order: 2; 
-  margin: 10px 90px 15px; /* Márgenes reducidos para que los resultados de vuelos suban */
+  margin: 5px 90px 15px;
   margin-bottom: 20px;
   background-color: #e9f1f6;
   border-radius: 500px;
@@ -107,12 +94,16 @@
 
 :deep(.vuelo-tab) {
   border-radius: 40px !important;
+<<<<<<< HEAD
   padding: 10px 64px !important; /* Relleno idéntico al de cuerpo.css */
+=======
+  padding: 10px 64px !important;
+>>>>>>> 25e2efbbea94fd3fdcc03124745f6221802e0781
   padding: 10px 32px !important; 
   border: none !important;
   background: none !important;
   color: #113955 !important;
-  font-size: 15px !important; /* Tamaño de fuente idéntico al de cuerpo.css */
+  font-size: 15px !important;
   font-size: 14px !important;
   display: flex !important;
   align-items: center !important;
@@ -133,16 +124,15 @@
 :deep(.search-fields-dynamic), 
 :deep(.multidestino-container),
 :deep(.pasajeros-top) {
-  order: 1; /* Los campos de búsqueda van arriba */
+  order: 1;
 }
 
-/* ── AJUSTES RESPONSIVE PARA FILTROS ── */
 @media (max-width: 768px) {
   .vuelos-main-content-layout {
     flex-direction: column;
     gap: 10px;
     padding: 0 12px;
-    margin-top: 70px; /* Un poco más de aire bajo el header */
+    margin-top: 70px;
     align-items: stretch;
   }
 
@@ -151,11 +141,11 @@
   }
 
   .search-top-layer {
-    order: 1; /* Buscador (incluye los tabs de viaje redondo al final) */
+    order: 1;
   }
 
   .filters-column {
-    order: 2; /* El botón de filtros aparece ahora justo después de los tabs */
+    order: 2;
     margin: 0;
     display: flex;
     justify-content: center;
@@ -163,7 +153,7 @@
   }
 
   .vuelos-search-wrapper:not(.search-top-layer) {
-    order: 3; /* Los resultados de vuelos quedan al final */
+    order: 3;
   }
 
   :deep(.vuelos-tabs) {
@@ -203,11 +193,9 @@ const busqueda = ref({
 });
 
 async function ejecutarBusqueda() {
-  // Sincronizar IDs para que el sidebar de filtros sepa qué buscar
   busqueda.value.id_origen = route.query.id_origen || null;
   busqueda.value.id_destino = route.query.id_destino || null;
 
-  // Solo buscar si hay al menos un origen o destino
   if (!route.query.id_origen && !route.query.id_destino) return;
 
   cargando.value = true;
@@ -223,14 +211,12 @@ async function ejecutarBusqueda() {
 
 onMounted(ejecutarBusqueda);
 
-// Reaccionar a cambios en la URL (cuando el usuario hace clic en Buscar)
 watch(() => route.query, ejecutarBusqueda, { deep: true });
 
 function aplicarFiltros(filtros) {
   console.log('Filtros aplicados:', filtros);
   const query = { ...route.query };
 
-  // Mapeo de filtros emitidos a parámetros de URL que entiende el backend
   if (filtros.nombre) query.nombre = filtros.nombre;
   else delete query.nombre;
 

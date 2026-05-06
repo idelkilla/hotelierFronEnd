@@ -16,24 +16,14 @@ html {
     background-color: #ffffff;
     width: 100%;
     padding-bottom: 100px;
-    margin-top: 60px; /* Alineado con el alto del header (60px) */
+    margin-top: 60px; /* Ajustado para eliminar el exceso de scroll inicial */
 }
 /* Botón filtros oculto en desktop */
 .filters-toggle-btn {
   display: none;
 }
 
-<<<<<<< HEAD
-/* Panel siempre visible en desktop */
-.filters-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-/* ── SECCIÓN DE BÚSQUEDA ──────────────────────────────────── */
-=======
 /* =====================    BUSCADOR — centrado arriba    ===================== */
->>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
 .search-section-container {
     width: 100%;
     max-width: 900px;       /* centrado sobre el contenido */

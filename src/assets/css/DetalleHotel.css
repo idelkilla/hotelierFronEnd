@@ -60,7 +60,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-top: 6px; /* <--- ESTO BAJA EL TEXTO */
+    padding-top: 4px; /* Reducido para que la barra sea menos alta */
 }
 
 .input-text-area label {
