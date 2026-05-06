@@ -410,19 +410,76 @@ onUnmounted(() => window.removeEventListener('mousedown', handleOutsideClick))
 .search-container.compact-mode {
   background: transparent !important;
   padding: 0 !important;
-  margin: 0 auto !important; /* Centra el componente */
+  margin: 0 auto !important;
   min-height: auto !important;
   box-shadow: none !important;
   width: 100% !important;
-  max-width: 896px !important; /* Coincide con el ancho de la columna de resultados */
+  max-width: 900px !important;
 }
 
 .compact-form-box {
   background: white !important;
-  margin: 0 !important; /* Quitamos el auto para que mande el contenedor padre */
-  padding: 10px !important;
-  border-radius: 12px !important;
-  box-shadow: none !important;
+  margin: 0 auto !important;
+  padding: 0 8px !important;
+  border-radius: 999px !important; /* Forma de pastilla */
+  border: 1.5px solid #e0e0e0 !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
   width: 100%;
+  height: 66px;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  /* Permitimos que los hijos absolutos (dropdowns) se vean fuera del contenedor */
+  overflow: visible !important; 
+}
+
+/* Forzamos disposición horizontal de los campos */
+.compact-form-box :deep(.search-fields-dynamic) {
+  margin-top: 0 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  width: 100%;
+  height: 100%;
+  gap: 0 !important;
+  flex-wrap: nowrap !important;
+}
+
+/* Contenedores de cada campo (Ubicación, Fechas, Huéspedes) */
+.compact-form-box :deep(.dynamic-field-wrapper) {
+  flex: 1;
+  height: 100%;
+  position: relative !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 20px;
+  border-right: 1.5px solid #f0f0f0;
+  min-width: 0;
+}
+
+.compact-form-box :deep(.dynamic-field-wrapper:last-of-type),
+.compact-form-box :deep(.search-button-container) {
+  border-right: none;
+}
+
+/* Forzamos que los dropdowns salgan debajo */
+.compact-form-box :deep(.location-dropdown),
+.compact-form-box :deep(.calendar-modal),
+.compact-form-box :deep(.guests-dropdown) {
+  position: absolute !important;
+  top: calc(100% + 10px) !important; /* Los baja 10px del borde inferior */
+  left: 0 !important;
+  z-index: 9999 !important;
+  transform: none !important;
+  /* Evitamos que hereden anchos extraños de flex */
+  width: auto !important;
+  min-width: 300px;
+}
+
+/* El dropdown de huéspedes lo alineamos a la derecha para que no se salga de la pantalla */
+.compact-form-box :deep(.guests-dropdown) {
+  right: 0 !important;
+  left: auto !important;
 }
 </style>

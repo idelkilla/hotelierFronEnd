@@ -91,17 +91,37 @@
   </section>
 </template>
 <script setup>
-import { ref, computed, reactive, onMounted } from 'vue'
+import { ref, computed, reactive, onMounted, watch } from 'vue'
+import { apiFetch } from '../services/api'
 
-// Estados reactivos necesarios para el funcionamiento del template y computados
+const props = defineProps({
+  hospedajeId: {
+    type: [String, Number],
+    required: true
+  }
+})
+
+// ── Estado ──────────────────────────────────────────────────
 const reviews = ref([])
-const averageRating = ref(0)
+const averageRating = computed(() => {
+  if (!reviews.value.length) return 0
+  const total = reviews.value.reduce((sum, r) => sum + r.calificacion, 0)
+  return total / reviews.value.length
+})
+
 const activeFilter = ref('all')
 const filters = [
   { label: 'Todas', value: 'all' },
   { label: 'Recientes', value: 'recent' }
 ]
-const filteredReviews = computed(() => reviews.value)
+const filteredReviews = computed(() => {
+  let filtered = reviews.value
+  if (activeFilter.value === 'recent') {
+    // Assuming 'date' property exists and is sortable, or sort by id if no date
+    filtered = [...filtered].sort((a, b) => b.id - a.id) // Example: sort by ID for 'recent'
+  }
+  return filtered
+})
 
 const newReview = reactive({ rating: 0, text: '' })
 const hoverRating = ref(0)
@@ -109,6 +129,7 @@ const ratingLabel = computed(() => '')
 const submitReview = () => { console.log('Enviando reseña...') }
 
 const palabraRating = computed(() => {
+  // Use averageRating.value here
   const v = averageRating.value * 2 // convierte escala 1-5 a 1-10
   if (v >= 9) return 'Excepcional'
   if (v >= 8) return 'Excelente'
@@ -116,6 +137,20 @@ const palabraRating = computed(() => {
   if (v >= 6) return 'Buena'
   if (v >= 5) return 'Regular'
   return 'Baja'
+})
+
+watch(hoverRating, (newVal) => {
+  if (newVal === 0) {
+    ratingLabel.value = ''
+    return
+  }
+  const v = newVal * 2
+  if (v >= 9) ratingLabel.value = 'Excepcional'
+  else if (v >= 8) ratingLabel.value = 'Excelente'
+  else if (v >= 7) ratingLabel.value = 'Muy buena'
+  else if (v >= 6) ratingLabel.value = 'Buena'
+  else if (v >= 5) ratingLabel.value = 'Regular'
+  else ratingLabel.value = 'Baja'
 })
 
 function palabraPorCalificacion(r) {
@@ -130,13 +165,34 @@ function palabraPorCalificacion(r) {
 
 const subcategorias = computed(() => {
   if (!reviews.value.length) return []
-  const avg = (fn) => reviews.value.reduce((s, r) => s + fn(r), 0) / reviews.value.length
+  // Assuming 'calificacion' is the main rating.
+  // For subcategories, we'd ideally have specific ratings (e.g., r.limpieza, r.servicios).
+  // Since we only have 'calificacion', we'll use a weighted average or mock values for now.
+  const baseAvg = averageRating.value * 2; // Convert to 1-10 scale
   return [
-    { label: 'Limpieza',  value: avg(r => r.rating) * 2 * 0.95 },
-    { label: 'Servicios', value: avg(r => r.rating) * 2 * 0.90 },
-    { label: 'Servicio',  value: avg(r => r.rating) * 2 * 0.92 },
+    { label: 'Limpieza',  value: Math.min(10, baseAvg * 0.95) }, // Slightly lower
+    { label: 'Servicios', value: Math.min(10, baseAvg * 0.90) }, // Even lower
+    { label: 'Ubicación', value: Math.min(10, baseAvg * 1.05) }, // Slightly higher
+    { label: 'Calidad-precio', value: Math.min(10, baseAvg * 0.98) },
   ]
 })
+
+// ── Cargar reseñas ──────────────────────────────────────────
+async function cargarResenas() {
+  if (!props.hospedajeId) return
+  try {
+    const data = await apiFetch(`/hospedaje/${props.hospedajeId}/resenas`)
+    if (Array.isArray(data)) {
+      reviews.value = data.map(r => ({ ...r, expanded: false }))
+    }
+  } catch (e) {
+    console.error('Error cargando reseñas:', e)
+    reviews.value = []
+  }
+}
+
+onMounted(cargarResenas)
+watch(() => props.hospedajeId, cargarResenas)
 </script>
 <style scoped>
 .reviews-section {

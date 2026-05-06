@@ -163,6 +163,10 @@ const sliderClass = computed(() => `pos-${activeTab.value}`);
   transition: background 0.15s;
 }
 
+.btn-volver:hover {
+  background: #f0f0f0;
+  text-decoration: underline;
+}
 
 .detalle-actions {
   display: flex;
@@ -227,6 +231,7 @@ const sliderClass = computed(() => `pos-${activeTab.value}`);
 }
 
 .tab.active {
+  background-color: #cbd9e6;
   color: #113955;
   font-weight: 700;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);

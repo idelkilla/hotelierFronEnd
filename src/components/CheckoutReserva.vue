@@ -436,8 +436,8 @@
               <div class="ck-aside-hotel">
                 <div class="ck-aside-img">
                   <img
-                    v-if="habitacion?.imagen_url"
-                    :src="habitacion.imagen_url"
+                    v-if="habitacion?.IMAGENES?.length"
+                    :src="habitacion.IMAGENES[0]"
                     alt="Hotel"
                   />
                   <div v-else class="ck-aside-img-placeholder">
@@ -773,10 +773,11 @@ function validarPaso0() {
 }
 
 function validarPaso1() {
-  if (form.value.metodo !== 'tarjeta')
-    return true[
-      ('nombreTarjeta', 'numeroTarjeta', 'mesExp', 'cvv', 'codigoPostal')
-    ].forEach(validarCampo)
+  if (form.value.metodo !== 'tarjeta') return true
+
+  ;['nombreTarjeta', 'numeroTarjeta', 'mesExp', 'cvv', 'codigoPostal'].forEach(
+    validarCampo,
+  )
   return (
     !errors.value.nombreTarjeta &&
     !errors.value.numeroTarjeta &&
@@ -1519,6 +1520,11 @@ async function confirmar() {
 }
 
 .ck-aside-hab {
+  padding: 12px 0;
+  border-top: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .ck-aside-tipo {
   font-size: 13px;

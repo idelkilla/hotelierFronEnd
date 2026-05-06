@@ -42,7 +42,7 @@
         @seleccionar-habitacion="onSeleccionarHabitacion"
       />
 
-      <ReviewsSection />
+      <ReviewsSection :hospedaje-id="hospedaje.id" />
     </div>
 
     <!-- Selectores flotantes -->
