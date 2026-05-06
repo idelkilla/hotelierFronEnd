@@ -1,16 +1,87 @@
-// src/services/api.js - VERSIÓN MEJORADA
+// src/services/api.js
 // Single source of truth for the API base URL.
 
 const BASE = (import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api')
   .trim()
-  .replace(/\/+$/, '')          // strip trailing slash
-  .replace(/\/api$/i, '')       // strip accidental /api suffix
+  .replace(/\/+$/, '')          // quita slash final
+  .replace(/\/api$/i, '')       // quita /api accidental al final
 
 export const API_ROOT = BASE           // https://hotelierbackend-1.onrender.com
 export const API      = `${BASE}/api`  // https://hotelierbackend-1.onrender.com/api
 
+// ─────────────────────────────────────────────
+// Helper: convierte "" / undefined → null
+// ─────────────────────────────────────────────
+export const nullIfEmpty = (v) =>
+  v === '' || v === undefined || v === null ? null : v
+
+// ─────────────────────────────────────────────
+// Helper: limpia el payload antes de enviarlo
+//  - strings vacíos  → null
+//  - id_*            → integer o null
+//  - estatura / peso → número o null
+// ─────────────────────────────────────────────
+export function sanitizeProfilePayload(raw) {
+  const strOrNull  = (v) => (v != null && String(v).trim() !== '' ? String(v).trim() : null)
+  const intOrNull  = (v) => {
+    if (v === '' || v == null) return null
+    const n = parseInt(String(v).trim(), 10)
+    return isNaN(n) ? null : n
+  }
+  const floatOrNull = (v) => {
+    if (v === '' || v == null) return null
+    const n = parseFloat(String(v).trim())
+    return isNaN(n) ? null : n
+  }
+
+  const generoMap = { 'Masculino': 'M', 'Femenino': 'F', 'Otro': 'O' }
+  const generoNorm = (v) => {
+    if (!v) return null
+    const s = String(v).trim()
+    return generoMap[s] ?? s
+  }
+
+  const payload = {}
+
+  if (strOrNull(raw.nombre_completo))        payload.nombre_completo            = strOrNull(raw.nombre_completo)
+  if (strOrNull(raw.apellidos))              payload.apellidos                  = strOrNull(raw.apellidos)
+  if (strOrNull(raw.fecha_nacimiento))       payload.fecha_nacimiento           = strOrNull(raw.fecha_nacimiento)
+  if (raw.genero)                            payload.genero                     = generoNorm(raw.genero)
+  if (strOrNull(raw.descripcion_personal) !== null) payload.descripcion_personal = strOrNull(raw.descripcion_personal)
+  if (intOrNull(raw.id_pais)    !== null)    payload.id_pais                    = intOrNull(raw.id_pais)
+  if (intOrNull(raw.id_ciudad)  !== null)    payload.id_ciudad                  = intOrNull(raw.id_ciudad)
+  if (intOrNull(raw.id_ubicacion) !== null)  payload.id_ubicacion               = intOrNull(raw.id_ubicacion)
+
+  if (raw.email?.trim())                     payload.email                      = raw.email.trim()
+  if (strOrNull(raw.telefono_numero))        payload.telefono_numero            = strOrNull(raw.telefono_numero)
+  if (strOrNull(raw.contacto_emergencia_nombre)) payload.contacto_emergencia_nombre = strOrNull(raw.contacto_emergencia_nombre)
+  if (strOrNull(raw.contacto_emergencia_tel))    payload.contacto_emergencia_tel    = strOrNull(raw.contacto_emergencia_tel)
+  if (strOrNull(raw.ubicacion_nombre))       payload.ubicacion_nombre           = strOrNull(raw.ubicacion_nombre)
+
+  if (strOrNull(raw.documento_numero))       payload.numero_documento           = strOrNull(raw.documento_numero)
+  if (strOrNull(raw.documento_emision))      payload.fecha_emision              = strOrNull(raw.documento_emision)
+  if (strOrNull(raw.documento_expiracion))   payload.fecha_expiracion           = strOrNull(raw.documento_expiracion)
+  if (strOrNull(raw.documento_emisor))       payload.emisor                     = strOrNull(raw.documento_emisor)
+
+  if (strOrNull(raw.num_viajero_conocido))   payload.num_viajero_conocido       = strOrNull(raw.num_viajero_conocido)
+  if (strOrNull(raw.num_dhs_trip))           payload.num_dhs_trip               = strOrNull(raw.num_dhs_trip)
+
+
+  if (strOrNull(raw.estatura) !== null)      payload.estatura = String(raw.estatura).trim().substring(0, 5)
+  if (strOrNull(raw.peso)     !== null)      payload.peso     = String(raw.peso).trim().substring(0, 5)
+  if (strOrNull(raw.sangre)   !== null)      payload.sangre   = String(raw.sangre).trim().substring(0, 3)
+
+  if (strOrNull(raw.ocupacion))              payload.ocupacion                  = strOrNull(raw.ocupacion)
+  if (strOrNull(raw.nacionalidad))           payload.nacionalidad               = strOrNull(raw.nacionalidad)
+  if (strOrNull(raw.estado_civil))           payload.estado_civil               = strOrNull(raw.estado_civil)
+
+  return payload
+}
+// ─────────────────────────────────────────────
+// Core fetch wrapper
+// ─────────────────────────────────────────────
 export async function apiFetch(path, options = {}) {
-  const token = localStorage.getItem('user_token')
+  const token   = localStorage.getItem('user_token')
   const headers = { ...options.headers }
 
   console.log('🌐 apiFetch:', {
@@ -20,15 +91,13 @@ export async function apiFetch(path, options = {}) {
     url: `${API}${path}`
   })
 
-  // ✅ SIEMPRE enviar token si existe
   if (token) {
     headers['Authorization'] = `Bearer ${token}`
-    console.log(`✅ Token added: ${token.slice(0, 20)}...`)
+    console.log(`✅ Token añadido: ${token.slice(0, 20)}...`)
   } else {
-    console.warn('⚠️ No token in localStorage')
+    console.warn('⚠️ No hay token en localStorage')
   }
 
-  // Solo agregamos JSON si no es FormData y no se ha especificado otro tipo
   if (!(options.body instanceof FormData) && !headers['Content-Type']) {
     headers['Content-Type'] = 'application/json'
   }
@@ -37,13 +106,12 @@ export async function apiFetch(path, options = {}) {
     const res = await fetch(`${API}${path}`, {
       ...options,
       headers,
-      credentials: 'include' // ← IMPORTANTE para cookies
+      credentials: 'include'  // necesario para cookies de sesión
     })
 
     console.log(`📊 Response status: ${res.status} ${res.statusText}`)
 
-    // ✅ Solo redirigir en 401 (No autenticado). 
-    // El 403 (Prohibido) debe manejarse como un error de permiso sin cerrar sesión.
+    // 401 → sesión expirada, redirigir a login
     if (res.status === 401 && token) {
       console.warn('⚠️ Sesión inválida o expirada. Redirigiendo a login.')
       localStorage.removeItem('user_token')
@@ -53,7 +121,6 @@ export async function apiFetch(path, options = {}) {
       throw new Error('Sesión expirada')
     }
 
-    // ✅ Si no hay token y falla, es un error normal (no redirigir)
     if (!res.ok) {
       let err = {}
       try {
@@ -61,36 +128,41 @@ export async function apiFetch(path, options = {}) {
       } catch (_) {
         err = { message: `Error ${res.status}` }
       }
-      
+
       console.error('❌ API Error:', {
-        status: res.status,
+        status:  res.status,
         message: err.message || err.error,
         details: err
       })
 
-      throw new Error(err.message || err.error || `Error ${res.status}`)
+      // Lanzar con el mensaje del backend para que el componente lo muestre
+      const error    = new Error(err.message || err.error || `Error ${res.status}`)
+      error.status   = res.status
+      error.details  = err
+      throw error
     }
 
     const data = await res.json()
     console.log('✅ Response data:', data)
     return data
+
   } catch (err) {
     console.error('❌ Fetch error:', err.message)
     throw err
   }
 }
 
-// Para GET simple
-export const apiGet = (path) => apiFetch(path)
+// ─────────────────────────────────────────────
+// Métodos HTTP de conveniencia
+// ─────────────────────────────────────────────
+export const apiGet    = (path)        => apiFetch(path)
+export const apiPost   = (path, data)  => apiFetch(path, { method: 'POST',   body: JSON.stringify(data) })
+export const apiPut    = (path, data)  => apiFetch(path, { method: 'PUT',    body: JSON.stringify(data) })
+export const apiDelete = (path)        => apiFetch(path, { method: 'DELETE' })
 
-// Para POST
-export const apiPost = (path, data) =>
-  apiFetch(path, { method: 'POST', body: JSON.stringify(data) })
-
-// Para PUT
-export const apiPut = (path, data) =>
-  apiFetch(path, { method: 'PUT', body: JSON.stringify(data) })
-
-// Para DELETE
-export const apiDelete = (path) =>
-  apiFetch(path, { method: 'DELETE' })
+// ─────────────────────────────────────────────
+// PUT de perfil con sanitización automática
+// Uso: await apiPutPerfil(formPerfil)
+// ─────────────────────────────────────────────
+export const apiPutPerfil = (rawForm) =>
+  apiPut('/perfil/profile/update', sanitizeProfilePayload(rawForm))

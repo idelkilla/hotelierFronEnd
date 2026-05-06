@@ -101,12 +101,12 @@
 
 .travel-rewards-card {
   background: #fff;
-  border-radius: var(--radius-xl);
-  border: 0.5px solid var(--border-light);
+  border-radius: 16px;
+  border: 1.5px solid #d0dce6;
   padding: 24px;
   text-align: center;
+  box-shadow: 0 2px 8px rgba(17, 57, 85, 0.06);
 }
-
 .travel-rewards-badge {
   display: inline-block;
   background: #003580;
@@ -158,22 +158,24 @@
   gap: 16px;
   padding: 16px 18px;
   background: #fff;
-  border: 0.5px solid var(--border-light);
-  border-radius: var(--radius-lg);
+  border: 1.5px solid #d0dce6;
+  border-radius: 16px;
   cursor: pointer;
   width: 100%;
   text-align: left;
   transition: all 0.18s ease;
   font-family: inherit;
+  box-shadow: 0 2px 8px rgba(17, 57, 85, 0.06);
 }
 
 .travel-nav-card.is-active {
   border: 2px solid #0068ef;
+  box-shadow: 0 2px 10px rgba(0, 104, 239, 0.12);
 }
 
 .travel-nav-card:hover:not(.is-active) {
   background: #fafafa;
-  border-color: #d0d0d0;
+  border-color: #b0c8da;
 }
 
 .travel-nav-icon {
@@ -253,10 +255,11 @@
 /* ─── INFO BLOCKS (perfil) ────────────────────────────────── */
 .info-block {
   background: #fff;
-  border-radius: var(--radius-md);
-  border: 0.5px solid var(--border-light);
+  border-radius: 16px;
+  border: 1.5px solid #d0dce6;
   padding: 26px 30px;
   margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(17, 57, 85, 0.06);
 }
 
 .info-block-header {
@@ -1672,4 +1675,125 @@
   .form-row-2 { grid-template-columns: 1fr; }
   .modal-box { padding: 20px; }
   .cup-empty { flex-direction: column; text-align: center; }
+}
+.pf-form-card {
+  background: #fff;
+  border: 1.5px solid #d0dce6;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(17, 57, 85, 0.06);
+  overflow: hidden;
+}
+ 
+.pf-form-header {
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid #eef2f6;
+  background: #f7fafc;
+}
+ 
+.pf-form-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #113955;
+  margin: 0 0 4px;
+}
+ 
+.pf-form-desc {
+  font-size: 13px;
+  color: #7a9bb5;
+  margin: 0;
+}
+ 
+.pf-group {
+  padding: 22px 28px;
+}
+ 
+.pf-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7a9bb5;
+  margin: 0 0 14px;
+}
+ 
+.pf-divider {
+  height: 1px;
+  background: #eef2f6;
+  margin: 0;
+}
+ 
+.pf-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+ 
+.pf-grid-2:last-child { margin-bottom: 0; }
+ 
+.pf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+ 
+.pf-field:last-child { margin-bottom: 0; }
+ 
+.pf-field label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #9a9a9a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+ 
+.pf-field input {
+  padding: 10px 13px;
+  border: 1px solid #dde7ef;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #1c1c1c;
+  background: #fafafa;
+  outline: none;
+  transition: border-color 0.18s, background 0.18s;
+}
+ 
+.pf-field input:focus {
+  border-color: #1c3055;
+  background: #fff;
+}
+ 
+.pf-form-footer {
+  padding: 20px 28px;
+  border-top: 1px solid #eef2f6;
+  background: #f7fafc;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: flex-end;
+}
+ 
+.pf-save-btn {
+  background: #113955;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 11px 28px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.18s;
+  letter-spacing: 0.02em;
+}
+ 
+.pf-save-btn:hover { background: #1a5276; }
+.pf-save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+ 
+@media (max-width: 600px) {
+  .pf-grid-2 { grid-template-columns: 1fr; }
+  .pf-group { padding: 18px; }
+  .pf-form-header, .pf-form-footer { padding: 18px; }
 }
