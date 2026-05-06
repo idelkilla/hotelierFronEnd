@@ -31,12 +31,8 @@ export async function apiFetch(path, options = {}) {
     credentials: 'include' // ← IMPORTANTE
   })
 
-  if (res.status === 401 || res.status === 403) { //
-    // Token expirado o inválido — redirige al login
-    localStorage.removeItem('user_token') //
-    localStorage.removeItem('user_role') //
-    window.location.href = '/login' //
-    throw new Error('Sesión expirada') //
+ if (res.status === 401 || res.status === 403) {
+    throw new Error('No autenticado')
   }
   if (!res.ok) { //
     const err = await res.json().catch(() => ({}))
