@@ -189,32 +189,32 @@ async function cargarTodo() {
   }
 
   try {
-    const [info, serviciosData, anfitrionData] = await Promise.all([
-      apiFetch(`/hospedaje/${id}`),
+    const info = await apiFetch(`/hospedaje/${id}`)
+    hospedaje.value = info
+
+    const [serviciosData, anfitrionData] = await Promise.allSettled([
       apiFetch(`/hospedaje/${id}/servicios`),
       apiFetch(`/hospedaje/${id}/anfitrion`),
     ])
 
-    // Info principal
-    hospedaje.value = info
+    if (serviciosData.status === 'fulfilled') {
+      servicios.value = serviciosData.value
+    }
 
-    // Servicios
-    servicios.value = serviciosData
-
-    // Anfitrión (puede no existir, no rompemos el render)
-    if (anfitrionData) {
-      host.value.name  = `${anfitrionData.nombre} ${anfitrionData.apellidos ?? ''}`.trim()
-      host.value.cargo = anfitrionData.cargo ?? 'Anfitrión'
-      host.value.years = anfitrionData.anios_en_plataforma ?? 1
+    if (anfitrionData.status === 'fulfilled' && anfitrionData.value) {
+      const a = anfitrionData.value
+      host.value.name  = `${a.nombre} ${a.apellidos ?? ''}`.trim()
+      host.value.cargo = a.cargo ?? 'Anfitrión'
+      host.value.years = a.anios_en_plataforma ?? 1
       host.value.photo = `https://ui-avatars.com/api/?name=${encodeURIComponent(host.value.name)}&background=2c537a&color=fff&size=128`
     }
 
-    // Precio base: primera habitación disponible como referencia
     await cargarPrecioBase(id)
-
   } catch (e) {
     console.error('Error cargando hospedaje:', e.message)
-  } finally { loading.value = false }
+  } finally {
+    loading.value = false
+  }
 }
 
 async function cargarPrecioBase(id) {
