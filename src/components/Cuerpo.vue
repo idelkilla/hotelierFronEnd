@@ -526,6 +526,7 @@ function verEnMapa() {
   // Lógica para abrir mapa pantalla completa
   console.log("Abriendo mapa...")
 }
+
 </script>
 
 <style scoped src="../assets/css/cuerpo.css"></style>

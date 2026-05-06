@@ -19,6 +19,7 @@
         </div>
       </div>
     </div>
+    <FooterComponent />
   </div>
 </template>
 
@@ -27,6 +28,7 @@ import HeaderComponent from "../components/Header.vue";
 import ActividadesSerch from "../components/ActividadesSearch.vue";
 import FiltrosActividades from "../components/FiltrosActividades.vue";
  import OpcionesActividades from "../components/OpcionesActividades.vue"
+ import FooterComponent from '../components/footer.vue'
 </script>
 
 <style scoped>
@@ -49,6 +51,8 @@ import FiltrosActividades from "../components/FiltrosActividades.vue";
   width: 100%;
   display: flex;
   justify-content: flex-end;
+  position: relative;
+  z-index: 100; /* Eleva el buscador para que el calendario y direcciones floten por encima de todo */
 }
 
 .actividades-layout {

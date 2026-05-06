@@ -9,8 +9,12 @@
     <div class="layout-detalle" style="gap: 0">
       <DetallesHotel />
     </div>
+<<<<<<< HEAD
+<FooterComponent />
+=======
 
     <FooterComponent />
+>>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
   </div>
 </template>
 

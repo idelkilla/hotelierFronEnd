@@ -26,6 +26,7 @@
       </div>
     </div>
   </div>
+  <FooterComponent />
 </template>
 
 <style scoped>
@@ -81,6 +82,13 @@
   /* No necesitamos padding o margin-top aquí, ya que el padre .vuelos-main-content-layout los maneja */
   /* No necesitamos display: flex o justify-content aquí, ya que el padre .vuelos-right-column ya alinea su contenido a la derecha */
 }
+
+/* Asegura que el buscador y sus menús (calendario, direcciones) queden siempre por delante */
+.search-top-layer {
+  position: relative;
+  z-index: 100;
+}
+
 /* Mover los tabs (Viaje redondo...) debajo de los inputs usando order */
 
 :deep(.vuelos-tabs) {
@@ -126,6 +134,51 @@
 :deep(.multidestino-container),
 :deep(.pasajeros-top) {
   order: 1; /* Los campos de búsqueda van arriba */
+}
+
+/* ── AJUSTES RESPONSIVE PARA FILTROS ── */
+@media (max-width: 768px) {
+  .vuelos-main-content-layout {
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 12px;
+    margin-top: 70px; /* Un poco más de aire bajo el header */
+    align-items: stretch;
+  }
+
+  .vuelos-right-column {
+    display: contents;
+  }
+
+  .search-top-layer {
+    order: 1; /* Buscador (incluye los tabs de viaje redondo al final) */
+  }
+
+  .filters-column {
+    order: 2; /* El botón de filtros aparece ahora justo después de los tabs */
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .vuelos-search-wrapper:not(.search-top-layer) {
+    order: 3; /* Los resultados de vuelos quedan al final */
+  }
+
+  :deep(.vuelos-tabs) {
+    margin: 5px 0 10px !important;
+    width: 100% !important;
+    justify-content: space-between;
+    padding: 3px;
+  }
+
+  :deep(.vuelo-tab) {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    flex: 1;
+    min-width: 0;
+  }
 }
 </style>
 

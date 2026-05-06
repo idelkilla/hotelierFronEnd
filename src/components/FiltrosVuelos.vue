@@ -182,12 +182,165 @@ watch(
 </script>
 
 <style scoped>
+/* ═══════════════════════════════════
+   BOTÓN FILTROS — solo móvil
+═══════════════════════════════════ */
+.btn-filtros-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .btn-filtros-mobile {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border: 1.5px solid #d1d5db;
+    border-radius: 20px;
+    padding: 9px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #113955;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    transition: border-color 0.2s;
+  }
+  .btn-filtros-mobile:hover { border-color: #113955; }
+}
+
+.filtros-badge {
+  background: #113955;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 18px; height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ═══════════════════════════════════
+   OVERLAY
+═══════════════════════════════════ */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 15, 30, 0.55);
+  z-index: 9998;
+  backdrop-filter: blur(2px);
+}
+.overlay-fade-enter-active, .overlay-fade-leave-active { transition: opacity 0.25s ease; }
+.overlay-fade-enter-from,   .overlay-fade-leave-to     { opacity: 0; }
+
+/* ═══════════════════════════════════
+   DRAWER
+═══════════════════════════════════ */
+.drawer-panel {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 9999;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.18);
+}
+
+.drawer-slide-enter-active, .drawer-slide-leave-active {
+  transition: transform 0.32s cubic-bezier(0.32, 1, 0.56, 1);
+}
+.drawer-slide-enter-from, .drawer-slide-leave-to { transform: translateY(100%); }
+
+.drawer-handle {
+  width: 36px; height: 4px;
+  background: #d1d5db;
+  border-radius: 4px;
+  margin: 12px auto 0;
+  flex-shrink: 0;
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  flex-shrink: 0;
+}
+
+.drawer-titulo {
+  font-size: 16px;
+  font-weight: 700;
+  color: #113955;
+}
+
+.drawer-close {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid #e2e8f0;
+  background: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #374151;
+  transition: background 0.15s;
+}
+.drawer-close:hover { background: #f1f5f9; }
+
+.drawer-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.drawer-footer {
+  display: flex;
+  gap: 10px;
+  padding: 14px 20px 32px;
+  border-top: 1px solid #f1f5f9;
+  flex-shrink: 0;
+}
+
+.btn-limpiar {
+  flex: 1;
+  border: 1.5px solid #e2e8f0;
+  background: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 14px; font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.btn-limpiar:hover { border-color: #113955; color: #113955; }
+
+.btn-aplicar {
+  flex: 2;
+  background: #113955;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-aplicar:hover { background: #0c2a40; }
+
+/* ═══════════════════════════════════
+   SIDEBAR DESKTOP
+═══════════════════════════════════ */
 .filtros-sidebar {
   display: flex;
   flex-direction: column;
   gap: 12px;
   width: 280px;
-  
   flex-shrink: 0;
   position: sticky;
   top: 110px; /* queda fijo bajo el header al hacer scroll */
@@ -226,6 +379,13 @@ watch(
   color: #333;
 }
 
+@media (max-width: 768px) {
+  .filtros-sidebar { display: none; }
+}
+
+/* ═══════════════════════════════════
+   ESTILOS ORIGINALES (sin cambios)
+═══════════════════════════════════ */
 .filtro-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;

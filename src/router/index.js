@@ -20,6 +20,7 @@ import DetalleCarros     from '../view/DetalleCarros.vue';
 import DetalleCrucero from '../view/DetalleCrucero.vue';
 import Actividades from '../view/Actividades.vue';
 import DetalleActividad from '../view/DetalleActividad.vue';
+import Favoritos from '../view/Favoritos.vue';
 import servicesMenu      from '../components/servicesMenu.vue';
 
 // Admin
@@ -49,6 +50,7 @@ const routes = [
   { path: '/Cruceros',         name: 'Cruceros',         component: Cruceros },
   { path: '/perfil',           name: 'Perfil',           component: Perfil, meta: { requiresAuth: true } },
   { path: '/Actividades',      name: 'Actividades',      component: Actividades },
+  { path: '/Favoritos',        name: 'Favoritos',        component: Favoritos },
   
 // dentro de routes:
 { path: '/actividades/:id', name: 'DetalleActividad', component: DetalleActividad },
@@ -72,7 +74,7 @@ const routes = [
     ]
   },
   { path: '/cruceros/:id', name: 'DetalleCrucero', component: DetalleCrucero },
-  { path: '/:pathMatch(.*)*', redirect: '/home' }
+  { path: '/:pathMatch(.*)*', redirect: '/home' },
 ]
 
 const router = createRouter({

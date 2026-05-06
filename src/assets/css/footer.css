@@ -176,7 +176,7 @@ footer.ft {
 }
 
 .ft-input::placeholder {
-  color: #999999; /* --color-placeholder */
+  color: #999999;
 }
 
 .ft-input:focus {
@@ -282,7 +282,12 @@ footer.ft {
 }
 
 @media (max-width: 768px) {
-  footer.ft { padding: 40px 20px 0; margin-top: 60px; }
+  /* FIX: margin-top eliminado para evitar el espacio con fondo distinto.
+     El espaciado superior ahora se maneja con padding-top dentro del footer. */
+  footer.ft {
+    padding: 40px 20px 0;
+    margin-top: 0;
+  }
   .ft-grid { grid-template-columns: repeat(2, 1fr); gap: 28px; }
   .ft-bottom { flex-direction: column; text-align: center; }
   .ft-bottom-links { justify-content: center; }
