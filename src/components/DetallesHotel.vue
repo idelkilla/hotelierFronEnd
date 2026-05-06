@@ -74,8 +74,8 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import CalendarSelector from './CalendarSelector.vue'
 import GuestSelector from './GuestSelector.vue'
 import HabitacionesSelector from './HabitacionesSelector.vue'
@@ -84,6 +84,7 @@ import { API, apiFetch } from '../services/api'
 
 const props = defineProps({ hotel: Object })
 const route = useRoute()
+const router = useRouter()
 const BASE = API
 
 // ── Estado global ─────────────────────────────────────────────
@@ -133,6 +134,15 @@ function onDatesSelected(dates) {
     fechaFin.value = sel
   }
   mostrarCalendario.value = false
+
+  // ✅ Sincroniza con la URL para que MenuDet y FormSearch las lean
+  router.replace({
+    query: {
+      ...route.query,
+      entrada: fechaInicio.value || undefined,
+      salida:  fechaFin.value   || undefined,
+    }
+  })
 }
 function fmt(str) {
   if (!str) return ''
