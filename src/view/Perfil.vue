@@ -83,38 +83,43 @@
                   </div>
                   <div class="form-field">
                     <label>Género</label>
-                    <select v-model="formTemp.genero">
-                      <option value="">Sin información</option>
-                      <option value="M">Masculino</option>
-                      <option value="F">Femenino</option>
-                      <option value="O">Otro</option>
-                    </select>
+                    <AppSelect
+                      v-model="formTemp.genero"
+                      :options="genderOptions"
+                      placeholder="Sin información"
+                    />
                   </div>
                 </div>
                 <div class="form-row-2">
                   <div class="form-field">
                     <label>País</label>
-                    <select v-model="formTemp.id_pais" @change="onPaisChange" :disabled="cargandoPaises">
-                      <option value="">{{ cargandoPaises ? 'Cargando países...' : 'Selecciona un país' }}</option>
-                      <option v-for="p in listaPaises" :key="p.ID_PAIS" :value="p.ID_PAIS">{{ p.NOMBRE }}</option>
-                    </select>
+                    <AppSelect
+                      v-model="formTemp.id_pais"
+                      :options="paisOptions"
+                      :placeholder="cargandoPaises ? 'Cargando países...' : 'Selecciona un país'"
+                      :disabled="cargandoPaises"
+                      @change="onPaisChange"
+                    />
                   </div>
                   <div class="form-field">
                     <label>Ciudad</label>
-                    <select v-model="formTemp.id_ciudad" @change="onCiudadChange" :disabled="!formTemp.id_pais || cargandoCiudades">
-                      <option value="">{{ !formTemp.id_pais ? 'Selecciona un país primero' : cargandoCiudades ? 'Cargando...' : 'Selecciona una ciudad' }}</option>
-                      <option v-for="c in listaCiudades" :key="c.ID_CIUDAD" :value="c.ID_CIUDAD">{{ c.NOMBRE }}</option>
-                    </select>
+                    <AppSelect
+                      v-model="formTemp.id_ciudad"
+                      :options="ciudadOptions"
+                      :placeholder="!formTemp.id_pais ? 'Selecciona un país primero' : cargandoCiudades ? 'Cargando...' : 'Selecciona una ciudad'"
+                      :disabled="!formTemp.id_pais || cargandoCiudades"
+                      @change="onCiudadChange"
+                    />
                   </div>
                 </div>
                 <div class="form-field">
                   <label>Ubicación / Zona</label>
-                  <select v-model="formTemp.id_ubicacion" :disabled="!formTemp.id_ciudad || cargandoUbicaciones">
-                    <option value="">{{ !formTemp.id_ciudad ? 'Selecciona una ciudad primero' : cargandoUbicaciones ? 'Cargando...' : listaUbicaciones.length === 0 ? 'Sin ubicaciones' : 'Selecciona una zona' }}</option>
-                    <option v-for="u in listaUbicaciones" :key="u.id" :value="u.id">
-                      {{ u.nombre }}{{ u.tipo ? ` (${u.tipo})` : '' }}
-                    </option>
-                  </select>
+                  <AppSelect
+                    v-model="formTemp.id_ubicacion"
+                    :options="ubicacionOptions"
+                    :placeholder="!formTemp.id_ciudad ? 'Selecciona una ciudad primero' : cargandoUbicaciones ? 'Cargando...' : listaUbicaciones.length === 0 ? 'Sin ubicaciones' : 'Selecciona una zona'"
+                    :disabled="!formTemp.id_ciudad || cargandoUbicaciones"
+                  />
                 </div>
                 <div class="form-field">
                   <label>Descripción personal</label>
@@ -182,10 +187,11 @@
                 <div class="form-row-2">
                   <div class="form-field">
                     <label>Tipo de sangre</label>
-                    <select v-model="formTemp.sangre">
-                      <option value="">Sin información</option>
-                      <option v-for="t in ['A+','A-','B+','B-','O+','O-','AB+','AB-']" :key="t" :value="t">{{ t }}</option>
-                    </select>
+                    <AppSelect
+                      v-model="formTemp.sangre"
+                      :options="sangreOptions"
+                      placeholder="Sin información"
+                    />
                   </div>
                   <div class="form-field">
                     <label>Estado civil</label>
@@ -240,11 +246,11 @@
               <!-- TIPO → BD: TIPO -->
               <div class="form-field">
                 <label>Tipo de tarjeta</label>
-                <select v-model="formTarjeta.tipo">
-                  <option value="Visa">Visa</option>
-                  <option value="Mastercard">Mastercard</option>
-                  <option value="Amex">American Express</option>
-                </select>
+                <AppSelect
+                  v-model="formTarjeta.tipo"
+                  :options="tarjetaOptions"
+                  placeholder="Selecciona tipo"
+                />
               </div>
 
               <!-- NUMERO → BD: ULTIMOS4 (backend extrae los últimos 4) -->
@@ -1016,10 +1022,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import Header from '../components/Header.vue'
 import footer from '../components/footer.vue'
+import AppSelect from '../components/AppSelect.vue'
 import { apiGet, apiPut, apiDelete } from '../services/api'
 
 const activeSection = ref('perfil')
@@ -1099,6 +1106,36 @@ const formTemp = reactive({
   documento_numero: '', documento_emision: '', documento_expiracion: '', documento_emisor: '',
   id_pais: '', id_ciudad: '', id_ubicacion: ''
 })
+
+// ── Opciones para AppSelect ──────────────────────────────────
+const genderOptions = [
+  { value: 'M', label: 'Masculino' },
+  { value: 'F', label: 'Femenino' },
+  { value: 'O', label: 'Otro' }
+]
+
+const paisOptions = computed(() => 
+  listaPaises.value.map(p => ({ value: p.ID_PAIS, label: p.NOMBRE }))
+)
+
+const ciudadOptions = computed(() => 
+  listaCiudades.value.map(c => ({ value: c.ID_CIUDAD, label: c.NOMBRE }))
+)
+
+const ubicacionOptions = computed(() => 
+  listaUbicaciones.value.map(u => ({ 
+    value: u.id, 
+    label: u.nombre + (u.tipo ? ` (${u.tipo})` : '') 
+  }))
+)
+
+const sangreOptions = ['A+','A-','B+','B-','O+','O-','AB+','AB-'].map(t => ({ value: t, label: t }))
+
+const tarjetaOptions = [
+  { value: 'Visa', label: 'Visa' },
+  { value: 'Mastercard', label: 'Mastercard' },
+  { value: 'Amex', label: 'American Express' }
+]
 
 // ── Lógica de Favoritos ───────────────────────────────────────
 const favoritos = ref([])
