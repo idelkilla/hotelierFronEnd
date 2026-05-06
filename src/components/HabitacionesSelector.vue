@@ -4,7 +4,7 @@
 
     <!-- Selector horizontal (Estilo MenuDet) -->
     <div class="hab-menu-container">
-      <MenuDet is-habitaciones />
+      <MenuDet is-habitaciones @update:fechas="onFechasUpdate" />
     </div>
 
     <!-- Filtros por tipo -->
@@ -155,7 +155,7 @@ const props = defineProps({
   noches: { type: Number, default: 0 },
 })
 
-const emit = defineEmits(['seleccionarHabitacion', 'abrirCalendario'])
+const emit = defineEmits(['seleccionarHabitacion', 'abrirCalendario', 'update:fechas'])
 
 const route = useRoute()
 const loading = ref(true)
@@ -167,6 +167,10 @@ const modalVisible = ref(false)
 const habitacionSeleccionada = ref(null)
 const checkoutVisible = ref(false)
 const tipoPago = ref('ahora')
+
+function onFechasUpdate(fechas) {
+  emit('update:fechas', fechas)
+}
 
 function abrirModal(hab) {
   habitacionSeleccionada.value = hab

@@ -42,6 +42,7 @@
         :noches="noches"
         @abrir-calendario="abrirCalendario"
         @seleccionar-habitacion="onSeleccionarHabitacion"
+        @update:fechas="e => { fechaInicio = e.entrada; fechaFin = e.salida }"
       />
 
       <div class="section-divider"></div>

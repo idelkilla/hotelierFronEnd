@@ -8,6 +8,7 @@
         :initial-huespedes="habitaciones"
         compact
         :is-habitaciones="isHabitaciones"
+        @update:fechas="onFechasUpdate"
       />
 
       <!-- Barra ver propiedades — solo en detalle -->
@@ -102,6 +103,7 @@ const habitaciones  = ref(
     : [{ adultos: 2, ninos: 0, edadesNinos: [] }]
 );
 const activeTab = ref('all');
+const emit = defineEmits(['update:fechas']);
 
 watch(() => route.query, (q) => {
   searchDestino.value = q.destino || '';
@@ -109,6 +111,12 @@ watch(() => route.query, (q) => {
   searchSalida.value  = q.salida  || '';
   if (q.huespedes) habitaciones.value = JSON.parse(q.huespedes);
 }, { deep: true });
+
+function onFechasUpdate(fechas) {
+  searchEntrada.value = fechas.entrada;
+  searchSalida.value  = fechas.salida;
+  emit('update:fechas', fechas);
+}
 
 const sliderClass = computed(() => `pos-${activeTab.value}`);
 
