@@ -54,7 +54,7 @@
         :key="review.ID_RESENA ?? review.id ?? review._id ?? review.ID ?? Math.random()"
         class="review-card"
       >
-   <div class="review-score-badge">
+        <div class="review-score-badge">
      <div class="badge-num">{{ ((review.CALIFICACION ?? review.calificacion) * 2).toFixed(0) }}</div>
      <div class="badge-sub">/10</div>
    </div>
@@ -123,10 +123,9 @@
           maxlength="200"
         ></textarea>
         <div class="form-footer">
-          <span class="char-count">{{ newReview.text.length }}/200</span>
           <button
             class="submit-btn"
-            :disabled="!newReview.rating || !newReview.text.trim() || submitting"
+            :disabled="!newReview.rating || !newReview.text.trim() || submitting || !userToken"
             @click="submitReview"
           >
             <span v-if="submitting">Publicando...</span>
@@ -152,6 +151,7 @@ const submitting = ref(false)
 const submitSuccess = ref(false)
 const activeFilter = ref('all')
 const hoverRating = ref(0)
+const userToken = computed(() => Boolean(localStorage.getItem('user_token')))
 const newReview = reactive({ rating: 0, text: '' })
 
 const filters = [
@@ -229,7 +229,7 @@ function palabraPorCalificacion(r) {
 async function cargarResenas() {
   if (!props.hospedajeId) return
   try {
-    const data = await apiFetch(`/hospedaje/${props.hospedajeId}/resenas`)
+    const data = await apiFetch(`/hospedajes/${props.hospedajeId}/resenas`)
 
     // Backend puede devolver:
     // - array directo
@@ -251,6 +251,10 @@ async function cargarResenas() {
 }
 
 async function submitReview() {
+  // Solo permitir publicar si hay sesión (token)
+  const token = localStorage.getItem('user_token')
+  if (!token) return
+
   if (!newReview.rating || !newReview.text.trim()) return
   submitting.value = true
   try {

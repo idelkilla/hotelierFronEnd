@@ -181,7 +181,7 @@ const handleGoogleCredential = async (response) => {
   error.value = null
   isLoading.value = true
   try {
-    const fetchResponse = await fetch(`${API}/auth/google-login`, {
+    const fetchResponse = await fetch(`${API_ROOT}/api/auth/google-login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
