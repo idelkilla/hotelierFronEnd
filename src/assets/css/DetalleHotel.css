@@ -70,6 +70,28 @@
     font-weight: 500;
 }
 
+.btn-favorito {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid rgba(38, 80, 115, 0.25);
+  color: #265073;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 20px;
+}
+.btn-favorito:hover {
+  background: rgba(38, 80, 115, 0.06);
+  border-color: rgba(38, 80, 115, 0.5);
+}
+.btn-favorito .material-symbols-outlined {
+  font-size: 18px;
+  color: #e05555;
+}
 .input-text-area input {
     border: none;
     outline: none;

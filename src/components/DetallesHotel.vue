@@ -2,6 +2,14 @@
   <div class="contenedor-detalles" v-if="!loading">
     <div class="info-hotel">
       <h1 class="nombre-hotel">{{ hospedaje.nombre }}</h1>
+      <!-- Botón favorito -->
+<button class="btn-favorito" @click="toggleFavorito">
+  <span class="material-symbols-outlined"
+        :style="{ fontVariationSettings: esFavorito ? `'FILL' 1` : `'FILL' 0` }">
+    favorite
+  </span>
+  {{ esFavorito ? 'Guardado' : 'Guardar' }}
+</button>
       <div class="rating-ubicacion">
         <span class="ubicacion">{{ hospedaje.ciudad }}, {{ hospedaje.pais }}</span>
       </div>
@@ -267,9 +275,36 @@ function handleOutsideClick(e) {
 
 onMounted(() => {
   cargarTodo()
+  verificarFavorito()  
   window.addEventListener('mousedown', handleOutsideClick)
 })
 onBeforeUnmount(() => window.removeEventListener('mousedown', handleOutsideClick))
+const esFavorito = ref(false)
+
+async function verificarFavorito() {
+  const id = route.params.id
+  if (!id) return
+  try {
+    const res = await apiFetch(`/favoritos/check/${id}`)
+    esFavorito.value = res.esFavorito
+  } catch { /* no autenticado, ok */ }
+}
+
+async function toggleFavorito() {
+  const id = route.params.id
+  if (!id) return
+  try {
+    if (esFavorito.value) {
+      await apiFetch(`/favoritos/${id}`, { method: 'DELETE' })
+      esFavorito.value = false
+    } else {
+      await apiFetch(`/favoritos/${id}`, { method: 'POST' })
+      esFavorito.value = true
+    }
+  } catch (e) {
+    alert('Debes iniciar sesión para guardar favoritos')
+  }
+}
 </script>
 
 <style scoped src="../assets/css/DetalleHotel.css"></style>

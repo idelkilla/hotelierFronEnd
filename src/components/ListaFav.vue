@@ -6,7 +6,9 @@
       <h2>Mis Hoteles Favoritos</h2>
       <p class="subtitle">Aquí se muestran todos los hoteles disponibles y tus favoritos.</p>
     </div>
-
+<!-- Estados de carga/error -->
+<div v-if="cargando" class="empty">Cargando favoritos...</div>
+<div v-else-if="error" class="empty" style="color:#e05555">{{ error }}</div>
     <!-- GRID DE FAVORITOS -->
     <div v-if="favoritos.length > 0" class="grid">
       <div class="hotel-card" v-for="hotel in favoritos" :key="hotel.id">
@@ -47,125 +49,59 @@
 
     <!-- VACÍO -->
     <div v-else class="empty">
-      No hay hoteles favoritos aún.
+      No tienes hospedajes favoritos aún. ¡Explora y guarda los que te gusten! 🏨
     </div>
   </div>
 </template>
 
-<script>
+<script>import { apiFetch } from '../services/api'  // ajusta el path si difiere
+
 export default {
   name: "Favoritos",
   data() {
     return {
       defaultImage: "https://images.unsplash.com/photo-1566073771259-6a8506099945",
-      favoritos: []
-    };
+      favoritos: [],
+      cargando: true,
+      error: null
+    }
   },
-  mounted() {
-  // localStorage.removeItem("favoritos"); // Se eliminó esta línea para permitir la persistencia de favoritos
-  this.cargarFavoritos();
-},
+  async mounted() {
+    await this.cargarFavoritos()
+  },
   methods: {
-    cargarFavoritos() {
-      const data = JSON.parse(localStorage.getItem("favoritos"));
-      if (data && data.length > 0) {
-        this.favoritos = data;
-        return;
+    async cargarFavoritos() {
+      this.cargando = true
+      this.error    = null
+      try {
+        const data = await apiFetch('/favoritos')
+        this.favoritos = data.map(h => ({
+          ...h,
+          location: `${h.ciudad}, ${h.pais}`,
+          imagen:   h.imagen  || this.defaultImage,
+          amenidad: h.tipo    || 'Hospedaje',
+          precio:   h.precio  ? Math.round(Number(h.precio)) : 0,
+          nombre:   h.nombre  || 'Hospedaje sin nombre',
+        }))
+      } catch (e) {
+        this.error = 'No se pudieron cargar los favoritos. ¿Estás autenticado?'
+      } finally {
+        this.cargando = false
       }
-
-      this.favoritos = [
-       {
-  id: 1,
-  nombre: "Barceló Bávaro Palace",
-  location: "Punta Cana, República Dominicana",
-  imagen: "https://images.trvl-media.com/lodging/3000000/2440000/2438600/2438582/b9a77204.jpg?impolicy=resizecrop&rw=1200&ra=fit",
-  precio: 306,
-  amenidad: "Todo incluido",
-  descripcion: "Uno de los resorts más famosos de Punta Cana, con playa privada, piscinas enormes y experiencia de lujo frente al mar."
-},
-
-{
-  id: 2,
-  nombre: "JW Marriott Hotel Santo Domingo",
-  location: "Santo Domingo, República Dominicana",
-  imagen: "https://tse1.mm.bing.net/th/id/OIP.mZTIo1rZvx0hKUQRxAQlgAHaC9?r=0&rs=1&pid=ImgDetMain&o=7&rm=3",
-  precio: 189,
-  amenidad: "Sky Pool",
-  descripcion: "Hotel moderno y elegante ubicado en el corazón de Santo Domingo, ideal para una experiencia urbana premium."
-},
-
-{
-  id: 3,
-  nombre: "InterContinental Real Santo Domingo",
-  location: "Santo Domingo, República Dominicana",
-  imagen: "https://aginterior.com.pk/wp-content/uploads/2022/04/ParkLaneTower_05.jpeg",
-  precio: 165,
-  amenidad: "Spa & Rooftop",
-  descripcion: "Hotel de lujo con diseño sofisticado, rooftop impresionante y excelente gastronomía internacional."
-},
-
-{
-  id: 4,
-  nombre: "Meliá Caribe Beach Resort",
-  location: "Punta Cana, República Dominicana",
-  imagen: "https://www.meliatropicalcaribe.com/images/slides/slide-44.jpg",
-  precio: 221,
-  amenidad: "Beach Resort",
-  descripcion: "Resort rodeado de jardines tropicales y acceso directo a una de las playas más hermosas de Punta Cana."
-},
-
-{
-  id: 5,
-  nombre: "Wyndham Alltra Samaná",
-  location: "Samaná, República Dominicana",
-  imagen: "https://www.wyndhamhotels.com/content/dam/property-images/en-us/lv/do/others/las-galeras/57046/57046_exterior_view_7.jpg?crop=2997:1998;*,*&downsize=1800:*",
-  precio: 161,
-  amenidad: "Vista panorámica",
-  descripcion: "Resort all-inclusive frente al mar en Las Galeras, perfecto para relajarse rodeado de naturaleza."
-},
-
-{
-  id: 6,
-  nombre: "Sublime Samaná Hotel",
-  location: "Las Terrenas, República Dominicana",
-  imagen: "https://images.trvl-media.com/lodging/5000000/4340000/4336100/4336022/bb65782d.jpg?impolicy=resizecrop&rw=598&ra=fit",
-  precio: 225,
-  amenidad: "Luxury Beachfront",
-  descripcion: "Hotel boutique elegante frente a Playa Cosón, con suites modernas y ambiente exclusivo."
-},
-
-{
-  id: 7,
-  nombre: "Renaissance Jaragua Hotel",
-  location: "Santo Domingo, República Dominicana",
-  imagen: "https://tse3.mm.bing.net/th/id/OIP.tf-F6GRpsVd5N1imQjsb7wHaEc?pid=Api&P=0&w=300&h=300",
-  precio: 100,
-  amenidad: "Casino & Malecón",
-  descripcion: "Hotel icónico frente al mar Caribe, ubicado en el famoso Malecón de Santo Domingo."
-},
-
-{
-  id: 8,
-  nombre: "The Westin Puntacana Resort",
-  location: "Punta Cana, República Dominicana",
-  imagen: "https://images.getaroom-cdn.com/image/upload/s--GPPmxkbx--/c_limit,e_improve,fl_lossy.immutable_cache,h_940,q_auto:good,w_940/v1770155432/61beb1786c6af03f6091df53f94ccbf4b81c75de?_a=BACAEuEv&atc=e7cd1cfa",
-  precio: 282,
-  amenidad: "Golf & Beach",
-  descripcion: "Resort exclusivo con playa privada, campos de golf y ambiente relajante de lujo."
-}
-      ];
-
-      localStorage.setItem("favoritos", JSON.stringify(this.favoritos));
     },
-    quitarFavorito(id) {
-      this.favoritos = this.favoritos.filter(h => h.id !== id);
-      localStorage.setItem("favoritos", JSON.stringify(this.favoritos));
+    async quitarFavorito(id) {
+      try {
+        await apiFetch(`/favoritos/${id}`, { method: 'DELETE' })
+        this.favoritos = this.favoritos.filter(h => h.id !== id)
+      } catch (e) {
+        alert('Error al quitar favorito')
+      }
     },
     onImageError(e) {
-      e.target.src = this.defaultImage;
+      e.target.src = this.defaultImage
     }
   }
-};
+}
 </script>
 
 <style scoped>

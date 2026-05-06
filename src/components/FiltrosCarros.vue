@@ -1,20 +1,9 @@
 <template>
   <div class="filtros-autos">
-<<<<<<< HEAD
-
-    <!-- Botón visible solo en mobile -->
-    <button class="filtros-toggle-btn" @click="drawerAbierto = true">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="4" y1="6" x2="20" y2="6"/>
-        <line x1="7" y1="12" x2="17" y2="12"/>
-        <line x1="10" y1="18" x2="14" y2="18"/>
-=======
     <button class="filter-toggle" @click="drawerAbierto = !drawerAbierto">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" 
         fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
->>>>>>> 25e2efbbea94fd3fdcc03124745f6221802e0781
       </svg>
       Filtros
       <span v-if="cantidadFiltros > 0" class="filtros-badge">{{ cantidadFiltros }}</span>
