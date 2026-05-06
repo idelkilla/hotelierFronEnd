@@ -339,13 +339,14 @@ watch(() => props.hospedajeId, cargarResenas)
   color: #444;
   margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
 .review-text.expanded {
   -webkit-line-clamp: unset;
+  line-clamp: unset;
   overflow: visible;
 }
 
