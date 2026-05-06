@@ -97,6 +97,7 @@
                         v-model="form.telefono"
                         type="tel"
                         placeholder="809-555-0000"
+                        @input="formatearTelefono"
                         @blur="validarCampo('telefono')"
                       />
                       <span class="ck-error-msg" v-if="errors.telefono">{{
@@ -808,6 +809,19 @@ function validarPaso0() {
   return (
     !errors.value.nombre && !errors.value.apellidos && !errors.value.telefono
   )
+}
+function formatearTelefono() {
+  // Deja solo dígitos
+  let digits = form.value.telefono.replace(/\D/g, '').slice(0, 10)
+
+  // Aplica formato XXX-XXX-XXXX
+  if (digits.length <= 3) {
+    form.value.telefono = digits
+  } else if (digits.length <= 6) {
+    form.value.telefono = digits.slice(0, 3) + '-' + digits.slice(3)
+  } else {
+    form.value.telefono = digits.slice(0, 3) + '-' + digits.slice(3, 6) + '-' + digits.slice(6)
+  }
 }
 function validarPaso1() {
   // Si no pagas con tarjeta, no validamos esos campos
