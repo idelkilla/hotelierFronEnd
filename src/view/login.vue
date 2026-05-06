@@ -103,7 +103,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import authService from '../services/authService'
 import footer from '../components/footer.vue'
-import { API } from '../services/api'
+import { API, API_ROOT } from '../services/api'
 
 const router = useRouter()
 

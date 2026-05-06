@@ -31,14 +31,15 @@ export async function apiFetch(path, options = {}) {
     credentials: 'include' // ← IMPORTANTE
   })
 
-  if (res.status === 401 || res.status === 403) { //
-    // Token expirado o inválido — redirige al login
-    localStorage.removeItem('user_token') //
-    localStorage.removeItem('user_role') //
-    window.location.href = '/login' //
-    throw new Error('Sesión expirada') //
+  // ✅ Solo redirigir si había token (sesión activa) y fue rechazado
+  // Si no había token, es una ruta pública que falló — no redirigir
+  if ((res.status === 401 || res.status === 403) && token) {
+    localStorage.removeItem('user_token')
+    localStorage.removeItem('user_role')
+    window.location.href = '/login'
+    throw new Error('Sesión expirada')
   }
-  if (!res.ok) { //
+  if (!res.ok) {
     const err = await res.json().catch(() => ({}))
     throw new Error(err.message || `Error ${res.status}`)
   }

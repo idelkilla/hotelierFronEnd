@@ -160,8 +160,8 @@ const reviews = ref([])
 const submitting = ref(false)
 const submitSuccess = ref(false)
 const activeFilter = ref('all')
-const hoverRating = ref(0)
-const userToken = computed(() => Boolean(localStorage.getItem('user_token')))
+const hoverRating = ref(0) // Initialize hoverRating
+const userToken = ref(Boolean(localStorage.getItem('user_token'))) // Initialize userToken as a ref
 const newReview = reactive({ rating: 0, text: '' })
 
 const filters = [
@@ -293,8 +293,20 @@ async function submitReview() {
   }
 }
 
-onMounted(cargarResenas)
-watch(() => props.hospedajeId, cargarResenas)
+function handleStorageChange() {
+  userToken.value = Boolean(localStorage.getItem('user_token'))
+}
+
+onMounted(() => {
+  cargarResenas()
+  window.addEventListener('storage', handleStorageChange)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('storage', handleStorageChange)
+})
+
+watch(() => props.hospedajeId, cargarResenas) // Watch for hospedajeId changes to reload reviews
 </script>
 
 <style scoped>
