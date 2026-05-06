@@ -432,6 +432,7 @@ async function ejecutarBusqueda() {
   hoteles.value = []
 
   const destino = route.query.destino || ''
+  const idUbicacionQuery = route.query.id_ubicacion || ''
   const fechaInicio = route.query.entrada || ''
   const fechaFin = route.query.salida || ''
   const habs = route.query.huespedes
@@ -444,15 +445,10 @@ async function ejecutarBusqueda() {
   searchSalida.value = fechaFin
   habitaciones.value = habs
 
+  // Validación básica de fechas si están presentes
   if (fechaInicio && fechaFin && fechaFin !== 'FLEXIBLE') {
     const dIni = new Date(fechaInicio)
     const dFin = new Date(fechaFin)
-
-    if (isNaN(dIni.getTime()) || isNaN(dFin.getTime())) {
-      errorMsg.value = 'Formato de fecha inválido'
-      isLoading.value = false
-      return
-    }
     if (dFin <= dIni) {
       errorMsg.value = 'La fecha de salida debe ser posterior a la de entrada'
       isLoading.value = false
@@ -460,24 +456,39 @@ async function ejecutarBusqueda() {
     }
   }
 
-  console.log('EJECUTANDO BÚSQUEDA CON:', { destino, fechaInicio, fechaFin, habs })
-
   try {
     const data = await apiPost('/search/hospedaje', {
       destino: destino || '',
+      id_ubicacion: idUbicacionQuery,
       fecha_inicio: fechaInicio || null,
       fecha_fin: (fechaFin && fechaFin !== 'FLEXIBLE') ? fechaFin : null,
       habitaciones: habs,
     })
 
-    // Asegurar que recibimos un array y procesar imágenes
-    const results = Array.isArray(data) ? data : []
-    hoteles.value = results.map(h => ({ 
-      ...h, 
-      currentImg: 0, 
-      isFavorite: false,
-      imagenes: Array.isArray(h.imagenes) && h.imagenes.length > 0 ? h.imagenes : (h.imagen_portada ? [h.imagen_portada] : [])
-    }))
+    // Normalizar la respuesta: Algunos backends devuelven { data: [...] } o [...]
+    const rawResults = Array.isArray(data) ? data : (data?.data || [])
+    
+    hoteles.value = rawResults.map(h => {
+      // Normalizar claves de Mayúsculas (Postgres) a Minúsculas (Frontend)
+      const normalized = {}
+      Object.keys(h).forEach(key => {
+        normalized[key.toLowerCase()] = h[key]
+      })
+
+      return {
+        ...normalized,
+        // Re-asignar ID si viene como id_servicio
+        id_servicio: normalized.id_servicio || normalized.id,
+        currentImg: 0,
+        isFavorite: false,
+        // Asegurar que amenidades sea un array
+        amenidades: Array.isArray(normalized.amenidades) ? normalized.amenidades : [],
+        // Procesar imágenes
+        imagenes: Array.isArray(normalized.imagenes) && normalized.imagenes.length > 0 
+          ? normalized.imagenes 
+          : (normalized.imagen_portada ? [normalized.imagen_portada] : [])
+      }
+    })
 
   } catch (err) {
     console.error('ERROR FETCH:', err)

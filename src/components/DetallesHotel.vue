@@ -115,7 +115,7 @@ const BASE = API
 
 // ── Estado global ─────────────────────────────────────────────
 const loading    = ref(true)
-const hospedaje  = ref({})
+const hospedaje  = ref({ nombre: '', ciudad: '', pais: '', descripcion: '' })
 const servicios  = ref([])
 const host       = ref({ name: '', photo: '', cargo: '', years: 0 })
 const precioBase = ref(0)
@@ -219,12 +219,24 @@ async function cargarTodo() {
 
 async function cargarPrecioBase(id) {
   try {
-    // Trae el precio mínimo de las habitaciones del hospedaje
-    const rows = await apiFetch(`/hospedaje/${id}/disponibilidad?desde=${hoy()}&hasta=${manana()}`)
-    if (rows.length) {
-      precioBase.value = Number(rows[0].precio_efectivo)
+    // Intenta con los próximos 30 días para tener más chances de encontrar precio
+    const desde = hoy()
+    const hasta = (() => {
+      const d = new Date(); d.setDate(d.getDate() + 30)
+      return d.toISOString().split('T')[0]
+    })()
+    const rows = await apiFetch(`/hospedaje/${id}/disponibilidad?desde=${desde}&hasta=${hasta}`)
+    if (rows && rows.length) {
+      // Toma el precio mínimo disponible
+      precioBase.value = Math.min(...rows.map(r => Number(r.precio_efectivo)))
+    } else {
+      // Fallback: busca precio base directo de habitaciones
+      const info = await apiFetch(`/hospedaje/${id}/habitaciones-base`)
+      if (info && info.length) precioBase.value = Number(info[0].precio_noche)
     }
-  } catch { /* sin disponibilidad hoy, precio queda en 0 */ }
+  } catch (e) {
+    console.warn('Sin precio disponible:', e.message)
+  }
 }
 
 // Recarga precio cuando el usuario elige fechas
