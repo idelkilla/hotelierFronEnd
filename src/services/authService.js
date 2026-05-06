@@ -8,6 +8,17 @@ const API_URL = `${API_ROOT}/api/auth`
 axios.defaults.withCredentials = true
 axios.defaults.crossDomain = true
 
+// Interceptor para adjuntar el token a todas las peticiones de axios
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem('user_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
 const authService = {
 
   // REGISTER: Debe retornar una promesa que resuelve en { data: { token: '...' } }
