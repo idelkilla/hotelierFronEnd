@@ -259,80 +259,51 @@
               </div>
             </div>
 
-            <!-- Documentos de viaje & aeropuerto -->
-            <div class="perfil-section">
-              <p class="perfil-section-label">Documentos de viaje & aeropuerto</p>
-              <div class="form-row-3">
-                <div class="form-field">
-                  <label>Número de pasaporte / ID</label>
-                  <input v-model="formPerfil.documento_numero" type="text" />
-                </div>
-                <div class="form-field">
-                  <label>Fecha de emisión</label>
-                  <input v-model="formPerfil.documento_emision" type="date" />
-                </div>
-                <div class="form-field">
-                  <label>Fecha de expiración</label>
-                  <input v-model="formPerfil.documento_expiracion" type="date" />
-                </div>
-              </div>
-              <div class="form-row-3">
-                <div class="form-field">
-                  <label>País emisor</label>
-                  <input v-model="formPerfil.documento_emisor" type="text" placeholder="País emisor" />
-                </div>
-                <div class="form-field">
-                  <label>TSA PreCheck</label>
-                  <input v-model="formPerfil.num_viajero_conocido" type="text" placeholder="Número de viajero conocido" />
-                </div>
-                <div class="form-field">
-                  <label>DHS TRIP / Redress Number</label>
-                  <input v-model="formPerfil.num_dhs_trip" type="text" placeholder="Número DHS TRIP" />
-                </div>
-              </div>
-            </div>
+         <!-- Datos biográficos & salud -->
+<div class="perfil-section">
+  <p class="perfil-section-label">Datos biográficos & salud</p>
+  <div class="form-row-2">
+    <div class="form-field">
+      <label>Estatura (cm)</label>
+      <input v-model="formPerfil.estatura" type="number" placeholder="165" />
+    </div>
+    <div class="form-field">
+      <label>Peso (kg)</label>
+      <input v-model="formPerfil.peso" type="number" placeholder="60" />
+    </div>
+  </div>
+  <div class="form-row-3">
+    <div class="form-field">
+      <label>Estado civil</label>
+      <AppSelect
+        v-model="formPerfil.estado_civil"
+        :options="estadoCivilOptions"
+        placeholder="Selecciona estado civil"
+      />
+    </div>
+    <div class="form-field">
+  <label>Ocupación</label>
+  <AppSelect
+    v-model="formPerfil.ocupacion"
+    :options="ocupacionOptions"
+    placeholder="Selecciona ocupación"
+  />
+</div>
+    <div class="form-field">
+      <label>Nacionalidad</label>
+      <AppSelect
+        v-model="formPerfil.nacionalidad"
+        :options="nacionalidadOptions"
+        placeholder="Selecciona nacionalidad"
+      />
+    </div>
+  </div>
+</div>
 
             <!-- Datos biográficos & salud -->
-            <div class="perfil-section">
-              <p class="perfil-section-label">Datos biográficos & salud</p>
-              <div class="form-row-3">
-                <div class="form-field">
-                  <label>Estatura (cm)</label>
-                  <input v-model="formPerfil.estatura" type="number" placeholder="165" />
-                </div>
-                <div class="form-field">
-                  <label>Peso (kg)</label>
-                  <input v-model="formPerfil.peso" type="number" placeholder="60" />
-                </div>
-                <div class="form-field">
-                  <label>Estado civil</label>
-                  <input v-model="formPerfil.estado_civil" type="text" placeholder="Soltero/a, Casado/a..." />
-                </div>
-              </div>
-              <div class="form-row-2">
-                <div class="form-field">
-                  <label>Ocupación</label>
-                  <input v-model="formPerfil.ocupacion" type="text" />
-                </div>
-                <div class="form-field">
-                  <label>Nacionalidad</label>
-                  <input v-model="formPerfil.nacionalidad" type="text" />
-                </div>
-              </div>
-            </div>
-          </div>
+         
+</div>
 
-          <!-- Personas adicionales -->
-          <div class="info-block">
-            <div class="info-block-header">
-              <div>
-                <h2>Personas adicionales</h2>
-                <p class="info-desc">Guarda los perfiles de familiares, amigos o compañeros que suelen viajar contigo.</p>
-              </div>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
-            </div>
-            <button class="btn-add-person">Agregar persona adicional</button>
-          </div>
         </div>
 
         <!-- SECCIÓN: MIS FAVORITOS -->
@@ -600,53 +571,88 @@
         </div>
 
         <!-- SECCIÓN: CRÉDITOS -->
-        <div v-else-if="activeSection === 'creditos'" class="section-wrap">
-          <div class="credits-wrapper">
-            <p class="cr-section-label">Créditos</p>
-            <div class="cr-tip-card">
-              <div class="cr-tip-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9AD0C2" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></div>
-              <div>
-                <p class="cr-tip-title">Usa tu crédito antes de que venza</p>
-                <p class="cr-tip-body">La política de vencimiento varía según la aerolínea. Te recomendamos reservar y completar tu viaje antes de la fecha límite.</p>
-              </div>
-            </div>
-            <div class="cr-available-section">
-              <p class="cr-available-label">Créditos disponibles</p>
-              <div class="cr-divider"></div>
-              <div v-if="creditos.length > 0">
-                <div v-for="c in creditos" :key="c.id" class="fp-row" style="margin-bottom:.5rem;">
-                  <div class="fp-row-left-inner">
-                    <div class="fp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2D9596" stroke-width="1.5" stroke-linecap="round" width="16" height="16"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg></div>
-                    <div class="fp-row-left">
-                      <div class="fp-row-label">{{ c.aerolinea }}</div>
-                      <div class="fp-row-value">${{ c.monto }} · Vence {{ c.vencimiento }}</div>
-                    </div>
-                  </div>
-                  <button class="fp-delete-btn" @click="eliminarCredito(c.id)">✕</button>
-                </div>
-              </div>
-              <div v-else class="cr-empty-state">
-                <div class="cr-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2D9596" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg></div>
-                <p>No tienes créditos disponibles</p>
-              </div>
-              <button v-if="!mostrarFormCredito" class="fp-add-btn" style="margin-top:1rem;" @click="mostrarFormCredito = true">Agregar crédito de aerolínea</button>
-              <div v-if="mostrarFormCredito" class="fp-form-container" style="margin-top:1rem;">
-                <div class="fp-form-body">
-                  <div class="fp-grid-2">
-                    <div class="fp-field"><label>Aerolínea</label><input v-model="formCredito.aerolinea" type="text" placeholder="Ej. American Airlines" /></div>
-                    <div class="fp-field"><label>Monto (USD)</label><input v-model="formCredito.monto" type="number" placeholder="150" /></div>
-                  </div>
-                  <div class="fp-field"><label>Fecha de vencimiento</label><input v-model="formCredito.vencimiento" type="date" /></div>
-                  <span v-if="errorCredito" class="error">{{ errorCredito }}</span>
-                  <div class="fp-actions">
-                    <button class="fp-btn-primary" @click="guardarCredito">Guardar</button>
-                    <button class="fp-btn-ghost" @click="mostrarFormCredito = false; errorCredito = ''">Cancelar</button>
-                  </div>
-                </div>
-              </div>
-            </div>
+       <!-- SECCIÓN: MEMBRESÍA -->
+<div v-else-if="activeSection === 'creditos'" class="section-wrap">
+  <div class="mem-wrap">
+
+    <!-- Header -->
+    <div class="mem-header">
+      <p class="mem-eyebrow">Mi cuenta</p>
+      <h1 class="mem-title">Membresía</h1>
+    </div>
+
+    <!-- Loading -->
+    <div v-if="cargandoMembresia" class="mem-loading">
+      Cargando membresía...
+    </div>
+
+    <!-- Sin membresía -->
+    <div v-else-if="!membresia" class="mem-empty">
+      <div class="mem-empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2D9596" stroke-width="1.2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v4M12 16h.01"/>
+        </svg>
+      </div>
+      <p class="mem-empty-title">No tienes membresía activa</p>
+      <p class="mem-empty-sub">Realiza tu primera reserva para unirte al programa de fidelidad.</p>
+    </div>
+
+    <!-- Card membresía -->
+    <div v-else class="mem-card">
+      <div class="mem-card-top">
+        <div class="mem-badge-wrap">
+          <span class="mem-badge">{{ membresia.NOMBRE_NIVEL }}</span>
+        </div>
+        <div class="mem-number">
+          <span class="mem-number-label">N.º de miembro</span>
+          <span class="mem-number-value">{{ membresia.NUMERO_MIEMBRO }}</span>
+        </div>
+      </div>
+
+      <div class="mem-card-body">
+        <!-- Puntos -->
+        <div class="mem-points-block">
+          <p class="mem-points-label">Puntos de fidelidad</p>
+          <p class="mem-points-value">{{ membresia.PUNTOS_FIDELIDAD.toLocaleString('es-DO') }}</p>
+          <p class="mem-points-sub">Mínimo para este nivel: {{ membresia.PUNTOS_MINIMOS.toLocaleString('es-DO') }} pts</p>
+        </div>
+
+        <!-- Barra de progreso al siguiente nivel -->
+        <div class="mem-progress-wrap">
+          <div class="mem-progress-bar">
+            <div
+              class="mem-progress-fill"
+              :style="{ width: Math.min((membresia.PUNTOS_FIDELIDAD / (membresia.PUNTOS_MINIMOS || 1)) * 100, 100) + '%' }"
+            ></div>
+          </div>
+          <p class="mem-progress-label">
+            {{ Math.min(Math.round((membresia.PUNTOS_FIDELIDAD / (membresia.PUNTOS_MINIMOS || 1)) * 100), 100) }}% del nivel actual alcanzado
+          </p>
+        </div>
+
+        <!-- Info extra -->
+        <div class="mem-info-grid">
+          <div class="mem-info-item">
+            <span class="mem-info-label">Miembro desde</span>
+            <span class="mem-info-value">{{ formatFecha(membresia.FECHA_INICIO) }}</span>
+          </div>
+          <div class="mem-info-item">
+            <span class="mem-info-label">Nivel</span>
+            <span class="mem-info-value">{{ membresia.NOMBRE_NIVEL }}</span>
           </div>
         </div>
+
+        <!-- Descripción del nivel -->
+        <div v-if="membresia.DESCRIPCION" class="mem-desc">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D9596" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          <p>{{ membresia.DESCRIPCION }}</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
 
         <!-- SECCIÓN: OPINIONES -->
         <div v-else-if="activeSection === 'opiniones'" class="section-wrap">
@@ -876,7 +882,50 @@ const tarjetaOptions = [
   { value: 'Mastercard', label: 'Mastercard' },
   { value: 'Amex',       label: 'American Express' }
 ]
+// ── Catálogos de estado civil y nacionalidad ──────────────────
+const listaEstadoCivil    = ref([])
+const listaNacionalidades = ref([])
 
+async function fetchEstadoCivil() {
+  try {
+    listaEstadoCivil.value = await apiGet('/catalogos/estados-civiles')
+  } catch (e) { console.error('Error cargando estados civiles:', e) }
+}
+
+async function fetchNacionalidades() {
+  try {
+    const data = await apiGet('/catalogos/nacionalidades')
+    console.log('NACI:', JSON.stringify(data[0]))  // ← agrega esto
+    listaNacionalidades.value = data
+  } catch (e) { console.error('Error cargando nacionalidades:', e) }
+}
+
+const nacionalidadOptions = computed(() =>
+  listaNacionalidades.value.map(n => ({
+    value: n.NOMBRE_NACIONALIDAD ?? n.nombre_nacionalidad,
+    label: n.NOMBRE_NACIONALIDAD ?? n.nombre_nacionalidad
+  }))
+)
+const estadoCivilOptions = computed(() =>
+  listaEstadoCivil.value.map(e => ({
+    value: e.NOMBRE_ESTADO ?? e.nombre_estado,
+    label: e.NOMBRE_ESTADO ?? e.nombre_estado
+  }))
+)
+const listaOcupaciones = ref([])
+
+async function fetchOcupaciones() {
+  try {
+    listaOcupaciones.value = await apiGet('/catalogos/ocupaciones')
+  } catch (e) { console.error('Error cargando ocupaciones:', e) }
+}
+
+const ocupacionOptions = computed(() =>
+  listaOcupaciones.value.map(o => ({
+    value: o.NOMBRE ?? o.nombre,
+    label: o.NOMBRE ?? o.nombre
+  }))
+)
 // ── Catálogos ─────────────────────────────────────────────────
 const listaPaises         = ref([])
 const listaCiudades       = ref([])
@@ -999,7 +1048,8 @@ const cargandoFav = ref(false)
 
 async function cambiarSeccion(key) {
   activeSection.value = key
-  if (key === 'favoritos') await fetchFavoritos()
+  if (key === 'favoritos')  await fetchFavoritos()
+  if (key === 'creditos')   await fetchMembresia()   // ← agrega esta línea
 }
 
 async function fetchFavoritos() {
@@ -1229,21 +1279,28 @@ function enviarComentario() {
   comentarioEnviado.value = true
   setTimeout(() => { mostrarFormComentario.value = false; textoComentario.value = ''; comentarioEnviado.value = false }, 1500)
 }
+// ── Membresía ─────────────────────────────────────────────────
+const membresia        = ref(null)
+const cargandoMembresia = ref(false)
 
-// ── Créditos ──────────────────────────────────────────────────
-const creditos           = ref([])
-const mostrarFormCredito = ref(false)
-const formCredito        = reactive({ aerolinea: '', monto: '', vencimiento: '' })
-const errorCredito       = ref('')
-
-function guardarCredito() {
-  if (!formCredito.aerolinea.trim() || !formCredito.monto || !formCredito.vencimiento) { errorCredito.value = 'Completa todos los campos.'; return }
-  creditos.value.push({ id: Date.now(), ...formCredito })
-  Object.assign(formCredito, { aerolinea: '', monto: '', vencimiento: '' })
-  errorCredito.value = ''; mostrarFormCredito.value = false
+async function fetchMembresia() {
+  try {
+    cargandoMembresia.value = true
+    membresia.value = await apiGet('/perfil/membresia')
+  } catch (e) {
+    console.error('Error cargando membresía:', e)
+    membresia.value = null
+  } finally {
+    cargandoMembresia.value = false
+  }
 }
 
-function eliminarCredito(id) { creditos.value = creditos.value.filter(c => c.id !== id) }
+function formatFecha(fecha) {
+  if (!fecha) return '—'
+  return new Date(fecha).toLocaleDateString('es-DO', {
+    year: 'numeric', month: 'long', day: 'numeric'
+  })
+}
 
 // ── Opiniones ─────────────────────────────────────────────────
 const opiniones          = ref([])
@@ -1343,9 +1400,9 @@ async function fetchUserData() {
       documento_emisor:           perfil.DOCUMENTACION?.EMISOR               || '',
       num_viajero_conocido:       perfil.num_viajero_conocido,
       num_dhs_trip:               perfil.num_dhs_trip,
-      sangre:                     perfil.SANGRE,
-      estatura:                   perfil.ESTATURA,
-      peso:                       perfil.PESO,
+      sangre:    (perfil.SANGRE    || '').trim(),
+estatura:  (perfil.ESTATURA  || '').trim(),
+peso:      (perfil.PESO      || '').trim(),
       ocupacion:                  perfil.OCUPACION,
       nacionalidad:               perfil.NACIONALIDAD,
       estado_civil:               perfil.ESTADO_CIVIL,
@@ -1368,6 +1425,9 @@ onMounted(() => {
   fetchUserData()
   fetchTarjetas()
   fetchPaises()
+  fetchEstadoCivil()      // ← agrega
+  fetchNacionalidades()   // ← agrega
+   fetchOcupaciones()   // ← agrega esto
 })
 
 function confirmarCerrarSesion() {
