@@ -66,6 +66,8 @@
     <GuestSelector v-if="mostrarHuespedes"
                    v-model="habitacionesGuest"
                    @close="mostrarHuespedes = false" />
+
+    <Toast ref="toastRef" />
   </div>
 
   <!-- Loading -->
@@ -81,6 +83,7 @@ import CalendarSelector from './CalendarSelector.vue'
 import GuestSelector from './GuestSelector.vue'
 import HabitacionesSelector from './HabitacionesSelector.vue'
 import ReviewsSection from '../components/Reviewssection.vue'
+import Toast from './alert.vue'
 import { API, apiFetch } from '../services/api'
 
 const props = defineProps({ hotel: Object })
@@ -91,6 +94,7 @@ const BASE = API
 // ── Estado global ─────────────────────────────────────────────
 const loading    = ref(true)
 const hospedaje  = ref({ nombre: '', ciudad: '', pais: '', descripcion: '' })
+const toastRef   = ref(null)
 const servicios  = ref([])
 const host       = ref({ name: '', photo: '', cargo: '', years: 0 })
 const precioBase = ref(0)
@@ -167,7 +171,7 @@ const totalPrecio = computed(() =>
 function onSeleccionarHabitacion(hab) {
   // Por ahora solo un log, después aquí va el flujo de reserva
   console.log('Habitación seleccionada:', hab)
-  alert(`Reservando: ${hab.TIPO_HABITACION} - $${hab.PRECIO_NOCHE}/noche`)
+  toastRef.value?.show('success', `Iniciando reserva: ${hab.TIPO_HABITACION}`)
 }
 
 // ── Fetch desde la BD ─────────────────────────────────────────
@@ -309,7 +313,7 @@ async function toggleFavorito() {
     }
   } catch (e) {
     if (e.message === 'No autenticado') {
-      alert('Inicia sesión para guardar favoritos')
+      toastRef.value?.show('error', 'Inicia sesión para guardar favoritos')
     }
   }
 }
