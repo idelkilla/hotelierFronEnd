@@ -5,6 +5,7 @@
   --rojo: #c0392b;
 }
 
+/* ── Overlay ──────────────────────────────────────────────────────────────── */
 .ck-overlay {
   position: fixed;
   inset: 0;
@@ -13,17 +14,19 @@
   align-items: flex-start;
   justify-content: center;
   z-index: 9999;
-  padding: 20px 16px;
+  padding: 20px 16px 20px 16px;
   overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE y Edge */
 }
 
+/* ── Modal — FIXED: altura limitada, body scrollable ─────────────────────── */
 .ck-modal {
   background: #fff;
   border-radius: 16px;
   width: 100%;
   max-width: 960px;
+  /* Altura máxima para que el header siempre sea visible */
   max-height: calc(100vh - 40px);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.22);
   overflow: hidden;
@@ -31,6 +34,7 @@
   flex-direction: column;
 }
 
+/* ── Header — no crece ni encoge ─────────────────────────────────────────── */
 .ck-header {
   flex-shrink: 0;
   display: flex;
@@ -61,6 +65,7 @@
   color: #113956;
 }
 
+/* Stepper */
 .ck-steps {
   display: flex;
   align-items: center;
@@ -112,27 +117,32 @@
   color: #2a7a4b;
 }
 
+/* ── Body — ocupa el espacio restante y permite scroll interno ────────────── */
 .ck-body {
   display: grid;
   grid-template-columns: 1fr 340px;
+  /* Clave: min-height:0 para que el grid respete el overflow del padre */
   min-height: 0;
   flex: 1;
   overflow: hidden;
 }
 
+/* Ocultar barra de desplazamiento para Chrome, Safari y Opera */
 .ck-overlay::-webkit-scrollbar,
 .ck-left::-webkit-scrollbar,
 .ck-aside::-webkit-scrollbar {
   display: none;
 }
 
+/* ── Left ────────────────────────────────────────────────────────────────── */
 .ck-left {
   padding: 24px;
   overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE y Edge */
 }
 
+/* Política */
 .ck-policy {
   display: flex;
   gap: 12px;
@@ -159,6 +169,7 @@
   margin: 2px 0 0;
 }
 
+/* Sección */
 .ck-section {
   animation: fadeUp 0.2s ease;
 }
@@ -213,6 +224,7 @@
   margin-bottom: 14px;
 }
 
+/* Field */
 .ck-field {
   display: flex;
   flex-direction: column;
@@ -251,28 +263,45 @@
 .ck-input-icon {
   display: flex;
   align-items: center;
-  border: 1.5px solid #ddd;
+  border: 1.5px solid #ddd; /* Manteniendo consistencia con ck-field */
   border-radius: 8px;
   overflow: hidden;
   transition: border-color 0.15s;
+  background: #fff; /* Fondo blanco */
 }
 .ck-input-icon:focus-within {
   border-color: #113956;
 }
-.ck-input-icon .material-symbols-outlined {
-  padding: 0 10px;
-  color: #888;
-  font-size: 18px;
-  flex-shrink: 0;
-}
 .ck-input-icon input {
-  border: none;
-  padding: 10px 10px 10px 0;
-  outline: none;
   flex: 1;
+  border: none;
+  outline: none;
+  padding: 0 12px;
+  height: 40px;
   font-size: 14px;
+  background: transparent;
+  min-width: 0;
 }
 
+/* Ícono izquierdo (credit_card) con margen */
+.ck-input-icon .material-symbols-outlined:first-child {
+  padding-left: 12px;
+  padding-right: 8px;
+  font-size: 18px;
+  color: #888;
+  flex-shrink: 0;
+}
+
+/* Ícono derecho (info del CVV) */
+.ck-input-icon .material-symbols-outlined:last-child {
+  padding-left: 8px;
+  padding-right: 12px;
+  font-size: 18px;
+  color: #888;
+  flex-shrink: 0;
+}
+
+/* Métodos pago */
 .ck-metodos {
   display: flex;
   flex-direction: column;
@@ -376,6 +405,7 @@
   margin-bottom: 16px;
 }
 
+/* Protección */
 .ck-recomendado-badge {
   display: inline-block;
   background: #2a7a4b;
@@ -470,6 +500,7 @@
   color: #e67e22;
 }
 
+/* Nav */
 .ck-nav {
   display: flex;
   justify-content: space-between;
@@ -528,6 +559,7 @@
   margin-top: 16px;
 }
 
+/* ── Aside ───────────────────────────────────────────────────────────────── */
 .ck-aside {
   border-left: 1px solid #eee;
   padding: 24px 20px;
@@ -536,8 +568,8 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE y Edge */
 }
 .ck-aside-hotel {
   display: flex;
@@ -729,6 +761,7 @@
   font-size: 16px;
 }
 
+/* ── Animaciones ─────────────────────────────────────────────────────────── */
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -782,6 +815,7 @@
   opacity: 0;
 }
 
+/* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .ck-body {
     grid-template-columns: 1fr;

@@ -205,11 +205,6 @@ async function toggleGuardar() {
   transition: background 0.15s;
 }
 
-.btn-volver:hover {
-  background: #f0f0f0;
-  text-decoration: underline;
-}
-
 .detalle-actions {
   display: flex;
   gap: 8px;
