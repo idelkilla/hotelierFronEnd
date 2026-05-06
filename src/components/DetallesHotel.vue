@@ -50,6 +50,8 @@
         @seleccionar-habitacion="onSeleccionarHabitacion"
       />
 
+      <div class="section-divider"></div>
+
       <ReviewsSection :hospedaje-id="hospedaje.id" />
     </div>
 

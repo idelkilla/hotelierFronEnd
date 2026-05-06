@@ -112,7 +112,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import authService from '../services/authService'
 import footer from '../components/footer.vue'
-import { API } from '../services/api'
+import { API, API_ROOT } from '../services/api'
+
 
 const router = useRouter()
 const username = ref('')
@@ -185,7 +186,7 @@ const handleGoogleCredential = async (response) => {
       return
     }
 
-    const responseServer = await fetch(`${API}/auth/google-login`, {
+    const responseServer = await fetch(`${API_ROOT}/api/auth/google-login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
