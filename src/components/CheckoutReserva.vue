@@ -3,6 +3,7 @@
     <Transition name="ck-slide">
       <div v-if="visible" class="ck-overlay" @click.self="$emit('cerrar')">
         <div class="ck-modal">
+          <Toast ref="toastRef" />
           <!-- HEADER -->
           <div class="ck-header">
             <button class="ck-close" @click="$emit('cerrar')">
@@ -580,6 +581,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { apiFetch } from '../services/api'
 import AppSelect from './AppSelect.vue'
+import Toast from './alert.vue'
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
@@ -594,6 +596,7 @@ const emit = defineEmits(['cerrar', 'reservaConfirmada'])
 
 const paso = ref(0)
 const cargando = ref(false)
+const toastRef = ref(null)
 const errorGlobal = ref('')
 const planProteccion = ref(null)
 
@@ -903,9 +906,9 @@ async function confirmar() {
     })
     emit('reservaConfirmada', resp)
   } catch (err) {
-    errorGlobal.value =
-      err?.message ??
-      'Ocurrió un error al procesar tu reserva. Intenta de nuevo.'
+    const msg = err?.message ?? 'Ocurrió un error al procesar tu reserva. Intenta de nuevo.'
+    errorGlobal.value = msg
+    toastRef.value?.show('error', msg)
   } finally {
     cargando.value = false
   }

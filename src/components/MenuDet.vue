@@ -8,6 +8,7 @@
         :initial-huespedes="habitaciones"
         compact
         :is-habitaciones="isHabitaciones"
+        @update:fechas="onFechasUpdate"
       />
 
       <!-- Barra ver propiedades — solo en detalle -->
@@ -76,12 +77,14 @@
       </div>
 
     </div>
+    <Toast ref="toastRef" />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import Toast from './alert.vue';
 import FormSearch from './FormSearch.vue';
 import { apiFetch } from '../services/api';
 
@@ -92,6 +95,7 @@ const props = defineProps({
 
 const route = useRoute();
 const isSaved = ref(false);
+const toastRef = ref(null);
 
 const searchDestino = ref(route.query.destino || '');
 const searchEntrada = ref(route.query.entrada || '');
@@ -102,6 +106,7 @@ const habitaciones  = ref(
     : [{ adultos: 2, ninos: 0, edadesNinos: [] }]
 );
 const activeTab = ref('all');
+const emit = defineEmits(['update:fechas']);
 
 watch(() => route.query, (q) => {
   searchDestino.value = q.destino || '';
@@ -109,6 +114,12 @@ watch(() => route.query, (q) => {
   searchSalida.value  = q.salida  || '';
   if (q.huespedes) habitaciones.value = JSON.parse(q.huespedes);
 }, { deep: true });
+
+function onFechasUpdate(fechas) {
+  searchEntrada.value = fechas.entrada;
+  searchSalida.value  = fechas.salida;
+  emit('update:fechas', fechas);
+}
 
 const sliderClass = computed(() => `pos-${activeTab.value}`);
 
@@ -139,7 +150,7 @@ async function toggleGuardar() {
   
   // Verificamos si hay token antes de intentar guardar
   if (!localStorage.getItem('user_token')) {
-    alert('Debes iniciar sesión para guardar favoritos')
+    toastRef.value?.show('error', 'Debes iniciar sesión para guardar favoritos')
     return
   }
 
@@ -155,7 +166,7 @@ async function toggleGuardar() {
     }
   } catch (e) {
     console.error('Error al actualizar favorito:', e.message)
-    alert('Hubo un problema al actualizar tus favoritos. Intenta de nuevo.')
+    toastRef.value?.show('error', 'Hubo un problema al actualizar favoritos.')
   }
 }
 </script>

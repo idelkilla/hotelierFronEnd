@@ -182,6 +182,8 @@ const props = defineProps({
 
 const router  = useRouter()
 
+const emit = defineEmits(['update:fechas'])
+
 const originWrapper = ref(null)
 const destinationWrapper = ref(null)
 
@@ -218,6 +220,10 @@ watch(() => props.initialHuespedes, (val) => {
 function onDatesSelected(dates) {
   fechaInicio.value = dates.start
   fechaFin.value    = dates.end
+  // ✅ Propagar al padre cuando está en modo habitaciones
+  if (props.isHabitaciones) {
+    emit('update:fechas', { entrada: dates.start, salida: dates.end })
+  }
 }
 
 function fmtFecha(str) {

@@ -42,6 +42,7 @@
         :noches="noches"
         @abrir-calendario="abrirCalendario"
         @seleccionar-habitacion="onSeleccionarHabitacion"
+        @update:fechas="e => { fechaInicio = e.entrada; fechaFin = e.salida }"
       />
 
       <div class="section-divider"></div>
@@ -65,6 +66,8 @@
     <GuestSelector v-if="mostrarHuespedes"
                    v-model="habitacionesGuest"
                    @close="mostrarHuespedes = false" />
+
+    <Toast ref="toastRef" />
   </div>
 
   <!-- Loading -->
@@ -74,21 +77,24 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import CalendarSelector from './CalendarSelector.vue'
 import GuestSelector from './GuestSelector.vue'
 import HabitacionesSelector from './HabitacionesSelector.vue'
 import ReviewsSection from '../components/Reviewssection.vue'
+import Toast from './alert.vue'
 import { API, apiFetch } from '../services/api'
 
 const props = defineProps({ hotel: Object })
 const route = useRoute()
+const router = useRouter()
 const BASE = API
 
 // ── Estado global ─────────────────────────────────────────────
 const loading    = ref(true)
 const hospedaje  = ref({ nombre: '', ciudad: '', pais: '', descripcion: '' })
+const toastRef   = ref(null)
 const servicios  = ref([])
 const host       = ref({ name: '', photo: '', cargo: '', years: 0 })
 const precioBase = ref(0)
@@ -133,6 +139,15 @@ function onDatesSelected(dates) {
     fechaFin.value = sel
   }
   mostrarCalendario.value = false
+
+  // ✅ Sincroniza con la URL para que MenuDet y FormSearch las lean
+  router.replace({
+    query: {
+      ...route.query,
+      entrada: fechaInicio.value || undefined,
+      salida:  fechaFin.value   || undefined,
+    }
+  })
 }
 function fmt(str) {
   if (!str) return ''
@@ -156,7 +171,7 @@ const totalPrecio = computed(() =>
 function onSeleccionarHabitacion(hab) {
   // Por ahora solo un log, después aquí va el flujo de reserva
   console.log('Habitación seleccionada:', hab)
-  alert(`Reservando: ${hab.TIPO_HABITACION} - $${hab.PRECIO_NOCHE}/noche`)
+  toastRef.value?.show('success', `Iniciando reserva: ${hab.TIPO_HABITACION}`)
 }
 
 // ── Fetch desde la BD ─────────────────────────────────────────
@@ -298,7 +313,7 @@ async function toggleFavorito() {
     }
   } catch (e) {
     if (e.message === 'No autenticado') {
-      alert('Inicia sesión para guardar favoritos')
+      toastRef.value?.show('error', 'Inicia sesión para guardar favoritos')
     }
   }
 }

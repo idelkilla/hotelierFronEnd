@@ -570,8 +570,7 @@
           </div>
         </div>
 
-        <!-- SECCIÓN: CRÉDITOS -->
-       <!-- SECCIÓN: MEMBRESÍA -->
+ 
 <div v-else-if="activeSection === 'creditos'" class="section-wrap">
   <div class="mem-wrap">
 
@@ -752,6 +751,8 @@
 
       </main>
     </div>
+
+    <Toast ref="toastRef" />
     <footer />
   </div>
 </template>
@@ -762,6 +763,7 @@ import { useRouter } from 'vue-router'
 import Header from '../components/Header.vue'
 import footer from '../components/footer.vue'
 import AppSelect from '../components/AppSelect.vue'
+import Toast from '../components/alert.vue'
 // ✅ CORRECCIÓN: importar sanitizeProfilePayload junto con los demás helpers
 import { apiGet, apiPost, apiPut, apiDelete, sanitizeProfilePayload } from '../services/api'
 
@@ -772,6 +774,7 @@ const router        = useRouter()
 const guardando     = ref(false)
 const guardadoOk    = ref(false)
 const guardadoError = ref(false)
+const toastRef      = ref(null)
 const errores       = reactive({})
 
 const navItems = [
@@ -1065,7 +1068,7 @@ async function quitarFavorito(id) {
   try {
     await apiDelete(`/favoritos/${id}`)
     favoritos.value = favoritos.value.filter(f => f.id !== id)
-  } catch (e) { alert('No se pudo quitar de favoritos. Intenta de nuevo.') }
+  } catch (e) { toastRef.value?.show('error', 'No se pudo quitar de favoritos.') }
 }
 
 function irADetalle(id) { router.push(`/hospedaje/${id}`) }
@@ -1123,7 +1126,7 @@ async function eliminarTarjeta(id) {
   try {
     await apiDelete(`/metodos-pago/${id}`)
     tarjetas.value = tarjetas.value.filter(t => t.id !== id)
-  } catch (e) { alert('No se pudo eliminar la tarjeta. Intenta de nuevo.') }
+  } catch (e) { toastRef.value?.show('error', 'Error al eliminar la tarjeta.') }
 }
 
 async function toggleGuardarTarjeta(tarjeta) {
@@ -1132,7 +1135,7 @@ async function toggleGuardarTarjeta(tarjeta) {
     await apiPut(`/metodos-pago/${tarjeta.id}/guardar`, { guardar: nuevoValor })
     const idx = tarjetas.value.findIndex(t => t.id === tarjeta.id)
     if (idx !== -1) tarjetas.value[idx].guardada = nuevoValor
-  } catch (e) { alert('No se pudo actualizar la tarjeta. Intenta de nuevo.') }
+  } catch (e) { toastRef.value?.show('error', 'Error al actualizar la tarjeta.') }
 }
 
 function formatearNumeroTarjeta(e) {
@@ -1269,7 +1272,7 @@ const textoComentario       = ref('')
 const comentarioEnviado     = ref(false)
 
 const helpItems = [
-  { id: 1, label: 'Iniciar chat',          iconHtml: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#265073" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`, action: () => alert('Chat de soporte (pendiente de integración)') },
+  { id: 1, label: 'Iniciar chat',          iconHtml: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#265073" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`, action: () => toastRef.value?.show('success', 'Iniciando chat de soporte...') },
   { id: 2, label: 'Ir al centro de ayuda', iconHtml: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#265073" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>`, action: () => window.open('https://help.example.com', '_blank') },
   { id: 3, label: 'Compartir comentarios', iconHtml: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#265073" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`, action: () => { mostrarFormComentario.value = true } },
 ]
