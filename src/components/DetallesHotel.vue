@@ -145,7 +145,7 @@ const noches = computed(() => {
   if (!fechaInicio.value || !fechaFin.value) return 0
   const [y1,m1,d1] = fechaInicio.value.split('-').map(Number)
   const [y2,m2,d2] = fechaFin.value.split('-').map(Number)
-  return Math.max(1, Math.round(
+  return Math.max(0, Math.round(
     (new Date(y2,m2-1,d2) - new Date(y1,m1-1,d1)) / 86400000
   ))
 })
