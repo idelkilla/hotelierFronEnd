@@ -29,7 +29,7 @@ const authService = {
   googleLogin: (credentialToken) => {
     // Log para debugging
     console.log('📤 Enviando google login con credential:', credentialToken ? 'Token presente' : 'Token vacío')
-    
+
     return axios.post(`${API_URL}/google-login`, { credential: credentialToken }, {
       // Configuración adicional para CORS
       headers: {
@@ -39,22 +39,16 @@ const authService = {
       timeout: 15000 // 15 second timeout
     }).then(response => {
       console.log('✅ Google login exitoso:', response.data)
-      return response
-    }).then(response => { // <-- Encadenar para procesar la respuesta
-      if (response.data && response.data.user) authService.setUserData(response.data.user)
-    }).catch(error => {
-      // Log detallado del error para debugging
-      if (error.response) {
-        console.error('❌ Error Google login - Response:', {
-          status: error.response.status,
-          data: error.response.data,
-          headers: error.response.headers
-        })
-      } else if (error.request) {
-        console.error('❌ Error Google login - No response received:', error.request)
-      } else {
-        console.error('❌ Error Google login:', error.message)
+      // Guardar token Y datos de usuario en el mismo .then()
+      if (response.data?.token) {
+        authService.saveToken(response.data.token)
       }
+      if (response.data?.user) {
+        authService.setUserData(response.data.user)
+      }
+      return response
+    }).catch(error => {
+      console.error('❌ Error Google login:', error.response?.data || error.message)
       throw error // Re-lanzar el error para que el calling code pueda manejarlo
     })
   },
