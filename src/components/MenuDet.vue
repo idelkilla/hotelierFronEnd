@@ -136,16 +136,26 @@ watch(() => route.params.id, async (id) => {
 async function toggleGuardar() {
   const id = route.params.id
   if (!id) return
+  
+  // Verificamos si hay token antes de intentar guardar
+  if (!localStorage.getItem('user_token')) {
+    alert('Debes iniciar sesión para guardar favoritos')
+    return
+  }
+
   try {
     if (isSaved.value) {
+      // Si ya está guardado, lo eliminamos
       await apiFetch(`/favoritos/${id}`, { method: 'DELETE' })
       isSaved.value = false
     } else {
+      // Si no está guardado, lo agregamos
       await apiFetch(`/favoritos/${id}`, { method: 'POST' })
       isSaved.value = true
     }
-  } catch {
-    alert('Inicia sesión para guardar favoritos')
+  } catch (e) {
+    console.error('Error al actualizar favorito:', e.message)
+    alert('Hubo un problema al actualizar tus favoritos. Intenta de nuevo.')
   }
 }
 </script>
