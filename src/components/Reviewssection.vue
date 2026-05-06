@@ -453,10 +453,11 @@ watch(() => props.hospedajeId, cargarResenas)
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.review-text.expanded { -webkit-line-clamp: unset; overflow: visible; }
+.review-text.expanded { -webkit-line-clamp: unset; line-clamp: unset; overflow: visible; }
 
 .read-more {
   background: none; border: none; font-size: 0.78rem;
