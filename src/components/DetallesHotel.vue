@@ -75,7 +75,7 @@ import { useRoute } from 'vue-router'
 import CalendarSelector from './CalendarSelector.vue'
 import GuestSelector from './GuestSelector.vue'
 import HabitacionesSelector from './HabitacionesSelector.vue'
-import ReviewsSection from './ReviewsSection.vue'
+import ReviewsSection from '../components/Reviewssection.vue'
 import { API, apiFetch } from '../services/api'
 
 const props = defineProps({ hotel: Object })
