@@ -35,6 +35,7 @@
             </span>
           </div>
         </div>
+        <FooterComponent />
       </div>
 
       <!-- Galería de miniaturas -->
@@ -243,6 +244,7 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import HeaderComponent from '../components/Header.vue'
+import FooterComponent from '../components/footer.vue'
 
 const route = useRoute()
 const hoy = new Date().toISOString().split('T')[0]

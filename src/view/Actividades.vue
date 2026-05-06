@@ -19,6 +19,7 @@
         </div>
       </div>
     </div>
+    <FooterComponent />
   </div>
 </template>
 
@@ -27,6 +28,7 @@ import HeaderComponent from "../components/Header.vue";
 import ActividadesSerch from "../components/ActividadesSearch.vue";
 import FiltrosActividades from "../components/FiltrosActividades.vue";
  import OpcionesActividades from "../components/OpcionesActividades.vue"
+ import FooterComponent from '../components/footer.vue'
 </script>
 
 <style scoped>

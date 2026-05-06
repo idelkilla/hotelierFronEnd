@@ -59,7 +59,7 @@
     <div class="divider" />
 
     <button class="menu-item" type="button" @click="irAPerfil">Mi cuenta</button>
-    <button class="menu-item" type="button">Lista de favoritos</button>
+    <button class="menu-item" type="button" @click="irAFav">Lista de favoritos</button>
     <button class="menu-item" type="button">Descubrir One Key</button>
     <button class="menu-item" type="button">Sugerencias</button>
 
@@ -104,8 +104,6 @@ const defaultState = {
   componentes_requeridos: 5,
 };
 
-const isMobile = ref(window.innerWidth <= 768);
-
 const userData = ref({ ...defaultState });
 
 watchEffect(() => {
@@ -145,23 +143,22 @@ const handleClickOutside = (e) => {
   if (menuRef.value && !menuRef.value.contains(e.target)) emit("close");
 };
 
-const handleResize = () => {
-  isMobile.value = window.innerWidth <= 768;
-};
-
 onMounted(() => {
   document.addEventListener("click", handleClickOutside);
-  window.addEventListener("resize", handleResize);
   fetchProfile();
 });
 
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
-  window.removeEventListener("resize", handleResize);
 });
 
 const irAPerfil = () => {
   router.push('/perfil');
+  emit("close");
+};
+
+const irAFav = () => {
+  router.push('/favoritos');
   emit("close");
 };
 

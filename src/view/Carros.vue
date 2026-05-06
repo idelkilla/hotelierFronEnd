@@ -17,6 +17,7 @@
       </div>
     </div>
   </div>
+  <FooterComponent />
 </template>
 
 <script setup>
@@ -25,6 +26,7 @@ import Header from "../components/Header.vue";
 import AutosSearch from "../components/AutosSearch.vue";
 import FiltrosCarros from '../components/FiltrosCarros.vue';
 import ResuladoCarros from '../components/OpcionesCarros.vue';
+import FooterComponent from '../components/footer.vue'
 </script>
 
 <style scoped>

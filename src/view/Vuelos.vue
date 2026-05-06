@@ -22,6 +22,7 @@
       </div>
     </div>
   </div>
+  <FooterComponent />
 </template>
 
 <style scoped>
@@ -99,11 +100,11 @@
 
 :deep(.vuelo-tab) {
   border-radius: 40px !important;
-  padding: 10px 64px !important; /* Relleno idéntico al de cuerpo.css */
+  padding: 10px 64px !important;
   border: none !important;
   background: none !important;
   color: #113955 !important;
-  font-size: 15px !important; /* Tamaño de fuente idéntico al de cuerpo.css */
+  font-size: 15px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -125,6 +126,51 @@
 :deep(.pasajeros-top) {
   order: 1; /* Los campos de búsqueda van arriba */
 }
+
+/* ── AJUSTES RESPONSIVE PARA FILTROS ── */
+@media (max-width: 768px) {
+  .vuelos-main-content-layout {
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 12px;
+    margin-top: 70px; /* Un poco más de aire bajo el header */
+    align-items: stretch;
+  }
+
+  .vuelos-right-column {
+    display: contents;
+  }
+
+  .search-top-layer {
+    order: 1; /* Buscador (incluye los tabs de viaje redondo al final) */
+  }
+
+  .filters-column {
+    order: 2; /* El botón de filtros aparece ahora justo después de los tabs */
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .vuelos-search-wrapper:not(.search-top-layer) {
+    order: 3; /* Los resultados de vuelos quedan al final */
+  }
+
+  :deep(.vuelos-tabs) {
+    margin: 5px 0 10px !important;
+    width: 100% !important;
+    justify-content: space-between;
+    padding: 3px;
+  }
+
+  :deep(.vuelo-tab) {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    flex: 1;
+    min-width: 0;
+  }
+}
 </style>
 
 <script setup>
@@ -133,4 +179,5 @@ import Header from "../components/Header.vue";
 import VuelosBuscar from"../components/VuelosSearch.vue";
 import FiltrosVuelos from"../components/FiltrosVuelos.vue";
 import OpcionesVuelos from '../components/OpcionesVuelos.vue';
+import FooterComponent from '../components/footer.vue'
 </script>

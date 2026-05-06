@@ -1325,4 +1325,95 @@ const vuelos = ref([
   .route-middle { flex-direction: row; padding: 0; }
   .info-grid { grid-template-columns: 1fr; }
 }
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════ */
+
+/* ── Tablet (≤ 768px) ── */
+@media (max-width: 768px) {
+  .resultados-titulo { font-size: 17px; }
+
+  .vuelo-contenido {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .vuelo-duracion {
+    flex: 0 0 100%;
+    text-align: left;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 8px;
+  }
+
+  .vuelo-precio-wrap {
+    flex: 1;
+    align-items: flex-end;
+  }
+
+  .mini-fly {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}
+
+/* ── Mobile (≤ 640px) ── */
+@media (max-width: 640px) {
+  /* Modal: sube desde abajo */
+  .modal-overlay { align-items: flex-end; padding: 0; }
+  .modal-shell   { max-width: 100%; max-height: 95vh; border-radius: 20px 20px 0 0; }
+
+  /* Formularios: columna simple */
+  .fg-row { grid-template-columns: 1fr; }
+
+  /* Ruta en el detalle */
+  .tramo-route   { flex-direction: column; align-items: stretch; gap: 12px; }
+  .route-middle  { flex-direction: row; padding: 0; }
+  .route-point   { width: auto; }
+  .info-grid     { grid-template-columns: 1fr; }
+
+  /* Tarjeta de vuelo */
+  .vuelo-contenido {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .vuelo-aerolinea-logo { display: none; }
+
+  .vuelo-horario { gap: 6px; }
+  .hora          { font-size: 14px; }
+  .vuelo-precio  { font-size: 18px; }
+
+  .vuelo-duracion {
+    width: 100%;
+    text-align: left;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 8px;
+  }
+
+  .vuelo-precio-wrap {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 8px;
+  }
+
+  /* Oferta banner */
+  .oferta-banner { flex-wrap: wrap; gap: 6px; padding: 8px 12px; }
+  .oferta-desc   { font-size: 12px; }
+
+  /* Steps bar más compacto */
+  .sn-label  { display: none; }
+  .steps-bar { padding: 10px 16px 6px; }
+
+  /* Footer modal */
+  .mf-detalle  { flex-direction: column; align-items: stretch; gap: 10px; }
+  .mf-reserva  { flex-wrap: wrap; gap: 8px; }
+  .btn-continuar { justify-content: center; width: 100%; }
+  .btn-atras     { justify-content: center; }
+  .mfr-right     { width: 100%; flex-direction: column; }
+}
 </style>

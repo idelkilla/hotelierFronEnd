@@ -17,6 +17,7 @@
     </div>
 
   </div>
+  <FooterComponent />
 </template>
 
 <script setup>
@@ -25,6 +26,7 @@ import Header from "../components/Header.vue";
 import CrucerosSearch from "../components/CrucerosSearch.vue";
 import FiltroCruceros from "../components/FiltrosCruceros.vue";
 import OpcionesCruceros from "../components/OpcionesCruceros.vue";
+import FooterComponent from '../components/footer.vue'
 </script>
 
 <style scoped>
