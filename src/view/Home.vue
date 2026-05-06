@@ -13,6 +13,7 @@
       </div>
       <AnotaLaFecha />
       <TravelPropositions />
+       <HospedajeCategorias/>
     </main>
 
     <LoginPromoPopup />
@@ -27,7 +28,7 @@ import AnotaLaFecha from '../components/AnotaLaFecha.vue'
 import TravelPropositions from '../components/TravelPropositions.vue'
 import LoginPromoPopup from '../components/LoginPromoPopup.vue'
 import FooterComponent from '../components/footer.vue'
-
+import HospedajeCategorias from '../components/HospedajeCategorias.vue'
 export default {
   name: 'Home',
   components: {
@@ -35,6 +36,7 @@ export default {
     FormSearch,
     AnotaLaFecha,
     TravelPropositions,
+    HospedajeCategorias,
     LoginPromoPopup,
     FooterComponent
   },

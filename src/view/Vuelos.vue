@@ -12,6 +12,10 @@
       </div>
 
       <div class="vuelos-right-column">
+<<<<<<< HEAD
+        <!-- El buscador de vuelos -->
+=======
+>>>>>>> 25e2efbbea94fd3fdcc03124745f6221802e0781
         <div class="vuelos-search-wrapper">
           <VuelosBuscar :initial-destino="route.query.destino" />
         </div>
