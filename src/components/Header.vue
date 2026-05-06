@@ -123,6 +123,7 @@ const loadUserData = () => {
   user.value.name = name || null
   user.value.email = emailStored || null
   user.value.initial = initialStored || (name ? name.charAt(0).toUpperCase() : '?')
+  isLogged.value = !!localStorage.getItem('user_token')
 }
 
 const handleResize = () => {
@@ -148,7 +149,7 @@ const fixPhoto = (url) => {
   return url
 }
 
-const isLogged = computed(() => Boolean(localStorage.getItem('user_token')))
+const isLogged = ref(false)
 const goToRegister = () => router.push('/register')
 
 const goHome = () => {

@@ -55,32 +55,42 @@
         class="review-card"
       >
         <div class="review-score-badge">
-     <div class="badge-num">{{ ((review.CALIFICACION ?? review.calificacion) * 2).toFixed(0) }}</div>
-     <div class="badge-sub">/10</div>
-   </div>
-   <div class="review-body">
-     <p class="review-rating-word">{{ palabraPorCalificacion(review.CALIFICACION ?? review.calificacion ?? review.rating) }}</p>
-     <p class="review-text" :class="{ expanded: review.expanded }">
-       {{ review.COMENTARIO ?? review.comentario ?? review.text }}
-     </p>
-     <button
-       v-if="(review.COMENTARIO ?? review.comentario ?? review.text ?? '').length > 160"
-       class="read-more"
-       @click="review.expanded = !review.expanded"
-     >
-       {{ review.expanded ? 'Ver menos' : 'Ver más' }}
-     </button>
-     <div class="reviewer-row">
-       <div class="reviewer-avatar">
-         {{ (review.nombre ?? 'H').slice(0,2).toUpperCase() }}
-       </div>
-       <div>
-         <p class="reviewer-name">{{ review.nombre_cliente ?? review.name ?? 'Huésped verificado' }}</p>
-         <p class="reviewer-meta">{{ review.fecha ?? review.date ?? '' }} · <span class="verified-tag">✓ Verificada</span></p>
-       </div>
-     </div>
-   </div>
+          <div class="badge-num">
+            {{ ((review.CALIFICACION ?? review.calificacion) * 2).toFixed(0) }}
+          </div>
+          <div class="badge-sub">/10</div>
+        </div>
+        <div class="review-body">
+          <p class="review-rating-word">
+            {{ palabraPorCalificacion(review.CALIFICACION ?? review.calificacion ?? review.rating) }}
+          </p>
+          <p class="review-text" :class="{ expanded: review.expanded }">
+            {{ review.COMENTARIO ?? review.comentario ?? review.text }}
+          </p>
+          <button
+            v-if="(review.COMENTARIO ?? review.comentario ?? review.text ?? '').length > 160"
+            class="read-more"
+            @click="review.expanded = !review.expanded"
+          >
+            {{ review.expanded ? 'Ver menos' : 'Ver más' }}
+          </button>
+          <div class="reviewer-row">
+            <div class="reviewer-avatar">
+              {{ (review.nombre ?? 'H').slice(0, 2).toUpperCase() }}
+            </div>
+            <div>
+              <p class="reviewer-name">
+                {{ review.nombre_cliente ?? review.name ?? 'Huésped verificado' }}
+              </p>
+              <p class="reviewer-meta">
+                {{ review.fecha ?? review.date ?? '' }} ·
+                <span class="verified-tag">✓ Verificada</span>
+              </p>
+            </div>
+          </div>
+        </div>
       </article>
+
     </div>
 
     <!-- Ver todas -->
@@ -138,7 +148,7 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive, onMounted, watch } from 'vue'
+import { ref, computed, reactive, onMounted, watch, onUnmounted } from 'vue'
 import { apiFetch } from '../services/api'
 
 const props = defineProps({
@@ -151,7 +161,14 @@ const submitting = ref(false)
 const submitSuccess = ref(false)
 const activeFilter = ref('all')
 const hoverRating = ref(0)
-const userToken = computed(() => Boolean(localStorage.getItem('user_token')))
+
+// ✅ Reactive reference for the token
+const userToken = ref(Boolean(localStorage.getItem('user_token')))
+
+const updateTokenStatus = () => {
+  userToken.value = Boolean(localStorage.getItem('user_token'))
+}
+
 const newReview = reactive({ rating: 0, text: '' })
 
 const filters = [
@@ -229,7 +246,7 @@ function palabraPorCalificacion(r) {
 async function cargarResenas() {
   if (!props.hospedajeId) return
   try {
-    const data = await apiFetch(`/hospedajes/${props.hospedajeId}/resenas`)
+    const data = await apiFetch(`/hospedaje/${props.hospedajeId}/resenas`)
 
     // Backend puede devolver:
     // - array directo
@@ -251,25 +268,41 @@ async function cargarResenas() {
 }
 
 async function submitReview() {
-  // Solo permitir publicar si hay sesión (token)
-  const token = localStorage.getItem('user_token')
-  if (!token) return
-
   if (!newReview.rating || !newReview.text.trim()) return
+
+  // Validar token ANTES de enviar
+  const token = localStorage.getItem('user_token')
+  console.log('🔍 submitReview - Token check:', {
+    hasToken: !!token,
+    tokenPreview: token ? `${token.slice(0, 20)}...` : 'MISSING',
+    hospedajeId: props.hospedajeId
+  })
+
+  if (!token) {
+    console.warn('❌ No token found. Redirecting to login...')
+    setTimeout(() => window.location.href = '/login', 1500)
+    return
+  }
+
   submitting.value = true
   try {
-    await apiFetch(`/hospedaje/${props.hospedajeId}/resenas`, {
+    const payload = {
+      calificacion: newReview.rating,
+      rating: newReview.rating,
+      comentario: newReview.text.trim(),
+      text: newReview.text.trim(),
+    }
+
+    console.log('📤 Sending review with payload:', payload)
+
+    const response = await apiFetch(`/hospedaje/${props.hospedajeId}/resenas`, {
       method: 'POST',
-      body: JSON.stringify({
-        // Compatibilidad de campos comunes (por si el backend usa nombres distintos)
-        calificacion: newReview.rating, // 1-5
-        rating: newReview.rating,
-        comentario: newReview.text.trim(),
-        text: newReview.text.trim(),
-      }),
+      body: JSON.stringify(payload),
     })
 
-    // Recargar desde backend para que el formato sea 100% consistente con la BD
+    console.log('✅ Review posted successfully:', response)
+
+    // Recargar desde backend
     await cargarResenas()
 
     submitSuccess.value = true
@@ -277,13 +310,24 @@ async function submitReview() {
     newReview.text = ''
     setTimeout(() => (submitSuccess.value = false), 4000)
   } catch (e) {
-    console.error('Error publicando reseña:', e)
+    console.error('❌ Error publicando reseña:', {
+      message: e.message,
+      status: e.response?.status,
+      data: e.response?.data
+    })
   } finally {
     submitting.value = false
   }
 }
 
-onMounted(cargarResenas)
+onMounted(() => {
+  // Listen for login/logout events dispatched from auth views
+  window.addEventListener('storage', updateTokenStatus)
+  updateTokenStatus()
+  cargarResenas()
+})
+
+onUnmounted(() => window.removeEventListener('storage', updateTokenStatus))
 watch(() => props.hospedajeId, cargarResenas)
 </script>
 
