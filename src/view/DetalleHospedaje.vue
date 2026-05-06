@@ -9,17 +9,11 @@
     <div class="layout-detalle" style="gap: 0">
       <DetallesHotel />
     </div>
-<<<<<<< HEAD
 <FooterComponent />
-=======
-
-    <FooterComponent />
->>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
   </div>
 </template>
 
 <script setup>
-<<<<<<< HEAD
 import { ref } from 'vue';
 import Header from "../components/Header.vue";
 import BuscadorPrincipal from "../components/MenuDet.vue";
@@ -27,16 +21,6 @@ import GaleriaCollage from "../components/GaleriaCollage.vue";
 import DetallesHotel from "../components/DetallesHotel.vue";
 import Reviewssection from "../components/Reviewssection.vue";
 import FooterComponent from '../components/footer.vue'
-=======
-import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import Header from '../components/Header.vue'
-import BuscadorPrincipal from '../components/MenuDet.vue'
-import GaleriaCollage from '../components/GaleriaCollage.vue'
-import DetallesHotel from '../components/DetallesHotel.vue'
-import FooterComponent from '../components/footer.vue'
-import { API, apiFetch } from '../services/api'
->>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
 
 const route = useRoute()
 const BASE = API

@@ -1,153 +1,4 @@
 <template>
-<<<<<<< HEAD
-  <div>
-
-    <!-- BOTÓN FILTROS — solo visible en móvil -->
-    <button class="btn-filtros-mobile" @click="drawerAbierto = true">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="4" y1="6" x2="20" y2="6"/>
-        <line x1="8" y1="12" x2="20" y2="12"/>
-        <line x1="12" y1="18" x2="20" y2="18"/>
-      </svg>
-      Filtros
-      <span v-if="totalFiltrosActivos > 0" class="filtros-badge">{{ totalFiltrosActivos }}</span>
-    </button>
-
-    <!-- OVERLAY + DRAWER (móvil) -->
-    <Teleport to="body">
-      <Transition name="overlay-fade">
-        <div v-if="drawerAbierto" class="drawer-overlay" @click="drawerAbierto = false" />
-      </Transition>
-      <Transition name="drawer-slide">
-        <div v-if="drawerAbierto" class="drawer-panel">
-
-          <div class="drawer-handle"></div>
-
-          <div class="drawer-header">
-            <span class="drawer-titulo">Filtros</span>
-            <button class="drawer-close" @click="drawerAbierto = false">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-            </button>
-          </div>
-
-          <div class="drawer-scroll">
-            <div class="filter-card-box">
-              <p class="filter-card-title">Busca por nombre</p>
-              <div class="name-search-wrapper">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                  fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-                </svg>
-                <input type="text" v-model="searchByName" placeholder="ej., Marriott" class="name-search-input" />
-              </div>
-            </div>
-
-            <div class="filtro-card">
-              <p class="filtro-titulo">Escalas</p>
-              <div v-for="escala in escalas" :key="escala.valor" class="filtro-opcion">
-                <input type="checkbox" v-model="escala.seleccionada" />
-                <span class="filtro-label">{{ escala.label }}</span>
-              </div>
-            </div>
-
-            <div class="filtro-card">
-              <p class="filtro-titulo">Tipo de aerolínea</p>
-              <div v-for="aerolinea in aerolineas" :key="aerolinea.nombre" class="filtro-opcion">
-                <input type="checkbox" v-model="aerolinea.seleccionada" />
-                <span class="filtro-label">{{ aerolinea.nombre }} ({{ aerolinea.vuelos }})</span>
-                <span class="filtro-precio">${{ aerolinea.precio.toLocaleString() }}</span>
-              </div>
-            </div>
-
-            <div class="filtro-card">
-              <p class="filtro-titulo">Tiempo total de viaje</p>
-              <span class="slider-val">
-                {{ tiempoMaximo === 35 ? 'Menos de 35 h' : `Menos de ${tiempoMaximo} h` }}
-              </span>
-              <input type="range" min="1" max="35" v-model.number="tiempoMaximo" />
-            </div>
-
-            <div class="filtro-card">
-              <p class="filtro-titulo">Clase preferida</p>
-              <div v-for="clase in clases" :key="clase.valor" class="clase-opcion">
-                <input type="radio" name="clase-drawer" :value="clase.valor" v-model="claseSeleccionada" />
-                <div>
-                  <div class="clase-nombre">{{ clase.label }}</div>
-                  <div v-if="clase.nota" class="clase-desc">{{ clase.nota }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="drawer-footer">
-            <button class="btn-limpiar" @click="limpiarFiltros">Limpiar todo</button>
-            <button class="btn-aplicar" @click="drawerAbierto = false">Ver resultados</button>
-          </div>
-
-        </div>
-      </Transition>
-    </Teleport>
-
-    <!-- SIDEBAR DESKTOP (igual que el original) -->
-    <div class="filtros-sidebar">
-
-      <div class="filter-card-box">
-        <p class="filter-card-title">Busca por nombre</p>
-        <div class="name-search-wrapper">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" 
-            fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-          </svg>
-          <input
-            type="text"
-            v-model="searchByName"
-            placeholder="ej., Marriott"
-            class="name-search-input"
-          />
-        </div> 
-      </div>
-
-      <div class="filtro-card">
-        <p class="filtro-titulo">Escalas</p>
-        <div v-for="escala in escalas" :key="escala.valor" class="filtro-opcion">
-          <input type="checkbox" v-model="escala.seleccionada" />
-          <span class="filtro-label">{{ escala.label }}</span>
-        </div>
-      </div>
-
-      <div class="filtro-card">
-        <p class="filtro-titulo">Tipo de aerolínea</p>
-        <div v-for="aerolinea in aerolineas" :key="aerolinea.nombre" class="filtro-opcion">
-          <input type="checkbox" v-model="aerolinea.seleccionada" />
-          <span class="filtro-label">{{ aerolinea.nombre }} ({{ aerolinea.vuelos }})</span>
-          <span class="filtro-precio">${{ aerolinea.precio.toLocaleString() }}</span>
-        </div>
-      </div>
-
-      <div class="filtro-card">
-        <p class="filtro-titulo">Tiempo total de viaje</p>
-        <span class="slider-val">
-          {{ tiempoMaximo === 35 ? 'Menos de 35 h' : `Menos de ${tiempoMaximo} h` }}
-        </span>
-        <input type="range" min="1" max="35" v-model.number="tiempoMaximo" />
-      </div>
-
-      <div class="filtro-card">
-        <p class="filtro-titulo">Clase preferida</p>
-        <div v-for="clase in clases" :key="clase.valor" class="clase-opcion">
-          <input type="radio" name="clase-sidebar" :value="clase.valor" v-model="claseSeleccionada" />
-          <div>
-            <div class="clase-nombre">{{ clase.label }}</div>
-            <div v-if="clase.nota" class="clase-desc">{{ clase.nota }}</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-=======
   <div class="filtros-sidebar">
     <!-- Busca por nombre -->
     <div class="filter-card-box">
@@ -245,17 +96,12 @@
         </div>
       </div>
      </template>
->>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
   </div>
 </template>
 
 <script setup>
-<<<<<<< HEAD
-import { ref, computed, watch } from 'vue';
-=======
 import { ref, watch, onMounted } from 'vue'
 import { getFiltrosVuelos } from '../services/vueloService'
->>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
 
 // ── Props opcionales: origen y destino para filtrar resultados ─────────────
 const props = defineProps({
@@ -263,19 +109,6 @@ const props = defineProps({
   idDestino: { type: [Number, String], default: null },
 })
 
-<<<<<<< HEAD
-const drawerAbierto = ref(false);
-const searchByName  = ref('');
-
-const aerolineas = ref([
-  { nombre: 'JetBlue Airways',     vuelos: 20, precio: 1528,  seleccionada: false },
-  { nombre: 'LOT-Polish Airlines', vuelos: 10, precio: 2205,  seleccionada: false },
-  { nombre: 'Turkish Airlines',    vuelos: 10, precio: 1528,  seleccionada: false },
-  { nombre: 'American Airlines',   vuelos: 3,  precio: 3859,  seleccionada: false },
-  { nombre: 'Lufthansa',           vuelos: 3,  precio: 13447, seleccionada: false },
-  { nombre: 'Delta',               vuelos: 2,  precio: 4686,  seleccionada: false },
-]);
-=======
 const emit = defineEmits(['filtros-cambiados'])
 
 // ── Estado reactivo ────────────────────────────────────────────────────────
@@ -287,7 +120,6 @@ const clases            = ref([])
 const claseSeleccionada = ref(null)
 const tiempoMaximo      = ref(35)
 const duracion          = ref({ minHoras: 1, maxHoras: 35 })
->>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
 
 const escalas = ref([
   { label: 'Directo',         valor: '0',  seleccionada: false, conteo: undefined },
@@ -305,31 +137,6 @@ async function cargarFiltros() {
     if (props.idOrigen)  params.set('id_origen',  props.idOrigen)
     if (props.idDestino) params.set('id_destino', props.idDestino)
 
-<<<<<<< HEAD
-const totalFiltrosActivos = computed(() => {
-  return aerolineas.value.filter(x => x.seleccionada).length
-    + escalas.value.filter(x => x.seleccionada).length
-    + (tiempoMaximo.value < 35 ? 1 : 0)
-    + (claseSeleccionada.value !== 'basica' ? 1 : 0)
-    + (searchByName.value.trim() ? 1 : 0);
-});
-
-const limpiarFiltros = () => {
-  aerolineas.value.forEach(a => a.seleccionada = false);
-  escalas.value.forEach(e => e.seleccionada = false);
-  claseSeleccionada.value = 'basica';
-  tiempoMaximo.value = 35;
-  searchByName.value = '';
-};
-
-// Emite los filtros al padre cada vez que cambian
-watch(
-  [aerolineas, escalas, claseSeleccionada, tiempoMaximo, searchByName],
-  () => {
-    emit('filtros-cambiados', {
-      searchByName:      searchByName.value,
-      aerolineas:        aerolineas.value.filter(a => a.seleccionada).map(a => a.nombre),
-=======
     // Usamos el servicio que ya tiene la ruta correcta /vuelos/filtros
     const data = await getFiltrosVuelos(Object.fromEntries(params))
 
@@ -365,7 +172,6 @@ watch(
     emit('filtros-cambiados', {
       nombre:            searchByName.value,
       aerolineas:        aerolineas.value.filter(a => a.seleccionada).map(a => a.id),
->>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
       escalas:           escalas.value.filter(e => e.seleccionada).map(e => e.valor),
       claseId:           claseSeleccionada.value,
       tiempoMaximoHoras: tiempoMaximo.value,
@@ -537,10 +343,6 @@ watch(
   width: 280px;
   flex-shrink: 0;
   position: sticky;
-<<<<<<< HEAD
-  top: 110px;
-  margin-top: 160px;
-=======
   top: 110px; /* queda fijo bajo el header al hacer scroll */
   margin-top: 10px; /* Ajustado para que no se pierdan al inicio */
 }
@@ -575,7 +377,6 @@ watch(
   width: 100%;
   font-size: 14px;
   color: #333;
->>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
 }
 
 @media (max-width: 768px) {
@@ -720,38 +521,6 @@ input[type="range"]  { width: 100%; accent-color: #113955; }
   margin-top: 4px;
 }
 
-<<<<<<< HEAD
-.filter-card-box {
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 12px;
-  padding: 18px 20px;
-}
-
-.filter-card-title {
-  font-size: 15px;
-  font-weight: bold;
-  color: #113955;
-  margin: 0 0 14px 0;
-}
-
-.name-search-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  padding: 8px 12px;
-  background: white;
-}
-
-.name-search-input {
-  border: none;
-  outline: none;
-  width: 100%;
-  font-size: 14px;
-  color: #333;
-=======
 /* Skeleton */
 .skeleton-card { pointer-events: none; }
 .sk-title, .sk-line {
@@ -786,7 +555,6 @@ input[type="range"]  { width: 100%; accent-color: #113955; }
   color: #b91c1c;
   border-radius: 8px;
   cursor: pointer;
->>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
 }
 .retry-btn:hover { background: #fef2f2; }
 .sin-datos { font-size: 12px; color: #9ca3af; }

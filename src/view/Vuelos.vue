@@ -16,13 +16,8 @@
       <!-- Columna derecha para el buscador y resultados -->
       <div class="vuelos-right-column">
         <!-- El buscador de vuelos -->
-<<<<<<< HEAD
-        <div class="vuelos-search-wrapper search-top-layer">
-          <VuelosBuscar />
-=======
         <div class="vuelos-search-wrapper">
           <VuelosBuscar :initial-destino="route.query.destino" />
->>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
         </div>
          <div class="vuelos-search-wrapper">
           <OpcionesVuelos :vuelos-data="vuelosResultados" :loading="cargando" />
@@ -112,13 +107,6 @@
 
 :deep(.vuelo-tab) {
   border-radius: 40px !important;
-<<<<<<< HEAD
-  padding: 10px 64px !important;
-  border: none !important;
-  background: none !important;
-  color: #113955 !important;
-  font-size: 15px !important;
-=======
   padding: 10px 64px !important; /* Relleno idéntico al de cuerpo.css */
   padding: 10px 32px !important; 
   border: none !important;
@@ -126,7 +114,6 @@
   color: #113955 !important;
   font-size: 15px !important; /* Tamaño de fuente idéntico al de cuerpo.css */
   font-size: 14px !important;
->>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -202,9 +189,6 @@ import Header from "../components/Header.vue";
 import VuelosBuscar from"../components/VuelosSearch.vue";
 import FiltrosVuelos from"../components/FiltrosVuelos.vue";
 import OpcionesVuelos from '../components/OpcionesVuelos.vue';
-<<<<<<< HEAD
-import FooterComponent from '../components/footer.vue'
-=======
 import { buscarVuelos } from '../services/vueloService';
 import { useRouter } from 'vue-router';
 
@@ -261,5 +245,4 @@ function aplicarFiltros(filtros) {
 
   router.push({ query });
 }
->>>>>>> 2e599de7d48b37a634614695fbfba3bc2efb894e
 </script>
