@@ -268,25 +268,41 @@ async function cargarResenas() {
 }
 
 async function submitReview() {
-  // Solo permitir publicar si hay sesión (token)
-  const token = localStorage.getItem('user_token')
-  if (!token) return
-
   if (!newReview.rating || !newReview.text.trim()) return
+
+  // Validar token ANTES de enviar
+  const token = localStorage.getItem('user_token')
+  console.log('🔍 submitReview - Token check:', {
+    hasToken: !!token,
+    tokenPreview: token ? `${token.slice(0, 20)}...` : 'MISSING',
+    hospedajeId: props.hospedajeId
+  })
+
+  if (!token) {
+    console.warn('❌ No token found. Redirecting to login...')
+    setTimeout(() => window.location.href = '/login', 1500)
+    return
+  }
+
   submitting.value = true
   try {
-    await apiFetch(`/hospedaje/${props.hospedajeId}/resenas`, {
+    const payload = {
+      calificacion: newReview.rating,
+      rating: newReview.rating,
+      comentario: newReview.text.trim(),
+      text: newReview.text.trim(),
+    }
+
+    console.log('📤 Sending review with payload:', payload)
+
+    const response = await apiFetch(`/hospedaje/${props.hospedajeId}/resenas`, {
       method: 'POST',
-      body: JSON.stringify({
-        // Compatibilidad de campos comunes (por si el backend usa nombres distintos)
-        calificacion: newReview.rating, // 1-5
-        rating: newReview.rating,
-        comentario: newReview.text.trim(),
-        text: newReview.text.trim(),
-      }),
+      body: JSON.stringify(payload),
     })
 
-    // Recargar desde backend para que el formato sea 100% consistente con la BD
+    console.log('✅ Review posted successfully:', response)
+
+    // Recargar desde backend
     await cargarResenas()
 
     submitSuccess.value = true
@@ -294,7 +310,11 @@ async function submitReview() {
     newReview.text = ''
     setTimeout(() => (submitSuccess.value = false), 4000)
   } catch (e) {
-    console.error('Error publicando reseña:', e)
+    console.error('❌ Error publicando reseña:', {
+      message: e.message,
+      status: e.response?.status,
+      data: e.response?.data
+    })
   } finally {
     submitting.value = false
   }
