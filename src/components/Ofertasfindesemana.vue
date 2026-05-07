@@ -99,8 +99,8 @@ onMounted(async () => {
     const data = await apiFetch('/hospedajes/ofertas-finde')
     hotels.value = data.map(h => ({
       id:              h.id,
-      name:            h.nombre,        // ← ahora viene de SERVICIO.NOMBRE ✅
-      location:        `${h.ubicacion}, ${h.ciudad}`,
+      name:            h.nombre,
+      location:        `${h.ciudad}, ${h.pais}`,
       score:           0,
       reviews:         0,
       vip:             false,
