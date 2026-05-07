@@ -1701,7 +1701,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  justify-content: flex-end;
+  justify-content: center;
 }
  
 .pf-save-btn {

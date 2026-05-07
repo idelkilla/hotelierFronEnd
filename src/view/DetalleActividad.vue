@@ -8,7 +8,7 @@
       <!-- Hero -->
       <div class="hero">
         <img :src="actividad.imagen" :alt="actividad.titulo" class="hero-img" />
-        <div class="hero-overlay" />
+        <div class="hero-overlay"></div>
         <div class="hero-inner">
           <button class="btn-back" @click="$router.back()">
             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -421,7 +421,7 @@ const reservar = () => { if (puedeReservar.value) confirmado.value = true }
   transition: transform 0.5s ease;
 }
 .hero:hover .hero-img { transform: scale(1.03); }
-.hero-overlay {
+.hero-overlay { /* No se necesita cambio aquí, es un overlay de color */
   position: absolute; inset: 0;
   background: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(10,22,44,0.72) 100%);
 }
@@ -431,7 +431,7 @@ const reservar = () => { if (puedeReservar.value) confirmado.value = true }
   justify-content: flex-end;
   padding: 40px;
   max-width: 1300px; margin: 0 auto;
-  left: 0; right: 0;
+  left: 0; right: 0; /* Estos ya centran el hero-inner */
 }
 .btn-back {
   position: absolute; top: 90px; left: 40px;
@@ -443,7 +443,10 @@ const reservar = () => { if (puedeReservar.value) confirmado.value = true }
   padding: 8px 16px; border-radius: 20px;
   cursor: pointer; transition: background 0.2s;
 }
-.btn-back:hover { background: rgba(255,255,255,0.28); }
+.btn-back {
+  left: calc(50% - 650px + 40px); /* Ajusta para alinear con el contenido centrado */
+}
+.btn-back:hover { background: rgba(255,255,255,0.28); } /* No se necesita cambio aquí */
 .hero-meta { display: flex; gap: 8px; margin-bottom: 10px; }
 .badge-tipo {
   background: rgba(255,255,255,0.9); color: #1a3a5c;

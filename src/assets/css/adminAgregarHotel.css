@@ -1,6 +1,7 @@
 .ah-page {
   padding: 28px 36px;
   max-width: 1200px;
+  margin: 0 auto; /* Añadido para centrar el contenido */
 }
 
 .adm-tabs-bar {

@@ -1,6 +1,8 @@
 <template>
   <div class="main-container">
     <Header />
+    <div class="centered-content">
+
 
     <!-- Buscador arriba a la derecha -->
     <div class="search-wrapper">
@@ -16,6 +18,7 @@
         <ResuladoCarros />
       </div>
     </div>
+    </div>
   </div>
   <FooterComponent />
 </template>
@@ -29,10 +32,17 @@ import ResuladoCarros from '../components/OpcionesCarros.vue';
 import FooterComponent from '../components/footer.vue'
 </script>
 
+<style>
+/* Estilo global para centrar el contenido principal */
+.centered-content {
+  max-width: 1200px; /* Define el ancho máximo deseado */
+  margin: 0 auto; /* Centra el div horizontalmente */
+}
+</style>
+
 <style scoped>
 .search-wrapper {
-  display: flex;
-  justify-content: flex-end; /* ALINEACIÓN HORIZONTAL: flex-end (derecha), center (centro), flex-start (izquierda) */
+  display: flex; /* ALINEACIÓN HORIZONTAL: flex-end (derecha), center (centro), flex-start (izquierda) */
   align-items: flex-start;
   padding: 80px 104px 20px 0; /* El segundo valor (40px) es la distancia desde la derecha si usas flex-end */
   background-color: #ffffff;
@@ -40,8 +50,9 @@ import FooterComponent from '../components/footer.vue'
   z-index: 100; /* Asegura que el calendario y dropdowns salgan por encima de las cards y filtros */
 }
 
-.search-wrapper :deep(> *) {
-  width: 95%;
+/* Ajuste para centrar el buscador dentro de su contenedor */
+.search-wrapper :deep(.autos-search) {
+  width: 100%; /* Ocupa todo el ancho disponible */
   transform: scale(0.9);
   transform-origin: top right;
 }
@@ -50,6 +61,7 @@ import FooterComponent from '../components/footer.vue'
 .search-wrapper :deep(.autos-search) {
   display: flex;
   flex-direction: column;
+  align-items: center; /* Centra el contenido del buscador */
 }
 
 /* Los campos de búsqueda (inputs) pasan a tener el orden 1 para estar arriba */
@@ -107,7 +119,7 @@ import FooterComponent from '../components/footer.vue'
 .autos-layout {
   display: flex;
   gap: 24px;
-  padding: 0px 40px; /* EL SEGUNDO VALOR (40px) maneja qué tan a la izquierda/derecha está todo el bloque de resultados y filtros */
+  padding: 0px 20px; /* Ajustado para un padding más equilibrado */
   align-items: flex-start;
   background-color: #ffffff;
 }

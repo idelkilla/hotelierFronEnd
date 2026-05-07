@@ -557,12 +557,11 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  @media (max-width: 768px) {
-    .ah-grid {
-      grid-template-columns: 1fr;
-    }
-    .ah-row-3 {
-      grid-template-columns: 1fr;
-    }
+  @media (max-width: 1024px) {
+    .ah-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 640px) {
+    .ah-row, .ah-row-3 { grid-template-columns: 1fr; }
   }
 </style>

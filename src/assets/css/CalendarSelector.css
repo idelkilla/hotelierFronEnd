@@ -6,7 +6,8 @@
 .calendar-modal {
   position: absolute;
   top: calc(100% + 8px);
-  right: 0;
+  left: 50%; /* Centra horizontalmente */
+  transform: translateX(-50%); /* Ajusta para el centrado perfecto */
   z-index: 1200;
   background: white;
   border-radius: 20px;
@@ -83,8 +84,6 @@
 @media (max-width: 600px) {
   .calendar-modal {
     right: auto; /* evita que se salga por la derecha */
-    left: 50%;
-    transform: translateX(-50%);
     border-radius: 16px;
   }
 

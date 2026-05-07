@@ -286,6 +286,8 @@ onMounted(fetchReservas)
   font-family: 'DM Sans', sans-serif;
   padding: 2rem;
   min-height: 100vh;
+  max-width: 1200px; /* Añadido para limitar el ancho */
+  margin: 0 auto; /* Añadido para centrar el contenido */
   background: #ffffff;
   color: #1a1d2e;
 }

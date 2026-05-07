@@ -1,5 +1,5 @@
 <template>
-  <div class="ah-grid" style="padding: 24px">
+  <div class="ah-grid ah-grid--edit">
 
     <!-- Columna izquierda -->
     <div class="ah-col">
@@ -373,6 +373,20 @@ const eliminar = async () => {
 <style scoped>
 @import '../assets/css/adminAgregarHotel.css';
 @import '../assets/css/CalendarSelector.css';
+  
+  .ah-grid--edit {
+    padding: 24px;
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 1024px) {
+    .ah-grid--edit {
+      grid-template-columns: 1fr;
+      padding: 16px;
+    }
+  }
 
 .ah-field {
   position: relative;
@@ -387,6 +401,16 @@ const eliminar = async () => {
   gap: 10px;
   padding-top: 8px;
   border-top: 1px solid #e8ecf4;
+  }
+
+  @media (max-width: 640px) {
+    .ah-actions-row {
+      flex-direction: column-reverse;
+    }
+    .ah-actions-row button {
+      width: 100%;
+      justify-content: center;
+    }
 }
 
 .ah-info-row {

@@ -294,10 +294,30 @@
   </div>
 </div>
 
-            <!-- Datos biográficos & salud -->
-         
-</div>
+            <!-- BOTONES DE ACCIÓN (Dentro de .info-block) -->
+            <div class="perfil-actions-bar">
+              <button
+                class="btn-save-main"
+                :disabled="guardando"
+                @click="guardarTodosLosDatos"
+              >
+                {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+              </button>
 
+              <button
+                type="button"
+                class="btn-cancel-main"
+                @click="cancelarEdicion"
+              >
+                Cancelar
+              </button>
+            </div>
+
+            <!-- Feedback visual opcional -->
+            <transition name="fade">
+              <p v-if="guardadoOk" class="save-status ok">✓ Cambios guardados correctamente</p>
+            </transition>
+          </div>
         </div>
 
         <!-- SECCIÓN: MIS FAVORITOS -->
@@ -959,6 +979,11 @@ async function guardarTodosLosDatos() {
   } finally { guardando.value = false }
 }
 
+function cancelarEdicion() {
+  // Reseteamos el formulario con una copia de los datos originales del perfil
+  Object.assign(formPerfil, JSON.parse(JSON.stringify(perfil)));
+}
+
 // ── Favoritos ─────────────────────────────────────────────────
 const favoritos   = ref([])
 const cargandoFav = ref(false)
@@ -1328,4 +1353,51 @@ function confirmarCerrarSesion() {
 .fav-price { font-size: 15px; font-weight: 700; color: #265073; }
 .fav-price small { font-size: 11px; color: #888; font-weight: 400; }
 @media (max-width: 600px) { .fav-grid { grid-template-columns: 1fr; } }
+.perfil-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+.btn-save-main {
+  background-color: #265073;
+  color: #ffffff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-save-main:hover {
+  background-color: #1a3a54;
+}
+.btn-save-main:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+.btn-cancel-main {
+  background-color: #ffffff;
+  color: #666;
+  border: 1px solid #ddd;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-cancel-main:hover {
+  background-color: #f9f9f9;
+  border-color: #bbb;
+}
+.save-status.ok {
+  color: #2d9596;
+  font-size: 14px;
+  margin-top: 10px;
+  font-weight: 500;
+}
 </style>
