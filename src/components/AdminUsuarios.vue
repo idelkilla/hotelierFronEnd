@@ -190,8 +190,8 @@
                     <div
                       class="usr-avatar"
                       :style="{
-                        background: avatarBg(u.tipo),
-                        color: avatarColor(u.tipo),
+                        background: avatarBg(u.rol_principal),
+                        color: avatarColor(u.rol_principal),
                       }"
                     >
                       {{ iniciales(u.nombre) }}
@@ -200,9 +200,9 @@
                   </div>
                 </td>
                 <td>
-                  <span :class="['usr-badge', tipoBadge(u.tipo)]">{{
-                    u.tipo
-                  }}</span>
+                  <span :class="['usr-badge', tipoBadge(u.rol_principal)]">
+                    {{ u.rol_principal }}
+                  </span>
                 </td>
                 <td class="usr-email">{{ u.correo }}</td>
                 <td>
@@ -291,7 +291,7 @@ const labelGuardar = computed(() => {
 })
 
 const usuariosFiltrados = computed(() => usuarios.value)
-
+const API_BASE = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api'
 // ── Helpers ──────────────────────────────────────────────────────
 const mostrarAlerta = (mensaje, tipo = 'error') => {
   alerta.mensaje = mensaje
@@ -311,18 +311,18 @@ const iniciales = (nombre = '') =>
     .toUpperCase()
 
 const avatarBg = (tipo) =>
-  ({ Empleado: '#E6F1FB', Cliente: '#EEEDFE', Miembro: '#E1F5EE' })[tipo] ||
+  ({ Empleado: '#E6F1FB', Cliente: '#EEEDFE', Miembro: '#E1F5EE', Miembros: '#E1F5EE' })[tipo] ||
   '#F1EFE8'
 
 const avatarColor = (tipo) =>
-  ({ Empleado: '#0C447C', Cliente: '#3C3489', Miembro: '#085041' })[tipo] ||
+  ({ Empleado: '#0C447C', Cliente: '#3C3489', Miembro: '#085041', Miembros: '#085041' })[tipo] ||
   '#444441'
 
 const tipoBadge = (tipo) =>
   ({
     Empleado: 'badge-empleado',
     Cliente: 'badge-cliente',
-    Miembro: 'badge-miembro',
+    Miembro: 'badge-miembro', Miembros: 'badge-miembro'
   })[tipo] || ''
 
 const nivelBadge = (nivel) =>
@@ -345,54 +345,15 @@ const guardarUsuario = async () => {
   }
 }
 
-// ── Sincronización con Rutas ──────────────────────────────────
-const syncRoute = () => {
-  const path = route.path
-  if (path.includes('/consultar')) {
-    vista.value = 'consultar'
-    filtroTipo.value = route.query.tipo || props.tipo || 'todos'
-    if (usuarios.value.length === 0) {
-      cargarListado()
-    }
-  } else {
-    vista.value = 'agregar'
-    if (path.includes('/cliente')) subtab.value = 'cliente'
-    else if (path.includes('/miembro')) subtab.value = 'miembro'
-    else subtab.value = 'empleado'
-  }
-}
-
-watch(filtroTipo, (newVal) => {
-  if (vista.value === 'consultar') {
-    cargarListado()
-  }
-})
-
-watch(() => route.fullPath, syncRoute, { immediate: true })
-
-const navegar = (v, s = null) => {
-  let path = '/admin/usuarios'
-  if (v === 'consultar') {
-    router.push({ path: `${path}/consultar`, query: { tipo: filtroTipo.value } })
-  } else {
-    router.push(`${path}/agregar/${s || subtab.value}`)
-  }
-}
-
-const cambiarFiltro = (t) => {
-  filtroTipo.value = t
-  router.push({ path: route.path, query: { tipo: t } })
-}
-
 // ── Consultar listado unificado ──────────────────────────────────
 const cargarListado = async () => {
   editando.value = null
   cargandoLista.value = true
   try {
-    const tipoParam = filtroTipo.value !== 'todos' ? `?tipo=${filtroTipo.value}` : ''
-    console.log(`📡 Cargando: /usuarios${tipoParam}`)
+    const tipoParam = filtroTipo.value !== 'todos' ? `tipo=${filtroTipo.value}` : ''
+    console.log(`📡 Cargando: /usuarios?${tipoParam}`)
     
-    const res = await apiFetch(`/usuarios${tipoParam}`)
+    const res = await apiFetch(`/usuarios?${tipoParam}`)
     usuarios.value = Array.isArray(res) ? res : []
     
     console.log(`✅ Usuarios cargados: ${usuarios.value.length}`)
@@ -436,10 +397,10 @@ const abrirEdicion = async (u) => {
   editando.value = u
   cargandoDetalle.value = true
   try {
-    const tipoParam = u.tipo.toLowerCase() !== 'usuario' ? `?tipo=${u.tipo.toLowerCase()}` : ''
-    const url = `/usuarios/${u.id}${tipoParam}`
+    const tipoParam = u.tipo.toLowerCase() !== 'usuario' ? `tipo=${u.tipo.toLowerCase()}` : ''
+    const url = `/usuarios/${u.id}?${tipoParam}`
     
-    console.log(`📡 Cargando detalle: ${url}`)
+    console.log(`📡 Cargando detalle: ${API_BASE}${url}`)
     const det = await apiFetch(url)
     editando.value = { ...u, ...det }
     
@@ -476,6 +437,45 @@ const eliminarUsuario = async (id) => {
     mostrarAlerta('Error al eliminar: ' + e.message)
   }
 }
+
+// ── Sincronización con Rutas ──────────────────────────────────
+const syncRoute = () => {
+  const path = route.path
+  if (path.includes('/consultar')) {
+    vista.value = 'consultar'
+    filtroTipo.value = route.query.tipo || props.tipo || 'todos'
+    if (usuarios.value.length === 0) {
+      cargarListado()
+    }
+  } else {
+    vista.value = 'agregar'
+    if (path.includes('/cliente')) subtab.value = 'cliente'
+    else if (path.includes('/miembro')) subtab.value = 'miembro'
+    else subtab.value = 'empleado'
+  }
+}
+
+const navegar = (v, s = null) => {
+  let path = '/admin/usuarios'
+  if (v === 'consultar') {
+    router.push({ path: `${path}/consultar`, query: { tipo: filtroTipo.value } })
+  } else {
+    router.push(`${path}/agregar/${s || subtab.value}`)
+  }
+}
+
+const cambiarFiltro = (t) => {
+  filtroTipo.value = t
+  router.push({ path: route.path, query: { tipo: t } })
+}
+
+watch(filtroTipo, (newVal) => {
+  if (vista.value === 'consultar') {
+    cargarListado()
+  }
+})
+
+watch(() => route.fullPath, syncRoute, { immediate: true })
 
 // ── Catálogos ────────────────────────────────────────────────────
 onMounted(async () => {

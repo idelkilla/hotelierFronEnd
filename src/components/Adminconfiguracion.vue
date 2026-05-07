@@ -135,6 +135,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue';
 import { apiFetch } from '../services/api';
+import CatalogTable from '../components/CatalogTable.vue';
 
 // ── State ──────────────────────────────────────────
 const activeTab = ref('hospedaje');
