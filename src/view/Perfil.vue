@@ -1376,9 +1376,10 @@ function formatFecha(fecha) {
   })
 }
 // ── Opiniones ─────────────────────────────────────────────────
+// ── Opiniones ─────────────────────────────────────────────────
 const opiniones          = ref([])
 const mostrarFormOpinion = ref(false)
-const cargandoOpiniones  = ref(false)        // ← nuevo
+const cargandoOpiniones  = ref(false)
 const formOpinion        = reactive({ titulo: '', texto: '', estrellas: 0 })
 const errorOpinion       = ref('')
 
@@ -1415,18 +1416,6 @@ async function guardarOpinion() {
   } catch (e) {
     errorOpinion.value = e?.message || 'Error al publicar la reseña.'
   }
-}
-  // Solo local por ahora — cuando tengas endpoint POST /perfil/resenas, llámalo aquí
-  opiniones.value.unshift({
-    id:        Date.now(),
-    titulo:    formOpinion.titulo,
-    texto:     formOpinion.texto,
-    estrellas: formOpinion.estrellas,
-    fecha:     new Date().toLocaleDateString('es-DO')
-  })
-  Object.assign(formOpinion, { titulo: '', texto: '', estrellas: 0 })
-  errorOpinion.value = ''
-  mostrarFormOpinion.value = false
 }
 
 function eliminarOpinion(id) {
