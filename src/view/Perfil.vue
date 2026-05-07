@@ -570,11 +570,10 @@
           </div>
         </div>
 
- 
+ <!-- SECCIÓN: MEMBRESÍA -->
 <div v-else-if="activeSection === 'creditos'" class="section-wrap">
   <div class="mem-wrap">
 
-    <!-- Header -->
     <div class="mem-header">
       <p class="mem-eyebrow">Mi cuenta</p>
       <h1 class="mem-title">Membresía</h1>
@@ -585,22 +584,66 @@
       Cargando membresía...
     </div>
 
-    <!-- Sin membresía -->
-    <div v-else-if="!membresia" class="mem-empty">
-      <div class="mem-empty-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#2D9596" stroke-width="1.2">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M12 8v4M12 16h.01"/>
-        </svg>
+    <!-- Sin membresía → mostrar form para unirse -->
+    <div v-else-if="!membresia">
+      <div v-if="!mostrarFormMembresia" class="mem-empty">
+        <div class="mem-empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2D9596" stroke-width="1.2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 8v4M12 16h.01"/>
+          </svg>
+        </div>
+        <p class="mem-empty-title">No tienes membresía activa</p>
+        <p class="mem-empty-sub">Únete al programa de fidelidad y empieza a acumular puntos en cada reserva.</p>
+        <button class="mem-join-btn" @click="abrirFormMembresia">
+          Unirme al programa →
+        </button>
       </div>
-      <p class="mem-empty-title">No tienes membresía activa</p>
-      <p class="mem-empty-sub">Realiza tu primera reserva para unirte al programa de fidelidad.</p>
+
+      <!-- Formulario para crear membresía -->
+      <div v-else class="mem-form-card">
+        <div class="mem-form-header">
+          <h3>Elige tu nivel de membresía</h3>
+          <button class="modal-close" @click="mostrarFormMembresia = false">✕</button>
+        </div>
+
+        <div v-if="cargandoNiveles" class="mem-loading">Cargando niveles...</div>
+
+        <div v-else class="mem-niveles-list">
+          <div
+            v-for="nivel in nivelesMembresia"
+            :key="nivel.ID_NIVEL"
+            class="mem-nivel-option"
+            :class="{ selected: formMembresia.id_nivel === nivel.ID_NIVEL }"
+            @click="formMembresia.id_nivel = nivel.ID_NIVEL"
+          >
+            <div class="mem-nivel-radio">
+              <div class="mem-nivel-dot" :class="{ active: formMembresia.id_nivel === nivel.ID_NIVEL }"></div>
+            </div>
+            <div class="mem-nivel-info">
+              <span class="mem-nivel-name">{{ nivel.NOMBRE_NIVEL }}</span>
+              <span class="mem-nivel-pts">Desde {{ nivel.PUNTOS_MINIMOS.toLocaleString('es-DO') }} pts</span>
+              <span v-if="nivel.DESCRIPCION" class="mem-nivel-desc">{{ nivel.DESCRIPCION }}</span>
+            </div>
+            <span class="mem-nivel-badge">{{ nivel.NOMBRE_NIVEL }}</span>
+          </div>
+        </div>
+
+        <span v-if="errorMembresia" class="error" style="padding:0 1.5rem; display:block;">{{ errorMembresia }}</span>
+
+        <div class="mem-form-footer">
+          <button class="fp-btn-primary" :disabled="!formMembresia.id_nivel || guardandoMembresia" @click="crearMembresia">
+            {{ guardandoMembresia ? 'Registrando...' : 'Confirmar membresía' }}
+          </button>
+          <button class="fp-btn-ghost" @click="mostrarFormMembresia = false">Cancelar</button>
+        </div>
+      </div>
     </div>
 
-    <!-- Card membresía -->
+    <!-- Card membresía activa -->
     <div v-else class="mem-card">
       <div class="mem-card-top">
-        <div class="mem-badge-wrap">
+        <div>
           <span class="mem-badge">{{ membresia.NOMBRE_NIVEL }}</span>
         </div>
         <div class="mem-number">
@@ -610,14 +653,12 @@
       </div>
 
       <div class="mem-card-body">
-        <!-- Puntos -->
         <div class="mem-points-block">
           <p class="mem-points-label">Puntos de fidelidad</p>
           <p class="mem-points-value">{{ membresia.PUNTOS_FIDELIDAD.toLocaleString('es-DO') }}</p>
           <p class="mem-points-sub">Mínimo para este nivel: {{ membresia.PUNTOS_MINIMOS.toLocaleString('es-DO') }} pts</p>
         </div>
 
-        <!-- Barra de progreso al siguiente nivel -->
         <div class="mem-progress-wrap">
           <div class="mem-progress-bar">
             <div
@@ -626,30 +667,28 @@
             ></div>
           </div>
           <p class="mem-progress-label">
-            {{ Math.min(Math.round((membresia.PUNTOS_FIDELIDAD / (membresia.PUNTOS_MINIMOS || 1)) * 100), 100) }}% del nivel actual alcanzado
+            {{ Math.min(Math.round((membresia.PUNTOS_FIDELIDAD / (membresia.PUNTOS_MINIMOS || 1)) * 100), 100) }}% del nivel alcanzado
           </p>
         </div>
 
-        <!-- Info extra -->
         <div class="mem-info-grid">
           <div class="mem-info-item">
             <span class="mem-info-label">Miembro desde</span>
             <span class="mem-info-value">{{ formatFecha(membresia.FECHA_INICIO) }}</span>
           </div>
           <div class="mem-info-item">
-            <span class="mem-info-label">Nivel</span>
+            <span class="mem-info-label">Nivel actual</span>
             <span class="mem-info-value">{{ membresia.NOMBRE_NIVEL }}</span>
           </div>
         </div>
 
-        <!-- Descripción del nivel -->
         <div v-if="membresia.DESCRIPCION" class="mem-desc">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D9596" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
           <p>{{ membresia.DESCRIPCION }}</p>
         </div>
       </div>
     </div>
-
+  
   </div>
 </div>
 
@@ -658,24 +697,27 @@
           <div class="opinions-wrapper">
             <div v-if="opiniones.length > 0">
               <h2 style="font-size:16px; font-weight:500; margin-bottom:1rem;">Mis reseñas</h2>
+              <div v-if="cargandoOpiniones" style="padding:40px 0; text-align:center; color:#888; font-size:14px;">
+  Cargando tus reseñas...
+</div>
               <div v-for="op in opiniones" :key="op.id" class="fp-row" style="align-items:flex-start; gap:12px; margin-bottom:.75rem; border:1px solid #eee; border-radius:10px; padding:12px;">
                 <div style="flex:1;">
                   <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
                     <span style="font-size:13px; font-weight:500;">{{ op.titulo }}</span>
                     <span style="font-size:12px; color:#aaa;">· {{ op.fecha }}</span>
                   </div>
-                  <div style="margin-bottom:4px;"><span v-for="n in 5" :key="n" :style="{ fontSize: '14px', color: n <= op.estrellas ? '#f5a623' : '#ddd' }">★</span></div>
+                  <div style="margin-bottom:4px;"><span v-for="n in 5" :key="n" :style="{ fontSize: '14px', color: n <= op.estrellas ? '#f5a623' : '#ddd' }"></span></div>
                   <p style="font-size:13px; color:#555;">{{ op.texto }}</p>
                 </div>
                 <button class="fp-delete-btn" @click="eliminarOpinion(op.id)">✕</button>
               </div>
             </div>
-            <div v-else class="op-empty-state">
-              <div class="op-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+            <div v-else class="op-empty-state"> 
+              <div class="op-empty-icon" style="width: 100px; height: 100px; opacity: 0.4; margin: 0 auto;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
               <h2 class="op-empty-title">¡Aún no has escrito reseñas!</h2>
               <p class="op-empty-subtitle">Tus opiniones ayudan a otros viajeros a tomar mejores decisiones.</p>
             </div>
-            <button v-if="!mostrarFormOpinion" class="fp-add-btn" style="margin-top:1.25rem;" @click="mostrarFormOpinion = true">Escribir una reseña</button>
+            <button v-if="!mostrarFormOpinion" class="fp-add-btn" style="margin-top:1.25rem; color:#000;" @click="mostrarFormOpinion = true">Escribir una reseña</button>
             <div v-if="mostrarFormOpinion" class="fp-form-container" style="margin-top:1rem;">
               <div class="fp-form-header"><h1 class="fp-form-title">Nueva reseña</h1></div>
               <div class="fp-form-body">
@@ -1052,9 +1094,9 @@ const cargandoFav = ref(false)
 async function cambiarSeccion(key) {
   activeSection.value = key
   if (key === 'favoritos')  await fetchFavoritos()
-  if (key === 'creditos')   await fetchMembresia()   // ← agrega esta línea
+  if (key === 'creditos')   await fetchMembresia()
+  if (key === 'opiniones')  await fetchOpiniones()   // ← agregar esta línea
 }
-
 async function fetchFavoritos() {
   try {
     cargandoFav.value = true
@@ -1282,9 +1324,15 @@ function enviarComentario() {
   comentarioEnviado.value = true
   setTimeout(() => { mostrarFormComentario.value = false; textoComentario.value = ''; comentarioEnviado.value = false }, 1500)
 }
-// ── Membresía ─────────────────────────────────────────────────
-const membresia        = ref(null)
-const cargandoMembresia = ref(false)
+/// ── Membresía ─────────────────────────────────────────────────
+const membresia           = ref(null)
+const cargandoMembresia   = ref(false)
+const mostrarFormMembresia = ref(false)
+const guardandoMembresia  = ref(false)
+const errorMembresia      = ref('')
+const nivelesMembresia    = ref([])
+const cargandoNiveles     = ref(false)
+const formMembresia       = reactive({ id_nivel: null })
 
 async function fetchMembresia() {
   try {
@@ -1293,9 +1341,32 @@ async function fetchMembresia() {
   } catch (e) {
     console.error('Error cargando membresía:', e)
     membresia.value = null
-  } finally {
-    cargandoMembresia.value = false
-  }
+  } finally { cargandoMembresia.value = false }
+}
+
+async function abrirFormMembresia() {
+  mostrarFormMembresia.value = true
+  errorMembresia.value = ''
+  formMembresia.id_nivel = null
+  if (nivelesMembresia.value.length) return
+  try {
+    cargandoNiveles.value = true
+    nivelesMembresia.value = await apiGet('/perfil/membresia/niveles')
+  } catch (e) {
+    console.error('Error cargando niveles:', e)
+  } finally { cargandoNiveles.value = false }
+}
+
+async function crearMembresia() {
+  if (!formMembresia.id_nivel) { errorMembresia.value = 'Selecciona un nivel.'; return }
+  try {
+    guardandoMembresia.value = true
+    errorMembresia.value = ''
+    membresia.value = await apiPost('/perfil/membresia', { id_nivel: formMembresia.id_nivel })
+    mostrarFormMembresia.value = false
+  } catch (e) {
+    errorMembresia.value = e?.message || 'Error al registrar membresía.'
+  } finally { guardandoMembresia.value = false }
 }
 
 function formatFecha(fecha) {
@@ -1304,22 +1375,45 @@ function formatFecha(fecha) {
     year: 'numeric', month: 'long', day: 'numeric'
   })
 }
-
 // ── Opiniones ─────────────────────────────────────────────────
 const opiniones          = ref([])
 const mostrarFormOpinion = ref(false)
+const cargandoOpiniones  = ref(false)        // ← nuevo
 const formOpinion        = reactive({ titulo: '', texto: '', estrellas: 0 })
 const errorOpinion       = ref('')
 
-function guardarOpinion() {
-  if (!formOpinion.titulo.trim() || !formOpinion.texto.trim() || formOpinion.estrellas === 0) { errorOpinion.value = 'Completa todos los campos y selecciona una calificación.'; return }
-  opiniones.value.push({ id: Date.now(), titulo: formOpinion.titulo, texto: formOpinion.texto, estrellas: formOpinion.estrellas, fecha: new Date().toLocaleDateString('es-DO') })
-  Object.assign(formOpinion, { titulo: '', texto: '', estrellas: 0 })
-  errorOpinion.value = ''; mostrarFormOpinion.value = false
+async function fetchOpiniones() {
+  try {
+    cargandoOpiniones.value = true
+    opiniones.value = await apiGet('/perfil/resenas')
+  } catch (e) {
+    console.error('Error cargando reseñas:', e)
+  } finally {
+    cargandoOpiniones.value = false
+  }
 }
 
-function eliminarOpinion(id) { opiniones.value = opiniones.value.filter(o => o.id !== id) }
+function guardarOpinion() {
+  if (!formOpinion.titulo.trim() || !formOpinion.texto.trim() || formOpinion.estrellas === 0) {
+    errorOpinion.value = 'Completa todos los campos y selecciona una calificación.'
+    return
+  }
+  // Solo local por ahora — cuando tengas endpoint POST /perfil/resenas, llámalo aquí
+  opiniones.value.unshift({
+    id:        Date.now(),
+    titulo:    formOpinion.titulo,
+    texto:     formOpinion.texto,
+    estrellas: formOpinion.estrellas,
+    fecha:     new Date().toLocaleDateString('es-DO')
+  })
+  Object.assign(formOpinion, { titulo: '', texto: '', estrellas: 0 })
+  errorOpinion.value = ''
+  mostrarFormOpinion.value = false
+}
 
+function eliminarOpinion(id) {
+  opiniones.value = opiniones.value.filter(o => o.id !== id)
+}
 // ── Cupones ───────────────────────────────────────────────────
 const cupones           = ref([])
 const codigoCupon       = ref('')
