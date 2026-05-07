@@ -153,6 +153,36 @@
               </div>
             </div>
 
+            <!-- Imágenes -->
+            <div class="adm-section">
+              <div class="adm-section-title">
+                <i class="fas fa-images"></i> Imágenes
+                <button class="adm-btn-add" @click="$refs.imgInput.click()">
+                  <i class="fas fa-plus"></i> Agregar
+                </button>
+                <input ref="imgInput" type="file" multiple accept="image/*"
+                  style="display:none" @change="subirImagenes" />
+              </div>
+
+              <div v-if="cargandoImagenes" class="adm-empty">
+                <i class="fas fa-spinner fa-spin"></i> Cargando...
+              </div>
+
+              <div v-else-if="!editImagenes.length" class="adm-empty">
+                Sin imágenes.
+              </div>
+
+              <div v-else class="adm-img-grid">
+                <div v-for="img in editImagenes" :key="img.id" class="adm-img-item">
+                  <img :src="imgUrl(img.url)" :alt="img.alt_text" />
+                  <input v-model="img.alt_text" placeholder="Texto alternativo" class="adm-img-alt" />
+                  <button class="adm-img-delete" @click="eliminarImagen(img)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <!-- Habitaciones -->
             <div class="adm-section">
               <div class="adm-section-title">
@@ -300,6 +330,8 @@ const tiposHabitacion = ref([])
 const paises          = ref([])
 const ciudadesEdit    = ref([])
 const servicios       = ref([])
+const editImagenes    = ref([])
+const cargandoImagenes = ref(false)
 
 // ── UI ──────────────────────────────────────────────────────────
 const cargandoLista   = ref(false)
@@ -352,11 +384,12 @@ const cargarListadoSilencioso = async () => {
 
 // ── Abrir edición ───────────────────────────────────────────────
 const abrirEdicion = async (h) => {
-  editando.value        = h
+  editando.value = h
   cargandoDetalle.value = true
-  ciudadesEdit.value    = []
+  editImagenes.value = []
+  ciudadesEdit.value = []
   try {
-    const det = await apiFetch(`/hospedajes/${h.ID_HOSPEDAJE}`) //
+    const det = await apiFetch(`/hospedajes/${h.ID_HOSPEDAJE}`)
     if (det.ID_PAIS) {
       ciudadesEdit.value = await apiFetch(`/catalogos/ciudades?id_pais=${det.ID_PAIS}`)
     }
@@ -388,6 +421,7 @@ const abrirEdicion = async (h) => {
   } finally {
     cargandoDetalle.value = false
   }
+  cargarImagenes(h.ID_HOSPEDAJE)
 }
 
 const cerrarEdicion = () => { editando.value = null }
@@ -403,6 +437,80 @@ const cargarCiudadesEdit = async () => {
   }
 }
 
+// ── Imágenes en edición ─────────────────────────────────────────
+const imgUrl = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return API_BASE.replace('/api', '') + url
+}
+
+const cargarImagenes = async (idHospedaje) => {
+  cargandoImagenes.value = true
+  try {
+    editImagenes.value = await apiFetch(`/imagenes/hospedaje/${idHospedaje}`)
+  } catch (e) {
+    mostrarAlerta('Error cargando imágenes: ' + e.message)
+  } finally {
+    cargandoImagenes.value = false
+  }
+}
+
+const subirImagenes = async (e) => {
+  const id = editando.value?.ID_HOSPEDAJE
+  if (!id) {
+    mostrarAlerta('Error: no hay hospedaje seleccionado')
+    return
+  }
+  const files = Array.from(e.target.files)
+  for (const [i, file] of files.entries()) {
+    try {
+      const fd = new FormData()
+      fd.append('imagen', file)
+      fd.append('id_hospedaje', String(id))        // ✅ campo que espera el backend
+      fd.append('orden', String(editImagenes.value.length + i))
+      fd.append('alt_text', '')
+
+      // ✅ Verifica qué hay en el FormData
+      for (let [k, v] of fd.entries()) {
+        console.log('FormData campo:', k, '=', v)
+      }
+
+      const nueva = await apiFetch('/imagenes', {
+        method: 'POST',
+        body: fd,
+      })
+      editImagenes.value.push(nueva)
+      mostrarAlerta('Imagen subida correctamente', 'exito')
+    } catch (err) {
+      mostrarAlerta('Error subiendo imagen: ' + err.message)
+    }
+  }
+  e.target.value = ''
+}
+
+const eliminarImagen = async (img) => {
+  if (!confirm('¿Eliminar esta imagen?')) return
+  try {
+    await apiFetch(`/imagenes/${img.id}`, { method: 'DELETE' })
+    editImagenes.value = editImagenes.value.filter(i => i.id !== img.id)
+  } catch (e) {
+    mostrarAlerta('Error eliminando imagen: ' + e.message)
+  }
+}
+
+const actualizarAltTexts = async () => {
+  for (const img of editImagenes.value) {
+    try {
+      await apiFetch(`/imagenes/${img.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ alt_text: img.alt_text })
+      })
+    } catch (e) {
+      console.error('Error actualizando alt text:', e)
+    }
+  }
+}
+
 // ── Habitaciones en edición ─────────────────────────────────────
 const agregarHabEdit = () => {
   editForm.habitaciones.push({
@@ -412,7 +520,7 @@ const agregarHabEdit = () => {
 const eliminarHabEdit = async (i, hab) => {
   if (hab.id_habitacion) {
     try {
-      await apiFetch(`/habitaciones/${hab.id_habitacion}`, { method: 'DELETE' })
+      await apiFetch(`/hospedajes/habitaciones-edit/${hab.id_habitacion}`, { method: 'DELETE' })
     } catch (e) {
       mostrarAlerta('Error eliminando habitación: ' + e.message)
       return
@@ -461,7 +569,7 @@ const guardarEdicion = async () => {
     }
     const existentes = editForm.habitaciones.filter(h => h.id_habitacion)
     for (const hab of existentes) {
-      await apiFetch(`/habitaciones/${hab.id_habitacion}`, {
+      await apiFetch(`/hospedajes/habitaciones-edit/${hab.id_habitacion}`, {
         method: 'PUT',
         body: JSON.stringify({
           id_tipo_habitacion: hab.id_tipo_habitacion,
@@ -471,6 +579,7 @@ const guardarEdicion = async () => {
         }),
       })
     }
+    await actualizarAltTexts()
     mostrarAlerta('Propiedad actualizada correctamente.', 'exito')
     await cargarListado()
     editando.value = null
@@ -629,6 +738,49 @@ const ejecutarEliminar  = async () => {
 .adm-amenities { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
 .adm-amenity { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #475569; cursor: pointer; }
 .adm-amenity input { cursor: pointer; accent-color: #265073; }
+
+/* Imágenes */
+.adm-img-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+.adm-img-item {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+.adm-img-item img { width: 100%; height: 100px; object-fit: cover; }
+.adm-img-alt {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  padding: 6px 8px;
+  font-size: 11px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+.adm-img-delete {
+  position: absolute;
+  top: 6px; right: 6px;
+  background: rgba(239,68,68,0.85);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  width: 26px; height: 26px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  transition: background 0.2s;
+}
+.adm-img-delete:hover { background: #dc2626; }
 
 /* Tabla habitaciones */
 .adm-table { width: 100%; border-collapse: collapse; font-size: 13px; }

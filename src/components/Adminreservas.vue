@@ -13,7 +13,7 @@
         </div>
         <AppSelect
           v-model="filterEstado"
-          :options="estados.map(e => ({ value: e.ID_ESTADO, label: e.ESTADO }))"
+          :options="estados.map(e => ({ value: e.id_estado, label: e.estado }))"
           placeholder="Todos los estados"
           class="header-filter"
         />
@@ -59,24 +59,24 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="r in reservasFiltradas" :key="r.ID_RESERVA" class="table-row">
-            <td class="id-cell">#{{ r.ID_RESERVA }}</td>
+          <tr v-for="r in reservasFiltradas" :key="r.id_reserva" class="table-row">
+            <td class="id-cell">#{{ r.id_reserva }}</td>
             <td>
               <div class="client-cell">
                 <div class="avatar">{{ initials(r.cliente_nombre) }}</div>
                 <span>{{ r.cliente_nombre || '—' }}</span>
               </div>
             </td>
-            <td>{{ r.origen_nombre || r.ID_ORIGEN }}</td>
-            <td>{{ r.destino_nombre || r.ID_DESTINO }}</td>
-            <td>{{ formatDate(r.FECHA_INICIO) }}</td>
-            <td>{{ formatDate(r.FECHA_FIN) }}</td>
+            <td>{{ r.origen_nombre || r.id_origen }}</td>
+            <td>{{ r.destino_nombre || r.id_destino }}</td>
+            <td>{{ formatDate(r.fecha_inicio) }}</td>
+            <td>{{ formatDate(r.fecha_fin) }}</td>
             <td>
               <span class="badge" :class="estadoClass(r.estado_nombre)">
                 {{ r.estado_nombre || '—' }}
               </span>
             </td>
-            <td>{{ r.empleado_nombre || r.ID_EMPLEADO }}</td>
+            <td>{{ r.empleado_nombre || r.id_empleado }}</td>
             <td>
               <div class="action-buttons">
                 <button class="btn-icon view" title="Ver detalles" @click="verDetalle(r)">
@@ -99,11 +99,11 @@
     <div v-if="selectedReserva" class="modal-overlay" @click.self="selectedReserva = null">
       <div class="modal">
         <button class="modal-close" @click="selectedReserva = null"><i class="fas fa-times"></i></button>
-        <h2 class="modal-title">Reserva #{{ selectedReserva.ID_RESERVA }}</h2>
+        <h2 class="modal-title">Reserva #{{ selectedReserva.id_reserva }}</h2>
         <div class="modal-grid">
           <div class="modal-field">
             <label>Cliente</label>
-            <p>{{ selectedReserva.cliente_nombre || selectedReserva.ID_CLIENTE }}</p>
+            <p>{{ selectedReserva.cliente_nombre || selectedReserva.id_cliente }}</p>
           </div>
           <div class="modal-field">
             <label>Estado</label>
@@ -111,23 +111,23 @@
           </div>
           <div class="modal-field">
             <label>Origen</label>
-            <p>{{ selectedReserva.origen_nombre || selectedReserva.ID_ORIGEN }}</p>
+            <p>{{ selectedReserva.origen_nombre || selectedReserva.id_origen }}</p>
           </div>
           <div class="modal-field">
             <label>Destino</label>
-            <p>{{ selectedReserva.destino_nombre || selectedReserva.ID_DESTINO }}</p>
+            <p>{{ selectedReserva.destino_nombre || selectedReserva.id_destino }}</p>
           </div>
           <div class="modal-field">
             <label>Fecha inicio</label>
-            <p>{{ formatDate(selectedReserva.FECHA_INICIO) }}</p>
+            <p>{{ formatDate(selectedReserva.fecha_inicio) }}</p>
           </div>
           <div class="modal-field">
             <label>Fecha fin</label>
-            <p>{{ formatDate(selectedReserva.FECHA_FIN) }}</p>
+            <p>{{ formatDate(selectedReserva.fecha_fin) }}</p>
           </div>
           <div class="modal-field">
             <label>Empleado asignado</label>
-            <p>{{ selectedReserva.empleado_nombre || selectedReserva.ID_EMPLEADO }}</p>
+            <p>{{ selectedReserva.empleado_nombre || selectedReserva.id_empleado }}</p>
           </div>
         </div>
 
@@ -135,10 +135,10 @@
         <div v-if="detalles.length" class="modal-section">
           <h3>Detalles de alojamiento</h3>
           <div class="detail-list">
-            <div v-for="d in detalles" :key="d.ID_DETALLE" class="detail-item">
-              <span>{{ d.CANTIDAD_NOCHE }} noches</span>
-              <span>{{ formatDate(d.FECHA_INICIO) }} → {{ formatDate(d.FECHA_FIN) }}</span>
-              <span class="price">${{ d.PRECIO_TOTAL?.toFixed(2) }}</span>
+            <div v-for="d in detalles" :key="d.id_detalle" class="detail-item">
+              <span>{{ d.cantidad_noche }} noches</span>
+              <span>{{ formatDate(d.fecha_inicio) }} → {{ formatDate(d.fecha_fin) }}</span>
+              <span class="price">${{ d.precio_total?.toFixed(2) }}</span>
             </div>
           </div>
         </div>
@@ -150,10 +150,10 @@
       <div class="modal modal--small">
         <button class="modal-close" @click="cambioEstadoReserva = null"><i class="fas fa-times"></i></button>
         <h2 class="modal-title">Cambiar estado</h2>
-        <p class="modal-sub">Reserva #{{ cambioEstadoReserva.ID_RESERVA }}</p>
+        <p class="modal-sub">Reserva #{{ cambioEstadoReserva.id_reserva }}</p>
         <AppSelect
           v-model="nuevoEstado"
-          :options="estados.map(e => ({ value: e.ID_ESTADO, label: e.ESTADO }))"
+          :options="estados.map(e => ({ value: e.id_estado, label: e.estado }))"
           placeholder="Seleccionar estado..."
           class="mb-4"
         />
@@ -196,11 +196,11 @@ const reservasFiltradas = computed(() => {
   return reservas.value.filter(r => {
     const q = searchQuery.value.toLowerCase()
     const matchQ = !q ||
-      String(r.ID_RESERVA).includes(q) ||
+      String(r.id_reserva).includes(q) ||
       r.cliente_nombre?.toLowerCase().includes(q) ||
       r.origen_nombre?.toLowerCase().includes(q) ||
       r.destino_nombre?.toLowerCase().includes(q)
-    const matchE = !filterEstado.value || r.ID_ESTADO === filterEstado.value
+    const matchE = !filterEstado.value || r.id_estado === filterEstado.value
     return matchQ && matchE
   })
 })
@@ -226,29 +226,29 @@ async function verDetalle(r) {
   selectedReserva.value = r
   detalles.value = []
   try {
-    const data = await apiFetch(`/reservas/${r.ID_RESERVA}/detalles`)
+    const data = await apiFetch(`/reservas/${r.id_reserva}/detalles`)
     detalles.value = data
   } catch (_) {}
 }
 
 function abrirCambioEstado(r) {
   cambioEstadoReserva.value = r
-  nuevoEstado.value = r.ID_ESTADO
+  nuevoEstado.value = r.id_estado
 }
 
 async function cambiarEstado() {
   if (!cambioEstadoReserva.value || nuevoEstado.value === null) return
   try {
-    await apiFetch(`/reservas/${cambioEstadoReserva.value.ID_RESERVA}/estado`, {
+    await apiFetch(`/reservas/${cambioEstadoReserva.value.id_reserva}/estado`, {
       method: 'PATCH',
-      body: JSON.stringify({ ID_ESTADO: nuevoEstado.value })
+      body: JSON.stringify({ id_estado: nuevoEstado.value })
     })
 
-    const idx = reservas.value.findIndex(r => r.ID_RESERVA === cambioEstadoReserva.value.ID_RESERVA)
+    const idx = reservas.value.findIndex(r => r.id_reserva === cambioEstadoReserva.value.id_reserva)
     if (idx !== -1) {
-      const estadoObj = estados.value.find(e => e.ID_ESTADO === nuevoEstado.value)
-      reservas.value[idx].ID_ESTADO = nuevoEstado.value
-      reservas.value[idx].estado_nombre = estadoObj?.ESTADO
+      const estadoObj = estados.value.find(e => e.id_estado === nuevoEstado.value)
+      reservas.value[idx].id_estado = nuevoEstado.value
+      reservas.value[idx].estado_nombre = estadoObj?.estado
     }
     cambioEstadoReserva.value = null
   } catch {

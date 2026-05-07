@@ -148,19 +148,19 @@
           <div
             class="list-item"
             v-for="h in hospedajes.slice(0, 5)"
-            :key="h.id_hospedaje"
+            :key="h.ID_HOSPEDAJE"
           >
             <div class="list-thumb">
-              <img v-if="h.imagen_portada" :src="h.imagen_portada" />
+              <img v-if="h.IMAGEN_PORTADA" :src="h.IMAGEN_PORTADA" />
               <div v-else class="thumb-placeholder">
                 <i class="fas fa-hotel"></i>
               </div>
             </div>
             <div class="list-info">
-              <div class="list-name">{{ h.nombre }}</div>
-              <div class="list-meta">{{ h.ciudad }} · {{ h.pais }}</div>
+              <div class="list-name">{{ h.NOMBRE }}</div>
+              <div class="list-meta">{{ h.TIPO_HOSPEDAJE || '—' }}</div>
             </div>
-            <span class="list-badge">{{ h.tipo_hospedaje }}</span>
+            <span class="list-badge">{{ h.TIPO_HOSPEDAJE }}</span>
           </div>
         </div>
       </div>
@@ -178,7 +178,7 @@
           <div
             class="transfer-item"
             v-for="r in reservas.slice(0, 5)"
-            :key="r.id_reserva"
+            :key="r.ID_RESERVA"
           >
             <div class="transfer-icon">
               <i class="fas fa-calendar-check"></i>
@@ -187,8 +187,8 @@
               <div class="transfer-name">Reserva #{{ r.id_reserva }}</div>
               <div class="transfer-date">{{ formatDate(r.fecha_inicio) }}</div>
             </div>
-            <span :class="['transfer-badge', estadoClass(r.estado)]">
-              {{ r.estado ?? '—' }}
+            <span :class="['transfer-badge', estadoClass(r.estado_nombre)]">
+              {{ r.estado_nombre ?? '—' }}
             </span>
           </div>
         </div>
@@ -289,7 +289,9 @@ const kpis = reactive([
 
 const formatDate = (d) => {
   if (!d) return '—'
-  return new Date(d).toLocaleDateString('es-DO', {
+  // ✅ Corta la parte de tiempo si viene como timestamp
+  const fecha = typeof d === 'string' ? d.split('T')[0] : d
+  return new Date(fecha + 'T00:00:00').toLocaleDateString('es-DO', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
@@ -369,51 +371,45 @@ const drawDonut = (pct) => {
 onMounted(async () => {
   try {
     const data = await apiFetch('/dashboard/stats')
-    
-    // Map stats to local state
+
     stats.totalHospedajes = data.hospedajes || 0
-    stats.totalReservas = data.reservas || 0
+    stats.totalReservas   = data.reservas   || 0
     stats.totalClientes = data.clientes || 0
     stats.totalMiembros = data.miembros || 0
     stats.totalHabitaciones = data.habitaciones || 0
     stats.actividad_total = data.actividad_total || 0
-    
-    // Update KPIs
+
     kpis[0].value = stats.totalHospedajes
     kpis[1].value = stats.totalClientes
     kpis[2].value = stats.totalMiembros
     kpis[3].value = stats.totalHabitaciones
-    
-    // Load lists (keep for recent views)
+    kpis.forEach(k => k.loading = false)
+
     const [hospData, reservasData] = await Promise.all([
       apiFetch('/hospedajes').catch(() => []),
-      apiFetch('/reservas').catch(() => [])
+      apiFetch('/reservas/admin/todas').catch(() => [])
     ])
+
     hospedajes.value = Array.isArray(hospData) ? hospData : []
     reservas.value = Array.isArray(reservasData) ? reservasData : []
-    
-    // Charts data
+    cargandoReservas.value = false
+
     const byTipo = {}
-    hospedajes.value.forEach((h) => {
-      const t = h.tipo_hospedaje || h.NOMBRE_TIPO || 'Otro'
+    hospedajes.value.forEach(h => {
+      const t = h.TIPO_HOSPEDAJE || h.tipo_hospedaje || 'Otro'
       byTipo[t] = (byTipo[t] || 0) + 1
     })
+
     const pctMiembros = stats.totalClientes > 0 ? Math.round((stats.totalMiembros / stats.totalClientes) * 100) : 0
     donutPct.value = pctMiembros
-    
+
     await nextTick()
     drawBar(Object.entries(byTipo).map(([l, v]) => ({ l, v })))
     drawDonut(pctMiembros)
-    
-    // Loading flags
-    Object.values(kpis).forEach(k => k.loading = false)
-    cargando.value = false
-    cargandoReservas.value = false
   } catch (error) {
     console.error('Dashboard load error:', error)
-    // Fallback to 0s
-    Object.values(stats).forEach((_, key) => stats[key] = 0)
     Object.values(kpis).forEach(k => { k.value = 0; k.loading = false })
+  } finally {
     cargando.value = false
     cargandoReservas.value = false
   }

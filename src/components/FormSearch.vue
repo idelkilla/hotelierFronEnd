@@ -385,6 +385,30 @@ async function handleSearch() {
     return
   }
 
+  // ✅ Guardar búsqueda reciente en localStorage
+  const nuevaBusqueda = {
+    destino:      busquedaDestino.value,
+    label:        labelUbicacion.value || busquedaDestino.value,
+    id_ubicacion: selectedUbicacion.value?.id ?? '',
+    entrada:      fechaInicio.value,
+    salida:       fechaFin.value,
+    huespedes:    habitaciones.value,
+    fecha_busqueda: new Date().toISOString(),
+  }
+
+  try {
+    const previas = JSON.parse(localStorage.getItem('busquedas_recientes') || '[]')
+    // Evitar duplicados por destino+fechas
+    const filtradas = previas.filter(b =>
+      !(b.destino === nuevaBusqueda.destino &&
+        b.entrada === nuevaBusqueda.entrada &&
+        b.salida  === nuevaBusqueda.salida)
+    )
+    // Máximo 5 búsquedas recientes
+    const actualizadas = [nuevaBusqueda, ...filtradas].slice(0, 5)
+    localStorage.setItem('busquedas_recientes', JSON.stringify(actualizadas))
+  } catch (_) {}
+
   router.push({
     path: '/head',
     query: {
