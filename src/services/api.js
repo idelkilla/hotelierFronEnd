@@ -111,14 +111,28 @@ export async function apiFetch(path, options = {}) {
 
     console.log(`📊 Response status: ${res.status} ${res.statusText}`)
 
-    // 401 → sesión expirada, redirigir a login
     if (res.status === 401 && token) {
-      console.warn('⚠️ Sesión inválida o expirada. Redirigiendo a login.')
-      localStorage.removeItem('user_token')
-      localStorage.removeItem('user_role')
-      localStorage.removeItem('user_name')
-      window.location.href = '/login'
-      throw new Error('Sesión expirada')
+      let errBody = {}
+      try { errBody = await res.clone().json() } catch (_) {}
+
+      // ✅ Solo cerrar sesión si el backend indica token inválido
+      // NO cerrar si es "perfil incompleto" u otro 401
+      const msg = (errBody.message || errBody.error || '').toLowerCase()
+      const esSesionExpirada = msg.includes('token') || msg.includes('autenti')
+
+      if (esSesionExpirada && msg.includes('token')) {
+        console.warn('⚠️ Token inválido o expirado. Redirigiendo a login.')
+        localStorage.removeItem('user_token')
+        localStorage.removeItem('user_role')
+        localStorage.removeItem('user_name')
+        window.location.href = '/login'
+        throw new Error('Sesión expirada')
+      }
+
+      // Para otros 401 (ej: perfil incompleto), lanzar el error pero NO cerrar sesión
+      const error = new Error(errBody.message || errBody.error || 'No autorizado')
+      error.status = 401
+      throw error
     }
 
     if (!res.ok) {

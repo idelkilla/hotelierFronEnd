@@ -11,6 +11,8 @@
           />
         </div>
       </div>
+      <ContinuaPlanes />
+      <Ofertasfindesemana />
       <AnotaLaFecha />
       <TravelPropositions />
        <HospedajeCategorias/>
@@ -28,6 +30,8 @@ import AnotaLaFecha from '../components/AnotaLaFecha.vue'
 import TravelPropositions from '../components/TravelPropositions.vue'
 import LoginPromoPopup from '../components/LoginPromoPopup.vue'
 import FooterComponent from '../components/footer.vue'
+import ContinuaPlanes from '../components/ContinuaPlanes.vue'
+import Ofertasfindesemana from '../components/Ofertasfindesemana.vue'
 import HospedajeCategorias from '../components/HospedajeCategorias.vue'
 export default {
   name: 'Home',
@@ -35,6 +39,8 @@ export default {
     AppHeader,
     FormSearch,
     AnotaLaFecha,
+    ContinuaPlanes,
+    Ofertasfindesemana,
     TravelPropositions,
     HospedajeCategorias,
     LoginPromoPopup,

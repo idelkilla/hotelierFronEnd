@@ -470,6 +470,11 @@ const subirImagenes = async (e) => {
       fd.append('orden', String(editImagenes.value.length + i))
       fd.append('alt_text', '')
 
+      // ✅ Verifica qué hay en el FormData
+      for (let [k, v] of fd.entries()) {
+        console.log('FormData campo:', k, '=', v)
+      }
+
       const nueva = await apiFetch('/imagenes', {
         method: 'POST',
         body: fd,
