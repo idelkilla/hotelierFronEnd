@@ -1,6 +1,6 @@
 :root {
-  --cal-primary: #003580;
-  --cal-range: #d6eaf8;
+  --cal-primary: #191e3b;
+  --cal-range: #f0f7ff;
 }
 
 .calendar-modal {
@@ -47,7 +47,7 @@
   transition: color 0.2s;
 }
 .cal-tab.active {
-  color: #0071c2;
+  color: #191e3b;
   font-weight: 700;
 }
 .cal-tab.active::after {
@@ -57,7 +57,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: #0071c2;
+  background: #191e3b;
   border-radius: 2px 2px 0 0;
 }
 
@@ -164,7 +164,7 @@
 
 /* Hoy */
 .cal-day.today:not(.range-start):not(.range-end) .cal-day-inner {
-  color: #0071c2;
+  color: #191e3b;
   font-weight: 700;
 }
 .cal-day.today:not(.range-start):not(.range-end) .cal-day-inner::after {
@@ -174,7 +174,7 @@
   transform: translateX(-50%);
   width: 4px; height: 4px;
   border-radius: 50%;
-  background: #0071c2;
+  background: #191e3b;
 }
 
 /* Pasados */
@@ -183,29 +183,29 @@
 
 /* Banda de rango — el fondo va en .cal-day, el círculo en .cal-day-inner */
 .cal-day.in-range {
-  background: #d6eaf8;
+  background: #f0f7ff;
 }
 .cal-day.in-range .cal-day-inner {
-  color: #0071c2;
+  color: #191e3b;
   background: transparent;
 }
 
 /* Inicio de rango: media-banda a la derecha */
 .cal-day.range-start {
-  background: linear-gradient(to right, transparent 50%, #d6eaf8 50%);
+  background: linear-gradient(to right, transparent 50%, #f0f7ff 50%);
 }
 .cal-day.range-start .cal-day-inner {
-  background: #003580;
+  background: #191e3b;
   color: #fff;
   font-weight: 700;
 }
 
 /* Fin de rango: media-banda a la izquierda */
 .cal-day.range-end {
-  background: linear-gradient(to left, transparent 50%, #d6eaf8 50%);
+  background: linear-gradient(to left, transparent 50%, #f0f7ff 50%);
 }
 .cal-day.range-end .cal-day-inner {
-  background: #003580;
+  background: #191e3b;
   color: #fff;
   font-weight: 700;
 }
@@ -245,13 +245,13 @@
   font-family: inherit;
 }
 .cal-chip:hover {
-  border-color: #0071c2;
-  color: #0071c2;
+  border-color: #191e3b;
+  color: #191e3b;
 }
 .cal-chip.active {
   background: #f0f7ff;
-  border-color: #003580;
-  color: #003580;
+  border-color: #191e3b;
+  color: #191e3b;
   font-weight: 700;
 }
 
@@ -315,8 +315,8 @@
     border-color 0.15s;
 }
 .flex-check-box.checked {
-  background: #003580;
-  border-color: #003580;
+  background: #191e3b;
+  border-color: #191e3b;
 }
 
 .flex-divider {
@@ -349,14 +349,14 @@
   font-family: inherit;
 }
 .flex-month-card:hover {
-  border-color: #0071c2;
+  border-color: #191e3b;
 }
 .flex-month-card.active {
-  border-color: #003580;
+  border-color: #191e3b;
   background: #f0f7ff;
 }
 .flex-month-card.active svg {
-  stroke: #003580;
+  stroke: #191e3b;
 }
 
 .flex-month-name {
@@ -370,7 +370,7 @@
 }
 .flex-month-card.active .flex-month-name,
 .flex-month-card.active .flex-month-year {
-  color: #003580;
+  color: #191e3b;
 }
 
 .cal-footer {
@@ -393,13 +393,13 @@
 .btn-clear {
   background: none;
   border: none;
-  color: #0071c2;
+  color: #191e3b;
   font-weight: 600;
   cursor: pointer;
   font-size: 14px;
 }
 .btn-done {
-  background: #003580;
+  background: #191e3b;
   color: white;
   border: none;
   padding: 10px 32px;
@@ -409,5 +409,5 @@
   transition: background 0.2s;
 }
 .btn-done:hover {
-  background: #002254;
+  opacity: 0.9;
 }
