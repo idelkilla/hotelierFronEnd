@@ -27,6 +27,7 @@
           v-for="hotel in hotels"
           :key="hotel.id"
           class="ofs-card"
+          @click="goToDetail(hotel)"
         >
           <!-- Imagen con carrusel -->
           <div class="ofs-card__img-wrap">
@@ -73,7 +74,6 @@
             <div class="ofs-price-total">
               ${{ hotel.discountedTotal }} <s>${{ hotel.originalTotal }}</s>
             </div>
-            <div class="ofs-price-per-night">${{ hotel.pricePerNight }} por noche</div>
             <div class="ofs-price-taxes">Total con impuestos y cargos</div>
             <a href="#" class="ofs-taxes-link">✓ Total con impuestos y cargos</a>
           </div>
@@ -86,8 +86,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { apiFetch } from '../services/api'
 
+const router       = useRouter()
 const hotels       = ref([])
 const loading      = ref(true)
 const error        = ref(null)
@@ -110,6 +112,16 @@ onMounted(async () => {
       originalTotal:   Number(h.precio_noche_original) * 2,
       images:          (h.imagenes ?? []).map(i => i.url),
     }))
+
+    // Cargar favoritos actuales si el usuario está logueado
+    if (localStorage.getItem('user_token')) {
+      try {
+        const favs = await apiFetch('/favoritos')
+        favorites.value = favs.map(f => f.id)
+      } catch (err) {
+        console.warn('No se pudieron sincronizar los favoritos iniciales')
+      }
+    }
   } catch (e) {
     error.value = 'No se pudieron cargar las ofertas.'
   } finally {
@@ -117,10 +129,50 @@ onMounted(async () => {
   }
 })
 
-function toggleFav(id) {
+/**
+ * Navega al detalle del hospedaje configurando las fechas del próximo fin de semana
+ */
+function goToDetail(hotel) {
+  const hoy = new Date()
+  // Calculamos el próximo viernes
+  const diffViernes = (5 - hoy.getDay() + 7) % 7
+  const proximoViernes = new Date(hoy)
+  proximoViernes.setDate(hoy.getDate() + (diffViernes === 0 ? 7 : diffViernes))
+  
+  // Calculamos el domingo siguiente al viernes
+  const proximoDomingo = new Date(proximoViernes)
+  proximoDomingo.setDate(proximoViernes.getDate() + 2)
+
+  router.push({
+    path: `/hospedaje/${hotel.id}`,
+    query: {
+      entrada: proximoViernes.toISOString().split('T')[0],
+      salida:  proximoDomingo.toISOString().split('T')[0],
+      huespedes: JSON.stringify([{ adultos: 2, ninos: 0, edadesNinos: [] }])
+    }
+  })
+}
+
+async function toggleFav(id) {
+  if (!localStorage.getItem('user_token')) {
+    alert('Debes iniciar sesión para guardar tus favoritos')
+    return
+  }
+
   const i = favorites.value.indexOf(id)
-  if (i === -1) favorites.value.push(id)
-  else favorites.value.splice(i, 1)
+  try {
+    if (i === -1) {
+      // No está en favoritos, lo agregamos
+      await apiFetch(`/favoritos/${id}`, { method: 'POST' })
+      favorites.value.push(id)
+    } else {
+      // Ya es favorito, lo quitamos
+      await apiFetch(`/favoritos/${id}`, { method: 'DELETE' })
+      favorites.value.splice(i, 1)
+    }
+  } catch (err) {
+    console.error('Error al actualizar favoritos:', err.message)
+  }
 }
 
 function prevImg(hotel) {
@@ -206,12 +258,21 @@ function ratingLabel(score) {
 }
 
 /* ── Card ── */
-.ofs-card { cursor: pointer; }
+.ofs-card {
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.ofs-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
 
 .ofs-card__img-wrap {
   position: relative;
-  border-radius: 12px;
-  overflow: hidden;
   aspect-ratio: 4 / 3;
 }
 
@@ -283,7 +344,7 @@ function ratingLabel(score) {
 .ofs-card__arr--r            { right: 8px; }
 
 /* ── Card body ── */
-.ofs-card__body { padding: 10px 2px 0; }
+.ofs-card__body { padding: 12px 14px 16px; }
 
 .ofs-card__name {
   font-size: 14px;

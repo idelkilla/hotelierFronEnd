@@ -421,7 +421,7 @@ watch([() => props.fechaInicio, () => props.fechaFin], cargar)
   color: #fff;
   border: none;
   padding: 9px 18px;
-  border-radius: 8px;
+  border-radius: 30px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;

@@ -88,10 +88,13 @@ export default {
   font-size: 28px;
   font-weight: 600;
   color: #191e3b;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   letter-spacing: -0.02em;
+<<<<<<< HEAD
   text-align: left;
   padding-left: 100px; /* <--- AJUSTA ESTE VALOR para mover el título a la derecha */
+=======
+>>>>>>> 1f634c68217007df9ca9097f28c6aed32567a6ec
 }
 
 .cards-container {
@@ -99,18 +102,28 @@ export default {
   gap: 14px;
   overflow-x: auto;
   padding-bottom: 8px;
+<<<<<<< HEAD
   margin-top: 45px;
   justify-content: center;
+=======
+>>>>>>> 1f634c68217007df9ca9097f28c6aed32567a6ec
   scrollbar-width: none;
 }
 .Texto{
     color:#191e3b;
+<<<<<<< HEAD
     text-align: left;
     font-family: 'Inter', sans-serif;
     font-weight: 400;
     font-size: 16px;
     margin-bottom: 28px;
     padding-left: 100px; /* <--- AJUSTA ESTE VALOR para que coincida con el título */
+=======
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    margin-bottom: 24px;
+>>>>>>> 1f634c68217007df9ca9097f28c6aed32567a6ec
 
 }
 .cards-container::-webkit-scrollbar {
@@ -123,14 +136,23 @@ export default {
   overflow: hidden;
   cursor: pointer;
   position: relative;
+<<<<<<< HEAD
   box-shadow: none;
+=======
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+>>>>>>> 1f634c68217007df9ca9097f28c6aed32567a6ec
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  /* Fix: Mantiene bordes redondeados en zoom y previene parpadeo */
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  will-change: transform;
 }
 
+<<<<<<< HEAD
+=======
+.card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+>>>>>>> 1f634c68217007df9ca9097f28c6aed32567a6ec
 .card-img-wrapper {
   position: relative;
   height: 280px;
@@ -142,6 +164,10 @@ export default {
   object-fit: cover;
   display: block;
   transition: transform 0.5s ease;
+}
+
+.card:hover .card-img {
+  transform: scale(1.07);
 }
 
 .card-overlay {
@@ -177,6 +203,7 @@ export default {
     font-size: 22px;
   }
 
+<<<<<<< HEAD
   .section-title,
   .Texto,
   .cards-container {
@@ -190,6 +217,8 @@ export default {
     justify-content: flex-start; /* El scroll horizontal en móvil debe empezar desde la izquierda */
   }
 
+=======
+>>>>>>> 1f634c68217007df9ca9097f28c6aed32567a6ec
   .card {
     flex: 0 0 175px;
   }

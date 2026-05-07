@@ -129,7 +129,24 @@ export default {
       }
     },
     irADetalle(id) {
-      this.$router.push(`/hospedajes/${id}`)
+      const hoy = new Date()
+      // Calculamos el próximo viernes
+      const diffViernes = (5 - hoy.getDay() + 7) % 7
+      const proximoViernes = new Date(hoy)
+      proximoViernes.setDate(hoy.getDate() + (diffViernes === 0 ? 7 : diffViernes))
+      
+      // Calculamos el domingo siguiente al viernes
+      const proximoDomingo = new Date(proximoViernes)
+      proximoDomingo.setDate(proximoViernes.getDate() + 2)
+
+      this.$router.push({
+        path: `/hospedaje/${id}`,
+        query: {
+          entrada: proximoViernes.toISOString().split('T')[0],
+          salida:  proximoDomingo.toISOString().split('T')[0],
+          huespedes: JSON.stringify([{ adultos: 2, ninos: 0, edadesNinos: [] }])
+        }
+      })
     },
     onImageError(e) {
       e.target.src = this.defaultImage
