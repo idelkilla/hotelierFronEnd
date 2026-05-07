@@ -18,9 +18,8 @@
         <img src="../assets/img/reserva_servicio.png" alt="No reservations" class="img_reserva" />
 
         <div class="empty-reservation">
-          <p class="info_reserva">No encontramos ninguna reservación.</p>
-          <button class="primary-btn">Buscar una reservación existente</button>
-          <button class="secondary-btn">Iniciar una reserva</button>
+          <p class="info_reserva">¿Tienes problemas?</p>
+          <button class="primary-btn">Contactanos</button>
         </div>
       </section>
 
@@ -144,43 +143,19 @@
         </div>
       </section>
 
-      <section id="contacto" class="contacto">
-        <h2>Contáctanos</h2>
-
-        <form @submit.prevent="enviarFormulario">
-          <label>Nombre</label>
-          <input v-model="form.nombre" type="text" placeholder="Tu nombre completo" required />
-
-          <label>Correo</label>
-          <input v-model="form.email" type="email" placeholder="correo@email.com" required />
-
-          <label>Tipo de solicitud</label>
-          <select v-model="form.tipo">
-            <option>Reservación</option>
-            <option>Queja</option>
-            <option>Sugerencia</option>
-            <option>Información</option>
-          </select>
-
-          <label>Mensaje</label>
-          <textarea v-model="form.mensaje" rows="4" placeholder="Escriba su mensaje..."></textarea>
-
-          <button type="submit">Enviar mensaje</button>
-
-          <p v-if="enviado" class="ok">Mensaje enviado correctamente ✔</p>
-        </form>
-      </section>
     </main>
+    <FooterComponent />
   </div>
 </template>
 
 <script>
 import Header from './Header.vue'
 import SearchBox from './searchBox.vue'
+import FooterComponent from './footer.vue'
 
 export default {
   name: 'AtencionAlCliente',
-  components: { Header, SearchBox },
+  components: { Header, SearchBox, FooterComponent },
 
   data() {
     return {

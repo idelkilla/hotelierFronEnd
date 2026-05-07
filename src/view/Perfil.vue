@@ -488,7 +488,7 @@
                 </div>
               </div>
             </div>
-            <div class="fp-footer-link">¿Tienes preguntas sobre tu cuenta? <a href="#">Preguntas frecuentes sobre la configuración de la cuenta</a></div>
+            
           </div>
         </div>
 
@@ -1072,10 +1072,7 @@ function formatearExpiracion(e) {
 }
 
 const iconoTarjeta = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="8" rx="1.5" stroke="#2D9596" stroke-width="1.3"/><path d="M2 6h12" stroke="#2D9596" stroke-width="1.3"/><path d="M5 11v2M11 11v2M3 13h10" stroke="#2D9596" stroke-width="1.2" stroke-linecap="round"/></svg>`
-const formaPagoRowsExtras = [
-  { label: 'Cuentas conectadas',    value: '2 servicios vinculados',   muted: false, badge: null, icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="2.5" stroke="#2D9596" stroke-width="1.3"/><path d="M3 13c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="#2D9596" stroke-width="1.3" stroke-linecap="round"/></svg>` },
-  { label: 'Organizador de viajes', value: 'Sin itinerarios activos',  muted: false, badge: null, icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.8 3.6L14 6.5l-3 2.9.7 4.1L8 11.4l-3.7 2.1.7-4.1-3-2.9 4.2-.9z" stroke="#2D9596" stroke-width="1.2" stroke-linejoin="round"/></svg>` },
-]
+
 
 // ── Formas de pago / Pasajeros ────────────────────────────────
 const formaPagoTabs     = ['Mi cuenta', 'Otros pasajeros']
@@ -1166,10 +1163,8 @@ const mostrarFormComentario = ref(false)
 const textoComentario       = ref('')
 const comentarioEnviado     = ref(false)
 const helpItems = [
-  { id: 1, label: 'Iniciar chat',          iconHtml: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#265073" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`, action: () => toastRef.value?.show('success', 'Iniciando chat de soporte...') },
-  { id: 2, label: 'Ir al centro de ayuda', iconHtml: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#265073" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>`, action: () => window.open('https://help.example.com', '_blank') },
-  { id: 3, label: 'Compartir comentarios', iconHtml: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#265073" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`, action: () => { mostrarFormComentario.value = true } },
-]
+ { id: 2, label: 'Ir al centro de ayuda', iconHtml: `...`, action: () => router.push('/servicio-cliente') },
+  ]
 function enviarComentario() {
   if (!textoComentario.value.trim()) return
   comentarioEnviado.value = true

@@ -61,7 +61,7 @@
     <button class="menu-item" type="button" @click="irAPerfil">Mi cuenta</button>
     <button class="menu-item" type="button" @click="irAFav">Lista de favoritos</button>
     <button class="menu-item" type="button">Descubrir One Key</button>
-    <button class="menu-item" type="button">Sugerencias</button>
+    <button class="menu-item" type="button" @click="irAServicioCliente">Sugerencias</button>
 
     <div class="divider" />
 
@@ -159,6 +159,11 @@ const irAPerfil = () => {
 
 const irAFav = () => {
   router.push('/favoritos');
+  emit("close");
+};
+
+const irAServicioCliente = () => {
+  router.push('/servicio-cliente');
   emit("close");
 };
 
