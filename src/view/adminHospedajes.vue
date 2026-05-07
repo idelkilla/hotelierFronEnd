@@ -173,9 +173,9 @@
               </div>
 
               <div v-else class="adm-img-grid">
-                <div v-for="img in editImagenes" :key="img.ID_IMAGEN" class="adm-img-item">
-                  <img :src="imgUrl(img.URL)" :alt="img.ALT_TEXT" />
-                  <input v-model="img.ALT_TEXT" placeholder="Texto alternativo" class="adm-img-alt" />
+                <div v-for="img in editImagenes" :key="img.id" class="adm-img-item">
+                  <img :src="imgUrl(img.url)" :alt="img.alt_text" />
+                  <input v-model="img.alt_text" placeholder="Texto alternativo" class="adm-img-alt" />
                   <button class="adm-img-delete" @click="eliminarImagen(img)">
                     <i class="fas fa-trash"></i>
                   </button>
@@ -415,7 +415,6 @@ const abrirEdicion = async (h) => {
         capacidad_ninos:    hab.CAPACIDAD_NINOS,
         precio_noche:       parseFloat(hab.PRECIO_NOCHE),
       })),
-      editImagenes:        det.imagenes || [],
     })
   } catch (e) {
     mostrarAlerta('Error cargando detalle: ' + e.message)
@@ -448,7 +447,7 @@ const imgUrl = (url) => {
 const cargarImagenes = async (idHospedaje) => {
   cargandoImagenes.value = true
   try {
-    editImagenes.value = await apiFetch(`/hospedajes/${idHospedaje}/imagenes`)
+    editImagenes.value = await apiFetch(`/imagenes/hospedaje/${idHospedaje}`)
   } catch (e) {
     mostrarAlerta('Error cargando imágenes: ' + e.message)
   } finally {
@@ -457,19 +456,26 @@ const cargarImagenes = async (idHospedaje) => {
 }
 
 const subirImagenes = async (e) => {
-  const id = editando.value.ID_HOSPEDAJE
+  const id = editando.value?.ID_HOSPEDAJE
+  if (!id) {
+    mostrarAlerta('Error: no hay hospedaje seleccionado')
+    return
+  }
   const files = Array.from(e.target.files)
   for (const [i, file] of files.entries()) {
     try {
       const fd = new FormData()
       fd.append('imagen', file)
-      fd.append('orden', editImagenes.value.length + i)
+      fd.append('id_hospedaje', String(id))        // ✅ campo que espera el backend
+      fd.append('orden', String(editImagenes.value.length + i))
       fd.append('alt_text', '')
-      const nueva = await apiFetch(`/hospedajes/${id}/imagenes`, {
+
+      const nueva = await apiFetch('/imagenes', {
         method: 'POST',
         body: fd,
       })
       editImagenes.value.push(nueva)
+      mostrarAlerta('Imagen subida correctamente', 'exito')
     } catch (err) {
       mostrarAlerta('Error subiendo imagen: ' + err.message)
     }
@@ -480,10 +486,8 @@ const subirImagenes = async (e) => {
 const eliminarImagen = async (img) => {
   if (!confirm('¿Eliminar esta imagen?')) return
   try {
-    await apiFetch(`/hospedajes/${editando.value.ID_HOSPEDAJE}/imagenes/${img.ID_IMAGEN}`, {
-      method: 'DELETE'
-    })
-    editImagenes.value = editImagenes.value.filter(i => i.ID_IMAGEN !== img.ID_IMAGEN)
+    await apiFetch(`/imagenes/${img.id}`, { method: 'DELETE' })
+    editImagenes.value = editImagenes.value.filter(i => i.id !== img.id)
   } catch (e) {
     mostrarAlerta('Error eliminando imagen: ' + e.message)
   }
@@ -492,9 +496,9 @@ const eliminarImagen = async (img) => {
 const actualizarAltTexts = async () => {
   for (const img of editImagenes.value) {
     try {
-      await apiFetch(`/imagenes/${img.ID_IMAGEN}`, {
+      await apiFetch(`/imagenes/${img.id}`, {
         method: 'PUT',
-        body: JSON.stringify({ alt_text: img.ALT_TEXT })
+        body: JSON.stringify({ alt_text: img.alt_text })
       })
     } catch (e) {
       console.error('Error actualizando alt text:', e)
