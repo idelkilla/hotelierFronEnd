@@ -1,188 +1,155 @@
 <template>
-  <section class="hospedaje-section">
-    <h2 class="section-title">Hospedajes que convierten un viaje en una experiencia</h2>
-<p class="Texto">Encuentra el alojamiento perfecto para cada tipo de viaje</p>
-    <div class="cards-container">
-      <div
-        v-for="categoria in categorias"
-        :key="categoria.id"
-        class="card"
-        @click="irAHead(categoria)"
-      >
-        <div class="card-img-wrapper">
-          <img
-            :src="categoria.imagen"
-            :alt="categoria.nombre"
-            class="card-img"
-          />
-          <div class="card-overlay"></div>
-          <span class="card-label">{{ categoria.nombre }}</span>
-        </div>
+  <section class="le-wrapper">
+    <div class="le-container">
+      <div class="le-header" v-if="title || subtitle">
+        <h2 class="le-title">{{ title }}</h2>
+        <p v-if="subtitle" class="le-subtitle">{{ subtitle }}</p>
+      </div>
+
+      <div class="le-grid">
+        <article
+          v-for="category in categories"
+          :key="category.id"
+          class="le-card"
+          @click="$emit('select', category)"
+        >
+          <img :src="category.image" :alt="category.label" class="le-card__img" loading="lazy" />
+          <div class="le-card__overlay"></div>
+          <span class="le-card__label">{{ category.label }}</span>
+        </article>
       </div>
     </div>
   </section>
 </template>
 
-<script>
-export default {
-  name: 'HospedajeCategorias',
-  data() {
-    return {
-      categorias: [
-        {
-          id: 1,
-          nombre: 'Casas de vacaciones',
-          imagen: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80',
-          tipo: 'casas-de-vacaciones'
-        },
-        {
-          id: 2,
-          nombre: 'Departamentos y condominios',
-          imagen: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400&q=80',
-          tipo: 'departamentos-condominios'
-        },
-        {
-          id: 3,
-          nombre: 'Cabañas',
-          imagen: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&q=80',
-          tipo: 'cabanas'
-        },
-        {
-          id: 4,
-          nombre: 'Casas de campo',
-          imagen: 'https://images.unsplash.com/photo-1572120360610-d971b9d7767c?w=400&q=80',
-          tipo: 'casas-de-campo'
-        },
-        {
-          id: 5,
-          nombre: 'Villas',
-          imagen: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&q=80',
-          tipo: 'villas'
-        }
-      ]
-    }
+<script setup>
+defineEmits(['select'])
+
+defineProps({
+  title: {
+    type: String,
+    default: "Vive la experiencia local en un hospedaje en Puerto Plata"
   },
-  methods: {
-    irAHead(categoria) {
-      this.$router.push({
-        name: 'head',
-        query: { tipo: categoria.tipo }
-      })
-    }
+  subtitle: {
+    type: String,
+    default: "Descubre hospedajes auténticos con encanto creado para ti"
+  },
+  categories: {
+    type: Array,
+    default: () => [
+      { id: 1, label: 'Casas de vacaciones',       image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&q=80' },
+      { id: 2, label: 'Departamentos y condominios',image: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=900&q=80' },
+      { id: 3, label: 'Cabañas',                   image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=900&q=80' },
+      { id: 4, label: 'Casas de campo',            image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&q=80' },
+      { id: 5, label: 'Villas',                    image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=900&q=80' },
+    ]
   }
-}
+})
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap');
-
-.hospedaje-section {
-  padding: 48px 32px;
-  background: #ffffff;
-  font-family: 'Inter', sans-serif;
+.le-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  padding: 2.5rem 2rem;
+  border-top: 1px solid #e2e2e2;
+  border-bottom: 1px solid #e2e2e2;
 }
 
-.section-title {
+.le-container {
+  max-width: 1152px;
+  width: 100%;
+}
+
+.le-header {
+  margin-bottom: 1.5rem;
+}
+
+.le-title {
   font-family: 'Inter', sans-serif;
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 600;
   color: #191e3b;
-  margin-bottom: 8px;
-  letter-spacing: -0.02em;
+  margin: 0 0 0.25rem;
+  line-height: 1.3;
 }
 
-.cards-container {
-  display: flex;
+.le-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: #444444;
+  margin: 0;
+}
+
+.le-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 14px;
-  overflow-x: auto;
-  padding-bottom: 8px;
-  scrollbar-width: none;
-}
-.Texto{
-    color:#191e3b;
-    font-family: 'Inter', sans-serif;
-    font-weight: 400;
-    font-size: 16px;
-    margin-bottom: 24px;
-
-}
-.cards-container::-webkit-scrollbar {
-  display: none;
 }
 
-.card {
-  flex: 0 0 220px;
+.le-card {
+  position: relative;
   border-radius: 16px;
   overflow: hidden;
-  cursor: pointer;
-  position: relative;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer; /* Se mantiene el cursor para indicar interactividad */
+  min-height: 300px; /* Aumentado para hacer las imágenes más altas */
+  background-color: #f0f0f0;
+  transition: transform 0.3s ease;
 }
 
-.card:hover {
-  transform: translateY(-6px) scale(1.02);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+.le-card:hover {
+  transform: translateY(-6px);
 }
 
-.card-img-wrapper {
-  position: relative;
-  height: 280px;
-}
-
-.card-img {
+.le-card__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.5s ease;
+  transition: transform 0.4s ease;
 }
 
-.card:hover .card-img {
-  transform: scale(1.07);
+.le-card:hover .le-card__img {
+  transform: scale(1.06);
 }
 
-.card-overlay {
+.le-card__overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    to bottom,
-    transparent 40%,
-    rgba(10, 20, 50, 0.72) 100%
+    to top,
+    rgba(0, 0, 0, 0.65) 0%,
+    rgba(0, 0, 0, 0.1) 50%,
+    transparent 100%
   );
 }
 
-.card-label {
+.le-card__label {
   position: absolute;
-  bottom: 16px;
-  left: 14px;
-  right: 14px;
+  left: 12px;
+  bottom: 12px;
   color: #ffffff;
   font-family: 'Inter', sans-serif;
-  font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 13px;
+  font-weight: 600;
   line-height: 1.3;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+  max-width: 80%;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .hospedaje-section {
-    padding: 32px 16px;
-  }
+@media (max-width: 1024px) {
+  .le-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
 
-  .section-title {
-    font-size: 22px;
-  }
+@media (max-width: 680px) {
+  .le-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .le-card { min-height: 240px; } /* Ajustado para pantallas medianas */
+}
 
-  .card {
-    flex: 0 0 175px;
-  }
-
-  .card-img-wrapper {
-    height: 230px;
-  }
+@media (max-width: 420px) {
+  .le-grid { grid-template-columns: 1fr; gap: 10px; }
+  .le-card { min-height: 200px; } /* Ajustado para pantallas pequeñas */
 }
 </style>

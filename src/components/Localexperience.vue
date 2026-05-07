@@ -1,24 +1,22 @@
-<template>
+﻿<template>
   <section class="le-wrapper">
     <div class="le-container">
-
-      <div class="le-header">
+      <div class="le-header" v-if="title || subtitle">
         <h2 class="le-title">{{ title }}</h2>
-        <p class="le-subtitle">{{ subtitle }}</p>
+        <p v-if="subtitle" class="le-subtitle">{{ subtitle }}</p>
       </div>
 
       <div class="le-grid">
-        <div
+        <article
           v-for="category in categories"
           :key="category.id"
           class="le-card"
         >
-          <img :src="category.image" :alt="category.label" class="le-card__img" />
+          <img :src="category.image" :alt="category.label" class="le-card__img" loading="lazy" />
           <div class="le-card__overlay"></div>
           <span class="le-card__label">{{ category.label }}</span>
-        </div>
+        </article>
       </div>
-
     </div>
   </section>
 </template>
@@ -27,97 +25,79 @@
 defineProps({
   title: {
     type: String,
-    default: 'Hospedajes que convierten un viaje en una experiencia'
+    default: "Vive la experiencia local en un hospedaje en Puerto Plata"
   },
   subtitle: {
     type: String,
-    default: 'Encuentra el alojamiento perfecto para cada tipo de viaje'
+    default: "Descubre hospedajes auténticos con encanto creado para ti"
   },
   categories: {
     type: Array,
     default: () => [
-      {
-        id: 1,
-        label: 'Casas de vacaciones',
-        image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80'
-      },
-      {
-        id: 2,
-        label: 'Departamentos y condominios',
-        image: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&q=80'
-      },
-      {
-        id: 3,
-        label: 'Cabañas',
-        image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80'
-      },
-      {
-        id: 4,
-        label: 'Casas de campo',
-        image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&q=80'
-      },
-      {
-        id: 5,
-        label: 'Villas',
-        image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80'
-      }
+      { id: 1, label: "Casas de vacaciones", image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&q=80" },
+      { id: 2, label: "Departamentos y condominios", image: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=900&q=80" },
+      { id: 3, label: "Cabañas", image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=900&q=80" },
+      { id: 4, label: "Casas de campo", image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&q=80" },
+      { id: 5, label: "Villas", image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=900&q=80" }
     ]
   }
 })
 </script>
 
 <style scoped>
-/* ── Wrapper: misma estructura que .page-wrapper ── */
 .le-wrapper {
-  background-color: #ffffff;
-  padding: 2rem;                /* idéntico al padding de .page-wrapper */
   display: flex;
+  align-items: center;
   justify-content: center;
+  background-color: #ffffff;
+  padding: 2.5rem 2rem;
+  border-top: 1px solid #e2e2e2;
+  border-bottom: 1px solid #e2e2e2;
 }
 
-/* ── Container: mismo max-width que .container ── */
 .le-container {
-  max-width: 1152px;            /* idéntico al max-width de .container  */
+  max-width: 1152px;
   width: 100%;
 }
 
-/* ── Header: mismos estilos que .section-header + .main-title + .subtitle ── */
 .le-header {
-  text-align: left;
   margin-bottom: 1.5rem;
 }
 
 .le-title {
-  font-family: 'Inter', sans-serif;
-  font-size: 28px;
+  font-family: "Inter", sans-serif;
+  font-size: 22px;
   font-weight: 600;
   color: #191e3b;
-  letter-spacing: -0.02em;
-  margin-bottom: 0.4rem;
+  margin: 0 0 0.25rem;
   line-height: 1.3;
 }
 
 .le-subtitle {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 15px;
   color: #444444;
-  font-weight: 400;
+  margin: 0;
 }
 
-/* ── Grid de tarjetas ── */
 .le-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
 }
 
-/* ── Tarjeta ── */
 .le-card {
   position: relative;
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
-  height: 240px;
+  min-height: 220px;
+  background-color: #f0f0f0;
+  transition: transform 0.3s ease;
+}
+
+.le-card:hover {
+  transform: translateY(-6px);
 }
 
 .le-card__img {
@@ -125,11 +105,11 @@ defineProps({
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.45s ease;
+  transition: transform 0.4s ease;
 }
 
 .le-card:hover .le-card__img {
-  transform: scale(1.07);
+  transform: scale(1.06);
 }
 
 .le-card__overlay {
@@ -138,47 +118,48 @@ defineProps({
   background: linear-gradient(
     to top,
     rgba(0, 0, 0, 0.65) 0%,
-    rgba(0, 0, 0, 0.08) 55%,
-    transparent 100%
-  );
-  transition: background 0.45s ease;
-}
-
-.le-card:hover .le-card__overlay {
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.75) 0%,
-    rgba(0, 0, 0, 0.15) 55%,
+    rgba(0, 0, 0, 0.1) 50%,
     transparent 100%
   );
 }
 
 .le-card__label {
   position: absolute;
-  bottom: 13px;
-  left: 13px;
-  right: 13px;
+  left: 12px;
+  bottom: 12px;
   color: #ffffff;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
   font-weight: 600;
-  line-height: 1.35;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  line-height: 1.3;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+  max-width: 80%;
 }
 
-/* ── Responsive ── */
 @media (max-width: 1024px) {
-  .le-grid { grid-template-columns: repeat(3, 1fr); }
-  .le-card { height: 200px; }
+  .le-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
-@media (max-width: 640px) {
-  .le-title { font-size: 20px; }
-  .le-grid  { grid-template-columns: repeat(2, 1fr); }
-  .le-card  { height: 160px; }
+@media (max-width: 680px) {
+  .le-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .le-card {
+    min-height: 180px;
+  }
 }
 
-@media (max-width: 400px) {
-  .le-grid { grid-template-columns: 1fr; }
+@media (max-width: 420px) {
+  .le-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .le-card {
+    min-height: 160px;
+  }
 }
 </style>
