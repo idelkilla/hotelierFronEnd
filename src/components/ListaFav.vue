@@ -4,7 +4,6 @@
     <!-- HEADER -->
     <div class="header">
       <div class="header-left">
-        <p class="eyebrow">Mi cuenta</p>
         <h2>Mis favoritos</h2>
         <p class="subtitle" v-if="!cargando && !error">
           {{ favoritos.length }} hospedaje{{ favoritos.length !== 1 ? 's' : '' }} guardado{{ favoritos.length !== 1 ? 's' : '' }}

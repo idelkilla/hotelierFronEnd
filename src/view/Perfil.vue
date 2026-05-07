@@ -21,7 +21,7 @@
           <span class="travel-user-email">{{ perfil.email }}</span>
         </div>
 
-        <div class="travel-rewards-card">
+        <div class="travel-rewards-card" style="box-shadow: none;">
           <span class="travel-rewards-badge">{{ perfil.nivel_membresia || 'Blue' }}</span>
           <div class="travel-rewards-label">OneKeyCash</div>
           <div class="travel-rewards-value">${{ (perfil.puntos || 0).toFixed(2) }}</div>
@@ -33,6 +33,7 @@
             v-for="item in navItems"
             :key="item.key"
             class="travel-nav-card"
+            style="box-shadow: none;"
             :class="{ 'is-active': activeSection === item.key }"
             @click="cambiarSeccion(item.key)"
           >
@@ -56,7 +57,7 @@
         <!-- MODAL TARJETA -->
         <transition name="modal-fade">
           <div v-if="mostrarModalTarjeta" class="modal-overlay" @click.self="cerrarModalTarjeta">
-            <div class="modal-box">
+            <div class="modal-box" style="box-shadow: none;">
               <div class="modal-header">
                 <h3>Agregar tarjeta</h3>
                 <button class="modal-close" @click="cerrarModalTarjeta">✕</button>
@@ -106,7 +107,7 @@
         <!-- MODAL NOTIFICACIÓN -->
         <transition name="modal-fade">
           <div v-if="mostrarModalNotif" class="modal-overlay" @click.self="mostrarModalNotif = false">
-            <div class="modal-box">
+            <div class="modal-box" style="box-shadow: none;">
               <div class="modal-header">
                 <h3>{{ notifModalTitulo }}</h3>
                 <button class="modal-close" @click="mostrarModalNotif = false">✕</button>
@@ -124,7 +125,7 @@
         <!-- MODAL SEGURIDAD -->
         <transition name="modal-fade">
           <div v-if="mostrarModalSeguridad" class="modal-overlay" @click.self="cerrarModalSeguridad">
-            <div class="modal-box">
+            <div class="modal-box" style="box-shadow: none;">
               <div class="modal-header">
                 <h3>{{ seguridadModalTitulo }}</h3>
                 <button class="modal-close" @click="cerrarModalSeguridad">✕</button>
@@ -148,18 +149,11 @@
         <div v-if="activeSection === 'perfil'" class="section-wrap">
           <h1 class="section-title">{{ perfil.nombre_completo || 'Mi Perfil' }}</h1>
 
-          <div class="info-block">
+          <div class="info-block" style="box-shadow: none;">
             <div class="info-block-header">
               <div>
                 <h2>Editar perfil</h2>
                 <p class="info-desc">Todos tus datos personales en un solo lugar.</p>
-              </div>
-              <div style="display:flex; align-items:center; gap:12px;">
-                <span v-if="guardadoOk"    class="save-status ok"  style="margin:0">✓ Guardado</span>
-                <span v-if="guardadoError" class="save-status err" style="margin:0">✗ Error al guardar</span>
-                <button class="btn-edit" :disabled="guardando" @click="guardarTodosLosDatos">
-                  {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
-                </button>
               </div>
             </div>
 
@@ -553,17 +547,8 @@
             </section>
             <div class="sc-divider"></div>
             <section class="sc-section">
-              <h2 class="sc-section-title">Administración de la cuenta</h2>
-              <p class="sc-section-desc">Más opciones de administración de tus datos, como la eliminación de tu cuenta.</p>
-              <div class="sc-items-list">
-                <button v-for="item in accountItems" :key="item.id" class="sc-item">
-                  <div class="sc-item-left">
-                    <div class="sc-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2D9596" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 16-4 16 0"/></svg></div>
-                    <p class="sc-item-label">{{ item.label }}</p>
-                  </div>
-                  <svg class="sc-chevron" viewBox="0 0 24 24" fill="none" stroke="#9AD0C2" stroke-width="1.5"><path d="M9 18l6-6-6-6"/></svg>
-                </button>
-              </div>
+             
+          
               <p class="sc-danger-link" @click="confirmarEliminarCuenta">Eliminar cuenta</p>
               <p class="sc-danger-desc">Elimina tus datos y cuenta de forma permanente.</p>
             </section>
@@ -601,7 +586,7 @@
       </div>
 
       <!-- Formulario para crear membresía -->
-      <div v-else class="mem-form-card">
+      <div v-else class="mem-form-card" style="box-shadow: none;">
         <div class="mem-form-header">
           <h3>Elige tu nivel de membresía</h3>
           <button class="modal-close" @click="mostrarFormMembresia = false">✕</button>
@@ -641,7 +626,7 @@
     </div>
 
     <!-- Card membresía activa -->
-    <div v-else class="mem-card">
+    <div v-else class="mem-card" style="box-shadow: none;">
       <div class="mem-card-top">
         <div>
           <span class="mem-badge">{{ membresia.NOMBRE_NIVEL }}</span>
@@ -728,7 +713,7 @@
               <div>
                 <p class="cup-eyebrow">Mi cuenta</p>
                 <h1 class="cup-title">Cupones</h1>
-                <a class="cup-link" href="#">Cómo usar los cupones <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 8.5L8.5 1.5M8.5 1.5H3.5M8.5 1.5V6.5" stroke="currentColor" stroke-width="1"/></svg></a>
+               
               </div>
             </div>
             <p class="cup-section-label">Cupones activos</p>
@@ -746,25 +731,8 @@
                 <p class="cup-empty-sub">Los cupones disponibles aparecerán aquí automáticamente.</p>
               </div>
             </div>
-            <div v-else class="cup-list">
-              <div v-for="cupon in cupones" :key="cupon.id" class="cup-item">
-                <div class="cup-item-icon"><svg width="18" height="18" viewBox="0 0 22 22" fill="none"><path d="M2 11L4.5 5H17.5L20 11" stroke="#2D9596" stroke-width="0.8"/><rect x="2" y="11" width="18" height="7" rx="1" stroke="#2D9596" stroke-width="0.8"/></svg></div>
-                <div class="cup-item-info">
-                  <p class="cup-item-code">{{ cupon.codigo }}</p>
-                  <p class="cup-item-desc">{{ cupon.descripcion }}</p>
-                </div>
-                <span class="cup-item-badge">{{ cupon.descuento }}</span>
-              </div>
             </div>
-            <div class="cup-divider"></div>
-            <p class="cup-section-label" style="margin-bottom:0.5rem;">¿Tienes un código?</p>
-            <p class="cup-sub-text">Ingresa tu código promocional para activar tu descuento.</p>
-            <div class="cup-input-row">
-              <input v-model="codigoCupon" class="cup-input" type="text" placeholder="Ej. PROMO2025" @keyup.enter="canjearCupon" />
-              <button class="cup-cta" @click="canjearCupon" :disabled="!codigoCupon.trim()">Canjear</button>
-            </div>
-            <p v-if="mensajeCupon" class="cup-mensaje" :class="{ error: mensajeCuponError }">{{ mensajeCupon }}</p>
-          </div>
+          
         </div>
 
         <!-- FALLBACK -->
@@ -1341,8 +1309,8 @@ function confirmarCerrarSesion() {
 .fav-empty-icon { width: 60px; height: 60px; margin-bottom: 15px; opacity: 0.5; }
 .fav-empty-state p { margin-bottom: 20px; font-size: 15px; }
 .fav-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; margin-top: 10px; }
-.fav-card { background: #fff; border: 1px solid #eee; border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
-.fav-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+.fav-card { background: #fff; border: 1px solid #eee; border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: none; }
+.fav-card:hover { transform: translateY(-4px); box-shadow: none; }
 .fav-card-img { position: relative; height: 160px; width: 100%; }
 .fav-card-img img { width: 100%; height: 100%; object-fit: cover; }
 .btn-fav-remove {
