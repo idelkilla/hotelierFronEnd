@@ -1370,94 +1370,68 @@
 
 .sc-danger-link:hover { text-decoration: underline; }
 .sc-danger-desc { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-/* ── MEMBRESÍA ─────────────────────────────── */
+/* ──/* ── MEMBRESÍA ──────────────────────────────────────────────── */
 .mem-wrap        { max-width: 600px; }
 .mem-eyebrow     { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:#999; margin-bottom:.25rem; }
-.mem-title       { font-size:24px; font-weight:700; color:#265073; margin-bottom:1.5rem; }
+.mem-title       { font-size:24px; font-weight:700; color:#113955; margin-bottom:1.5rem; }
 .mem-loading     { color:#888; font-size:14px; padding:2rem 0; }
 
-.mem-empty       { display:flex; flex-direction:column; align-items:center; text-align:center; padding:60px 20px; }
+.mem-empty       { display:flex; flex-direction:column; align-items:center; text-align:center; padding:60px 20px; background:#f7f8fa; border-radius:16px; border:0.5px solid #e8e8e8; }
 .mem-empty-icon  { width:56px; height:56px; opacity:.5; margin-bottom:1rem; }
-.mem-empty-title { font-size:16px; font-weight:600; color:#265073; margin-bottom:.5rem; }
-.mem-empty-sub   { font-size:13px; color:#888; }
+.mem-empty-title { font-size:16px; font-weight:600; color:#113955; margin-bottom:.5rem; }
+.mem-empty-sub   { font-size:13px; color:#888; margin-bottom:1.5rem; max-width:300px; line-height:1.6; }
+.mem-join-btn    { background:#113955; color:#fff; border:none; border-radius:10px; padding:11px 28px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; transition:background .18s; }
+.mem-join-btn:hover { background:#1a4f78; }
 
-.mem-card        { background:#fff; border:1px solid #e8f0f5; border-radius:16px; overflow:hidden; box-shadow:0 4px 20px rgba(38,80,115,.06); }
-.mem-card-top    { background:linear-gradient(135deg,#265073,#2D9596); padding:1.5rem; display:flex; justify-content:space-between; align-items:flex-start; }
+.mem-form-card   { background:#fff; border:0.5px solid #e8e8e8; border-radius:16px; overflow:hidden; }
+.mem-form-header { display:flex; justify-content:space-between; align-items:center; padding:20px 24px; border-bottom:0.5px solid #f2f2f2; background:#f7f8fa; }
+.mem-form-header h3 { font-size:16px; font-weight:700; color:#113955; margin:0; }
+.mem-form-footer { padding:20px 24px; border-top:0.5px solid #f2f2f2; display:flex; gap:10px; background:#f7f8fa; }
+
+.mem-niveles-list { padding:16px 24px; display:flex; flex-direction:column; gap:10px; }
+
+.mem-nivel-option {
+  display:flex; align-items:flex-start; gap:14px;
+  padding:16px; border:1.5px solid #e8e8e8; border-radius:12px;
+  cursor:pointer; transition:all .18s; background:#fff;
+}
+.mem-nivel-option:hover     { border-color:#2D9596; background:#f0fafa; }
+.mem-nivel-option.selected  { border-color:#113955; background:#f0f5ff; }
+
+.mem-nivel-radio  { padding-top:2px; flex-shrink:0; }
+.mem-nivel-dot    { width:16px; height:16px; border-radius:50%; border:2px solid #ccc; transition:all .15s; }
+.mem-nivel-dot.active { border-color:#113955; background:#113955; }
+
+.mem-nivel-info   { flex:1; display:flex; flex-direction:column; gap:3px; }
+.mem-nivel-name   { font-size:14px; font-weight:700; color:#113955; }
+.mem-nivel-pts    { font-size:12px; color:#888; }
+.mem-nivel-desc   { font-size:12px; color:#555; margin-top:2px; line-height:1.5; }
+.mem-nivel-badge  { font-size:11px; font-weight:600; background:#113955; color:#fff; padding:3px 10px; border-radius:20px; flex-shrink:0; align-self:flex-start; }
+
+.mem-card        { background:#fff; border:0.5px solid #e8e8e8; border-radius:16px; overflow:hidden; box-shadow:0 4px 20px rgba(38,80,115,.06); }
+.mem-card-top    { background:linear-gradient(135deg,#113955,#2D9596); padding:1.5rem; display:flex; justify-content:space-between; align-items:flex-start; }
 .mem-badge       { background:rgba(255,255,255,.2); color:#fff; border:1px solid rgba(255,255,255,.4); padding:4px 14px; border-radius:20px; font-size:13px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
 .mem-number      { text-align:right; }
 .mem-number-label{ display:block; font-size:10px; color:rgba(255,255,255,.7); text-transform:uppercase; letter-spacing:.05em; margin-bottom:2px; }
 .mem-number-value{ font-size:15px; font-weight:700; color:#fff; letter-spacing:.06em; }
 
 .mem-card-body   { padding:1.5rem; display:flex; flex-direction:column; gap:1.25rem; }
-
 .mem-points-block{ text-align:center; padding:.75rem 0; }
 .mem-points-label{ font-size:12px; color:#888; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.25rem; }
-.mem-points-value{ font-size:40px; font-weight:800; color:#265073; line-height:1; margin-bottom:.25rem; }
+.mem-points-value{ font-size:40px; font-weight:800; color:#113955; line-height:1; margin-bottom:.25rem; }
 .mem-points-sub  { font-size:12px; color:#aaa; }
-
-.mem-progress-wrap { }
-.mem-progress-bar  { height:8px; background:#f0f4f8; border-radius:99px; overflow:hidden; margin-bottom:.5rem; }
-.mem-progress-fill { height:100%; background:linear-gradient(90deg,#2D9596,#9AD0C2); border-radius:99px; transition:width .6s ease; }
-.mem-progress-label{ font-size:12px; color:#888; text-align:right; }
+.mem-progress-wrap  { margin-top: 0.5rem; }
+.mem-progress-bar   { height:8px; background:#f0f4f8; border-radius:99px; overflow:hidden; margin-bottom:.5rem; }
+.mem-progress-fill  { height:100%; background:linear-gradient(90deg,#2D9596,#9AD0C2); border-radius:99px; transition:width .6s ease; }
+.mem-progress-label { font-size:12px; color:#888; text-align:right; }
 
 .mem-info-grid  { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .mem-info-item  { background:#f8fafc; border-radius:10px; padding:12px; }
 .mem-info-label { display:block; font-size:11px; color:#999; text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px; }
-.mem-info-value { font-size:14px; font-weight:600; color:#265073; }
+.mem-info-value { font-size:14px; font-weight:600; color:#113955; }
 
 .mem-desc       { display:flex; gap:10px; align-items:flex-start; background:#f0fafa; border-radius:10px; padding:12px; border-left:3px solid #2D9596; }
 .mem-desc p     { font-size:13px; color:#555; margin:0; line-height:1.5; }
-/* ══ OPINIONES ══════════════════════════════════════════════ */
-.opinions-wrapper {
-  background: #fff;
-  border-radius: var(--radius-xl);
-  padding: 4px 0;
-  max-width: 600px;
-}
-
-.op-empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2.5rem 1rem;
-  text-align: center;
-}
-
-.op-empty-icon {
-  width: 54px;
-  height: 54px;
-  border-radius: 16px;
-  background: var(--surface);
-  border: 0.5px solid var(--border-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1.2rem;
-}
-
-.op-empty-icon svg {
-  width: 24px;
-  height: 24px;
-  color: var(--navy);
-  opacity: .4;
-}
-
-.op-empty-title { font-size: 17px; font-weight: 600; color: var(--navy); margin: 0 0 7px; }
-.op-empty-subtitle { font-size: 13px; font-weight: 400; color: var(--text-muted); margin: 0 0 1.5rem; max-width: 300px; line-height: 1.6; }
-
-/* Star rating */
-.star-rating { display: flex; gap: 4px; margin-top: 4px; }
-
-.star-rating span {
-  font-size: 22px;
-  cursor: pointer;
-  color: var(--border-light);
-  transition: color .1s;
-  line-height: 1;
-}
-
-.star-rating span.on { color: #c97c1a; }
 
 /* ══ CUPONES ════════════════════════════════════════════════ */
 .cup-wrap {
