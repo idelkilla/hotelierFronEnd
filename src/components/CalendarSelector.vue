@@ -10,7 +10,7 @@
 
     <!-- ── CALENDARIO ─────────────────────────────────── -->
     <template v-if="activeTab === 'calendario'">
-      <div class="cal-grid">
+      <div class="cal-grid" :class="{ 'is-single': !range }">
 
         <!-- Mes 1 -->
         <div class="cal-month">
@@ -21,7 +21,12 @@
               </svg>
             </button>
             <span>{{ monthName(viewYear, viewMonth) }}</span>
-            <span class="cal-nav" style="visibility:hidden" />
+            <button v-if="!range" class="cal-nav" @click="navigate(1)" aria-label="Siguiente">
+              <svg width="18" height="18" viewBox="0 0 24 24">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/>
+              </svg>
+            </button>
+            <span v-else class="cal-nav" style="visibility:hidden" />
           </div>
           <div class="cal-week-header">
             <span v-for="d in DAYS" :key="d">{{ d }}</span>
@@ -38,10 +43,10 @@
           </div>
         </div>
 
-        <div class="cal-divider" />
+        <div class="cal-divider" v-if="range" />
 
         <!-- Mes 2 -->
-        <div class="cal-month">
+        <div class="cal-month" v-if="range">
           <div class="cal-month-header">
             <span class="cal-nav" style="visibility:hidden" />
             <span>{{ monthName(nextYear, nextMonth) }}</span>
@@ -267,6 +272,7 @@ function handleClick(y, m, day) {
     rangeStart.value = date
     rangeEnd.value   = null
     emitRange()
+    emit('close') // Cierre automático al seleccionar fecha única
     return
   }
 
