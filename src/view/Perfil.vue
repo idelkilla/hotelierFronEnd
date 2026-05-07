@@ -717,25 +717,7 @@
               <h2 class="op-empty-title">¡Aún no has escrito reseñas!</h2>
               <p class="op-empty-subtitle">Tus opiniones ayudan a otros viajeros a tomar mejores decisiones.</p>
             </div>
-            <button v-if="!mostrarFormOpinion" class="fp-add-btn" style="margin-top:1.25rem; color:#000;" @click="mostrarFormOpinion = true">Escribir una reseña</button>
-            <div v-if="mostrarFormOpinion" class="fp-form-container" style="margin-top:1rem;">
-              <div class="fp-form-header"><h1 class="fp-form-title">Nueva reseña</h1></div>
-              <div class="fp-form-body">
-                <div class="fp-field"><label>Título</label><input v-model="formOpinion.titulo" type="text" placeholder="Ej. Excelente experiencia" /></div>
-                <div class="fp-field">
-                  <label>Calificación</label>
-                  <div style="display:flex; gap:6px; margin-top:4px;">
-                    <span v-for="n in 5" :key="n" style="font-size:24px; cursor:pointer; transition:.1s;" :style="{ color: n <= formOpinion.estrellas ? '#f5a623' : '#ddd' }" @click="formOpinion.estrellas = n">★</span>
-                  </div>
-                </div>
-                <div class="fp-field"><label>Comentario</label><textarea v-model="formOpinion.texto" rows="3" placeholder="Cuéntanos tu experiencia..." style="width:100%; padding:8px; border:1px solid #ddd; border-radius:8px; font-size:14px; resize:vertical;"></textarea></div>
-                <span v-if="errorOpinion" class="error">{{ errorOpinion }}</span>
-                <div class="fp-actions">
-                  <button class="fp-btn-primary" @click="guardarOpinion">Publicar</button>
-                  <button class="fp-btn-ghost" @click="mostrarFormOpinion = false; errorOpinion = ''">Cancelar</button>
-                </div>
-              </div>
-            </div>
+           
           </div>
         </div>
 
@@ -1324,103 +1306,121 @@ function enviarComentario() {
   comentarioEnviado.value = true
   setTimeout(() => { mostrarFormComentario.value = false; textoComentario.value = ''; comentarioEnviado.value = false }, 1500)
 }
-/// ── Membresía ─────────────────────────────────────────────────
-const membresia           = ref(null)
-const cargandoMembresia   = ref(false)
-const mostrarFormMembresia = ref(false)
-const guardandoMembresia  = ref(false)
-const errorMembresia      = ref('')
-const nivelesMembresia    = ref([])
-const cargandoNiveles     = ref(false)
-const formMembresia       = reactive({ id_nivel: null })
+import { Router } from 'express'
+import { getProfile, updateProfile } from '../controllers/userController.js'
+import { authenticateToken } from '../middleware/authMiddleware.js'
+import * as db from '../db.js'
 
-async function fetchMembresia() {
+const router = Router()
+router.use(authenticateToken)
+
+// Helper para obtener ID_PERSONA desde ID_USUARIO
+async function getIdPersona(idUsuario) {
+  const { rows } = await db.query(
+    `SELECT "ID_PERSONA" FROM "USUARIO" WHERE "ID_USUARIO" = $1`,
+    [idUsuario]
+  )
+  return rows[0]?.ID_PERSONA || null
+}
+
+router.get('/profile',        getProfile)
+router.put('/profile/update', updateProfile)
+
+// ── GET membresía ─────────────────────────────────────────────
+router.get('/membresia', async (req, res, next) => {
   try {
-    cargandoMembresia.value = true
-    membresia.value = await apiGet('/perfil/membresia')
-  } catch (e) {
-    console.error('Error cargando membresía:', e)
-    membresia.value = null
-  } finally { cargandoMembresia.value = false }
-}
+    const idPersona = await getIdPersona(req.user.id)
+    if (!idPersona) return res.json(null)
 
-async function abrirFormMembresia() {
-  mostrarFormMembresia.value = true
-  errorMembresia.value = ''
-  formMembresia.id_nivel = null
-  if (nivelesMembresia.value.length) return
+    const { rows } = await db.query(`
+      SELECT m."NUMERO_MIEMBRO", m."FECHA_INICIO", m."PUNTOS_FIDELIDAD",
+             n."ID_NIVEL", n."NOMBRE_NIVEL", n."DESCRIPCION", n."PUNTOS_MINIMOS"
+      FROM "MIEMBRO" m
+      JOIN "NIVEL_MEMBRESIA" n ON n."ID_NIVEL" = m."ID_NIVEL"
+      WHERE m."ID_CLIENTE" = $1
+    `, [idPersona])
+
+    res.json(rows[0] || null)
+  } catch (err) { next(err) }
+})
+
+// ── GET niveles disponibles ───────────────────────────────────
+router.get('/membresia/niveles', async (req, res, next) => {
   try {
-    cargandoNiveles.value = true
-    nivelesMembresia.value = await apiGet('/perfil/membresia/niveles')
-  } catch (e) {
-    console.error('Error cargando niveles:', e)
-  } finally { cargandoNiveles.value = false }
-}
+    const { rows } = await db.query(`
+      SELECT "ID_NIVEL", "NOMBRE_NIVEL", "PUNTOS_MINIMOS", "DESCRIPCION"
+      FROM "NIVEL_MEMBRESIA"
+      ORDER BY "PUNTOS_MINIMOS" ASC
+    `)
+    res.json(rows)
+  } catch (err) { next(err) }
+})
 
-async function crearMembresia() {
-  if (!formMembresia.id_nivel) { errorMembresia.value = 'Selecciona un nivel.'; return }
+// ── POST crear membresía ──────────────────────────────────────
+router.post('/membresia', async (req, res, next) => {
   try {
-    guardandoMembresia.value = true
-    errorMembresia.value = ''
-    membresia.value = await apiPost('/perfil/membresia', { id_nivel: formMembresia.id_nivel })
-    mostrarFormMembresia.value = false
-  } catch (e) {
-    errorMembresia.value = e?.message || 'Error al registrar membresía.'
-  } finally { guardandoMembresia.value = false }
-}
+    const idPersona = await getIdPersona(req.user.id)
+    if (!idPersona) return res.status(400).json({ error: 'Usuario sin perfil.' })
 
-function formatFecha(fecha) {
-  if (!fecha) return '—'
-  return new Date(fecha).toLocaleDateString('es-DO', {
-    year: 'numeric', month: 'long', day: 'numeric'
-  })
-}
-// ── Opiniones ─────────────────────────────────────────────────
-// ── Opiniones ─────────────────────────────────────────────────
-const opiniones          = ref([])
-const mostrarFormOpinion = ref(false)
-const cargandoOpiniones  = ref(false)
-const formOpinion        = reactive({ titulo: '', texto: '', estrellas: 0 })
-const errorOpinion       = ref('')
+    const { id_nivel } = req.body
+    if (!id_nivel) return res.status(400).json({ error: 'El nivel es requerido.' })
 
-async function fetchOpiniones() {
+    const { rows: existe } = await db.query(
+      `SELECT 1 FROM "MIEMBRO" WHERE "ID_CLIENTE" = $1`, [idPersona]
+    )
+    if (existe.length) return res.status(409).json({ error: 'Ya tienes una membresía activa.' })
+
+    const { rows: cliente } = await db.query(
+      `SELECT 1 FROM "CLIENTE" WHERE "ID_CLIENTE" = $1`, [idPersona]
+    )
+    if (!cliente.length) {
+      await db.query(`
+        INSERT INTO "CLIENTE" ("ID_CLIENTE","ESTADO_CLIENTE","FECHA_REGISTRO")
+        VALUES ($1, 'A', CURRENT_DATE)
+      `, [idPersona])
+    }
+
+    const numeroMiembro = 'MEM-' + String(idPersona).padStart(5, '0')
+
+    await db.query(`
+      INSERT INTO "MIEMBRO" ("ID_CLIENTE","NUMERO_MIEMBRO","FECHA_INICIO","PUNTOS_FIDELIDAD","ID_NIVEL")
+      VALUES ($1, $2, CURRENT_DATE, 0, $3)
+    `, [idPersona, numeroMiembro, id_nivel])
+
+    const { rows: result } = await db.query(`
+      SELECT m."NUMERO_MIEMBRO", m."FECHA_INICIO", m."PUNTOS_FIDELIDAD",
+             n."ID_NIVEL", n."NOMBRE_NIVEL", n."DESCRIPCION", n."PUNTOS_MINIMOS"
+      FROM "MIEMBRO" m
+      JOIN "NIVEL_MEMBRESIA" n ON n."ID_NIVEL" = m."ID_NIVEL"
+      WHERE m."ID_CLIENTE" = $1
+    `, [idPersona])
+
+    res.status(201).json(result[0])
+  } catch (err) { next(err) }
+})
+
+// ── GET reseñas ───────────────────────────────────────────────
+router.get('/resenas', async (req, res, next) => {
   try {
-    cargandoOpiniones.value = true
-    opiniones.value = await apiGet('/perfil/resenas')
-  } catch (e) {
-    console.error('Error cargando reseñas:', e)
-  } finally {
-    cargandoOpiniones.value = false
-  }
-}
+    const idPersona = await getIdPersona(req.user.id)
+    if (!idPersona) return res.json([])
 
-async function guardarOpinion() {
-  if (!formOpinion.titulo.trim() || !formOpinion.texto.trim() || formOpinion.estrellas === 0) {
-    errorOpinion.value = 'Completa todos los campos y selecciona una calificación.'
-    return
-  }
-  try {
-    const nueva = await apiPost('/perfil/resenas', {
-      titulo:    formOpinion.titulo,
-      texto:     formOpinion.texto,
-      estrellas: formOpinion.estrellas
-    })
-    opiniones.value.unshift({
-      ...nueva,
-      titulo: formOpinion.titulo,
-      fecha:  new Date().toLocaleDateString('es-DO')
-    })
-    Object.assign(formOpinion, { titulo: '', texto: '', estrellas: 0 })
-    errorOpinion.value = ''
-    mostrarFormOpinion.value = false
-  } catch (e) {
-    errorOpinion.value = e?.message || 'Error al publicar la reseña.'
-  }
-}
+    const { rows } = await db.query(`
+      SELECT r."ID_RESENA"    AS id,
+             r."COMENTARIO"   AS texto,
+             r."CALIFICACION" AS estrellas,
+             s."NOMBRE"       AS titulo
+      FROM "RESENA" r
+      JOIN "SERVICIO" s ON s."ID_SERVICIO" = r."ID_SERVICIO"
+      WHERE r."ID_CLIENTE" = $1
+      ORDER BY r."ID_RESENA" DESC
+    `, [idPersona])
 
-function eliminarOpinion(id) {
-  opiniones.value = opiniones.value.filter(o => o.id !== id)
-}
+    res.json(rows)
+  } catch (err) { next(err) }
+})
+
+export default router
 // ── Cupones ───────────────────────────────────────────────────
 const cupones           = ref([])
 const codigoCupon       = ref('')
