@@ -509,7 +509,7 @@ onMounted(async () => {
 .usr-tabs-bar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end; /* Alinea tabs al fondo para pisar el borde */
   border-bottom: 2px solid #e8ecf4;
   margin-bottom: 0;
 }
@@ -549,6 +549,8 @@ onMounted(async () => {
   gap: 0;
   border-bottom: 1px solid #e8ecf4;
   margin-bottom: 24px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .usr-stab {
   padding: 9px 20px;
@@ -564,6 +566,7 @@ onMounted(async () => {
   align-items: center;
   gap: 7px;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 .usr-stab.active {
   color: #265073;
@@ -876,5 +879,29 @@ onMounted(async () => {
 .slide-leave-to {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+@media (max-width: 768px) {
+  .usr-tabs-bar {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 12px;
+    padding-bottom: 0;
+  }
+
+  .usr-tab {
+    flex: 1;
+    justify-content: center;
+    padding: 10px 12px;
+  }
+
+  .usr-tabs-actions {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .usr-tabs-actions button {
+    flex: 1;
+  }
 }
 </style>

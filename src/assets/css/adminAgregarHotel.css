@@ -433,3 +433,67 @@
 .ah-col-right .ah-card:nth-child(2) .ah-row {
   grid-template-columns: 1fr;
 }
+
+@media (max-width: 767px) {
+  .ah-page {
+    padding: 16px;
+  }
+
+  /* Grid de 2 columnas → 1 columna */
+  .ah-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Columna derecha va después de la izquierda */
+  .ah-col-right {
+    order: 2;
+  }
+
+  /* Filas de 2 campos → 1 columna */
+  .ah-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* Amenidades → 1 columna */
+  .ah-amenities {
+    grid-template-columns: 1fr;
+  }
+
+  /* Tabla de habitaciones — scroll horizontal */
+  .ah-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  /* Galería más pequeña */
+  .ah-thumb {
+    width: 70px;
+    height: 70px;
+  }
+
+  /* Footer — botones en columna */
+  .ah-footer {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .ah-footer button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Card padding más compacto */
+  .ah-card {
+    padding: 16px;
+  }
+
+  /* Dropzone más compacto */
+  .ah-dropzone {
+    padding: 20px 16px;
+  }
+
+  /* Alerta ocupa todo el ancho */
+  .ah-alerta {
+    font-size: 13px;
+  }
+}

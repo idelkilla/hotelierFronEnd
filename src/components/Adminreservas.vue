@@ -397,12 +397,14 @@ onMounted(fetchReservas)
   background: #fff;
   border-radius: 16px;
   border: 1.5px solid #f0f0f4;
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .reservas-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.875rem;
+  min-width: 950px;
 }
 .reservas-table thead {
   background: #fafafa;
@@ -535,4 +537,35 @@ onMounted(fetchReservas)
   transition: background 0.2s;
 }
 .btn-primary:hover { background: #1e3f5a; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .reservas-page {
+    padding: 1rem;
+  }
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .search-box input, .header-filter {
+    width: 100% !important;
+  }
+  .stats-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .modal-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-bar {
+    grid-template-columns: 1fr;
+  }
+}
 </style>

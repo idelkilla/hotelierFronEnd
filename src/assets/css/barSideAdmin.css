@@ -1,13 +1,35 @@
 /* ─────────────────────────────────────────
-   Variables — cambia solo aquí para recolor
+   Variables
 ───────────────────────────────────────── */
 :root {
-  --sidebar-bg: #265073;
-  --sidebar-w: 210px;
-  --item-radius: 22px;
-  --item-h: 48px;
-  --active-bg: #ffffff;
-  --font: 'Outfit', sans-serif;
+  --sidebar-bg:    #265073;
+  --sidebar-w:     210px;
+  --item-radius:   22px;
+  --item-h:        48px;
+  --active-bg:     #ffffff;
+  --font:          'Outfit', sans-serif;
+  --sidebar-collapsed-w: 64px;
+  --transition:    0.25s ease;
+}
+
+/* ─────────────────────────────────────────
+   Overlay (solo mobile, cuando el drawer está abierto)
+───────────────────────────────────────── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 19;
+  backdrop-filter: blur(2px);
+  animation: overlay-in 0.2s ease forwards;
+}
+.sidebar-overlay.active {
+  display: block;
+}
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* ─────────────────────────────────────────
@@ -31,11 +53,11 @@
   flex-direction: column;
   font-family: var(--font);
   position: relative;
-  overflow: visible;        /* ← cambia hidden por visible */
-  transition: width 0.25s ease, min-width 0.25s ease;
+  overflow: visible;
+  transition: width var(--transition), min-width var(--transition);
 }
 
-/* Círculo decorativo de fondo */
+/* Círculo decorativo */
 .sidebar::before {
   content: '';
   position: absolute;
@@ -46,7 +68,7 @@
   background: rgba(255, 255, 255, 0.06);
   border-radius: 50%;
   pointer-events: none;
-  clip-path: inset(0 0 0 0);  /* ← contiene el círculo */
+  clip-path: inset(0 0 0 0);
 }
 
 /* ─────────────────────────────────────────
@@ -55,7 +77,7 @@
 .sidebar__brand {
   display: flex;
   align-items: center;
-  padding: 34px 22px 34px;
+  padding: 34px 22px;
   font-size: 20px;
   font-weight: 700;
   color: #fff;
@@ -64,13 +86,15 @@
   overflow: hidden;
 }
 
-/* ── Toggle button ── */
 .sidebar__brand-text {
   transition: opacity 0.2s, width 0.2s;
   white-space: nowrap;
   overflow: hidden;
 }
 
+/* ─────────────────────────────────────────
+   Toggle button (solo desktop)
+───────────────────────────────────────── */
 .sidebar__toggle {
   position: absolute;
   top: 82px;
@@ -88,31 +112,38 @@
   flex-shrink: 0;
   z-index: 200;
   transition: background 0.2s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
-
 .sidebar__toggle:hover {
   background: #1a3a54;
 }
 
-/* ── Collapsed state ── */
-.sidebar--collapsed {
-  width: 64px;
-  min-width: 64px;
+/* Hamburger — solo existe en mobile, vive en el topbar */
+.sidebar__hamburger {
+  display: none; /* oculto en desktop */
 }
 
+/* ─────────────────────────────────────────
+   Estado colapsado (desktop)
+───────────────────────────────────────── */
+.sidebar--collapsed {
+  width: var(--sidebar-collapsed-w);
+  min-width: var(--sidebar-collapsed-w);
+}
 .sidebar--collapsed .sidebar__brand-text {
   opacity: 0;
   width: 0;
 }
-
 .sidebar--collapsed .nav-item__label {
   display: none;
 }
-
 .sidebar--collapsed .nav-item {
   justify-content: center;
   padding: 0;
+}
+.sidebar--collapsed .nav-item__icon {
+  width: 20px;
+  height: 20px;
 }
 
 /* ─────────────────────────────────────────
@@ -142,28 +173,20 @@
   transition: color 0.2s ease;
   user-select: none;
 }
-
 .nav-item:hover:not(.nav-item--active) {
   color: rgba(255, 255, 255, 0.95);
 }
-
-/* Agrega separador visual antes de Dashboard con espacio superior */
 .sidebar__nav > .nav-item:first-child {
   margin-top: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* ─────────────────────────────────────────
-   Ítem activo — texto azul
+   Ítem activo
 ───────────────────────────────────────── */
 .nav-item--active {
   color: var(--sidebar-bg);
 }
-
-/* ─────────────────────────────────────────
-   Capa blanca del ítem activo
-   (la "bandeja" que sale hacia la derecha)
-───────────────────────────────────────── */
 .nav-item__bg {
   position: absolute;
   inset: 0;
@@ -171,30 +194,17 @@
   pointer-events: none;
   transition: background 0.25s ease;
 }
-
 .nav-item--active .nav-item__bg {
   background: var(--active-bg);
   border-radius: var(--item-radius) 0 0 var(--item-radius);
   animation: slideIn 0.25s ease forwards;
 }
-
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(12px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
-/* ─────────────────────────────────────────
-   Esquina cóncava SUPERIOR
-   Técnica: cuadrado del color del sidebar
-   con border-radius en la esquina interna
-   + box-shadow del color activo que "rellena"
-───────────────────────────────────────── */
+/* Esquina cóncava superior */
 .nav-item--active .nav-item__bg::before {
   content: '';
   position: absolute;
@@ -204,14 +214,13 @@
   height: var(--item-radius);
   background: var(--sidebar-bg);
   border-bottom-right-radius: var(--item-radius);
-  box-shadow: calc(var(--item-radius) / 2.5) calc(var(--item-radius) / 2.5) 0 calc(var(--item-radius) / 2.5) var(--active-bg);
+  box-shadow: calc(var(--item-radius) / 2.5) calc(var(--item-radius) / 2.5) 0
+              calc(var(--item-radius) / 2.5) var(--active-bg);
   animation: fadeIn 0.2s ease 0.05s forwards;
   opacity: 0;
 }
 
-/* ─────────────────────────────────────────
-   Esquina cóncava INFERIOR
-───────────────────────────────────────── */
+/* Esquina cóncava inferior */
 .nav-item--active .nav-item__bg::after {
   content: '';
   position: absolute;
@@ -221,19 +230,15 @@
   height: var(--item-radius);
   background: var(--sidebar-bg);
   border-top-right-radius: var(--item-radius);
-  box-shadow: calc(var(--item-radius) / 2.5) calc(-1 * var(--item-radius) / 2.5) 0 calc(var(--item-radius) / 2.5) var(--active-bg);
+  box-shadow: calc(var(--item-radius) / 2.5) calc(-1 * var(--item-radius) / 2.5) 0
+              calc(var(--item-radius) / 2.5) var(--active-bg);
   animation: fadeIn 0.2s ease 0.05s forwards;
   opacity: 0;
 }
-
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-  }
-}
+@keyframes fadeIn { to { opacity: 1; } }
 
 /* ─────────────────────────────────────────
-   Ícono y label — encima del .nav-item__bg
+   Ícono y label
 ───────────────────────────────────────── */
 .nav-item__icon {
   width: 16px;
@@ -242,12 +247,6 @@
   position: relative;
   z-index: 1;
 }
-
-.sidebar--collapsed .nav-item__icon {
-  width: 20px;
-  height: 20px;
-}
-
 .nav-item__label {
   position: relative;
   z-index: 1;
@@ -268,46 +267,156 @@
   color: #fff;
   transition: background 0.2s, color 0.2s;
 }
-
 .nav-item--active .nav-item__badge {
   background: var(--sidebar-bg);
   color: #fff;
 }
 
 /* ─────────────────────────────────────────
-   Footer links
+   Footer
 ───────────────────────────────────────── */
 .sidebar__footer {
   padding: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
-
-/* Cerrar sesión — hereda estilos de nav-item pero con color rojo suave */
 .logout-item {
   color: #ffffff !important;
   border-radius: 10px;
   transition: background 0.2s, color 0.2s;
-  transform: none;
 }
-
 .logout-item:hover {
   background: rgba(80, 92, 255, 0.15);
   color: #ffffff !important;
 }
-
 .sidebar__footer-links {
   display: flex;
   gap: 12px;
   margin-top: 8px;
 }
-
 .sidebar__footer-links a {
   font-size: 11px;
   color: rgba(255, 255, 255, 0.4);
   text-decoration: none;
   transition: color 0.15s;
 }
-
 .sidebar__footer-links a:hover {
   color: rgba(255, 255, 255, 0.8);
+}
+
+/* ─────────────────────────────────────────
+   RESPONSIVE — Mobile (< 768px)
+   El sidebar se convierte en drawer lateral
+───────────────────────────────────────── */
+/* ─────────────────────────────────────────
+   FIX MOBILE — Drawer correcto
+───────────────────────────────────────── */
+@media (max-width: 767px) {   
+  /* Quitar completamente el sidebar-wrapper en mobile */
+  .sidebar-wrapper {
+    display: none !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    flex: none !important;
+  }
+
+  /* El sidebar en mobile es un drawer fixed */
+  .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100vh !important;
+    width: var(--sidebar-w) !important;
+    min-width: var(--sidebar-w) !important;
+    transform: translateX(-100%) !important;
+    transition: transform var(--transition) !important;
+    border-radius: 0 28px 28px 0 !important;
+    z-index: 20 !important;
+    box-shadow: none;
+  }
+
+  /* Drawer abierto */
+  .sidebar.sidebar--open {
+    transform: translateX(0) !important;
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Forzar estado expandido (ignorar --collapsed) */
+  .sidebar.sidebar--collapsed,
+  .sidebar.sidebar--open.sidebar--collapsed {
+    width: var(--sidebar-w) !important;
+    min-width: var(--sidebar-w) !important;
+  }
+  .sidebar.sidebar--collapsed .sidebar__brand-text,
+  .sidebar.sidebar--open .sidebar__brand-text {
+    opacity: 1 !important;
+    width: auto !important;
+  }
+  .sidebar.sidebar--collapsed .nav-item__label,
+  .sidebar.sidebar--open .nav-item__label {
+    display: block !important;
+  }
+  .sidebar.sidebar--collapsed .nav-item,
+  .sidebar.sidebar--open .nav-item {
+    justify-content: flex-start !important;
+    padding: 0 22px !important;
+  }
+
+  /* Ocultar el toggle de colapso en mobile */
+  .sidebar__toggle {
+    display: none !important;
+  }
+
+  .sidebar__hamburger {
+    display: flex !important;
+    position: static !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #265073 !important;
+    font-size: 20px !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+    border-radius: 0 !important;
+    top: unset !important;
+    left: unset !important;
+    z-index: unset !important;
+  }
+  .sidebar__hamburger:hover {
+    background: transparent !important;
+    transform: none !important;
+  }
+
+  /* Overlay */
+  .sidebar-overlay {
+    z-index: 19 !important;
+  }
+
+  .layout,
+  .admin-layout,
+  .main-content {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  /* Quitar círculo decorativo */
+  .sidebar::before {
+    display: none !important;
+  }
+
+  /* Quitar esquinas cóncavas del ítem activo */
+  .nav-item--active .nav-item__bg::before,
+  .nav-item--active .nav-item__bg::after {
+    display: none !important;
+  }
+
+  /* Quitar border-radius del ítem activo */
+  .nav-item--active .nav-item__bg {
+    border-radius: 0 !important;
+  }
 }

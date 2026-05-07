@@ -7,17 +7,19 @@
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  z-index: 1200; /* Mayor que el contenedor para asegurar prioridad absoluta */
+  z-index: 1200;
   background: white;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   width: 760px;
+  max-width: calc(100vw - 24px); /* ← nunca desborda la pantalla */
   user-select: none;
   font-family:
     'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   animation: cal-drop-in 0.16s ease;
   overflow: hidden;
 }
+
 @keyframes cal-drop-in {
   from {
     opacity: 0;
@@ -77,6 +79,29 @@
   align-self: stretch;
 }
 
+/* En mobile: los dos meses se apilan verticalmente */
+@media (max-width: 600px) {
+  .calendar-modal {
+    right: auto; /* evita que se salga por la derecha */
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 16px;
+  }
+
+  .cal-grid {
+    grid-template-columns: 1fr; /* una sola columna */
+    padding: 16px 16px 8px;
+    gap: 0;
+  }
+
+  .cal-divider {
+    width: auto;
+    height: 1px;
+    margin: 16px 0;
+  }
+}
+
+/* ── Cabecera mes ── */
 .cal-month-header {
   display: flex;
   align-items: center;
@@ -109,6 +134,7 @@
   color: #1a1a1a;
 }
 
+/* ── Días semana ── */
 .cal-week-header {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -137,13 +163,24 @@
   justify-content: center;
   cursor: pointer;
   position: relative;
-  /* sin border-radius aquí — lo maneja .cal-day-inner */
+}
+
+/* En pantallas pequeñas reducimos la altura de celda para que quepan bien */
+@media (max-width: 400px) {
+  .cal-day {
+    height: 36px;
+  }
+  .cal-day-inner {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
 }
 
 .cal-day-inner {
   width: 36px;
   height: 36px;
-  display: flex;           /* ← antes no tenía display:flex */
+  display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
@@ -152,15 +189,20 @@
   border-radius: 50%;
   position: relative;
   z-index: 1;
-  flex-shrink: 0;          /* ← evita que se encoja */
-  transition: background 0.12s, color 0.12s;
+  flex-shrink: 0;
+  transition:
+    background 0.12s,
+    color 0.12s;
 }
 
-.cal-day:not(.empty):not(.past):not(.range-start):not(.range-end):hover .cal-day-inner {
+.cal-day:not(.empty):not(.past):not(.range-start):not(.range-end):hover
+  .cal-day-inner {
   background: #f0f0f0;
 }
-
-.cal-day.empty { cursor: default; pointer-events: none; }
+.cal-day.empty {
+  cursor: default;
+  pointer-events: none;
+}
 
 /* Hoy */
 .cal-day.today:not(.range-start):not(.range-end) .cal-day-inner {
@@ -170,18 +212,24 @@
 .cal-day.today:not(.range-start):not(.range-end) .cal-day-inner::after {
   content: '';
   position: absolute;
-  bottom: 3px; left: 50%;
+  bottom: 3px;
+  left: 50%;
   transform: translateX(-50%);
-  width: 4px; height: 4px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
   background: #191e3b;
 }
 
 /* Pasados */
-.cal-day.past { pointer-events: none; }
-.cal-day.past .cal-day-inner { color: #bbb; }
+.cal-day.past {
+  pointer-events: none;
+}
+.cal-day.past .cal-day-inner {
+  color: #bbb;
+}
 
-/* Banda de rango — el fondo va en .cal-day, el círculo en .cal-day-inner */
+/* Rango */
 .cal-day.in-range {
   background: #f0f7ff;
 }
@@ -189,8 +237,6 @@
   color: #191e3b;
   background: transparent;
 }
-
-/* Inicio de rango: media-banda a la derecha */
 .cal-day.range-start {
   background: linear-gradient(to right, transparent 50%, #f0f7ff 50%);
 }
@@ -199,8 +245,6 @@
   color: #fff;
   font-weight: 700;
 }
-
-/* Fin de rango: media-banda a la izquierda */
 .cal-day.range-end {
   background: linear-gradient(to left, transparent 50%, #f0f7ff 50%);
 }
@@ -209,23 +253,41 @@
   color: #fff;
   font-weight: 700;
 }
-
-/* Día único (inicio = fin): sin banda */
 .cal-day.range-start.range-end {
   background: transparent;
 }
 
-/* ── Footer chips ── */
+/* ── Footer ── */
 .cal-footer {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 16px;
   padding: 14px 28px 20px;
   border-top: 1px solid #ececec;
-  flex-wrap: wrap;
   margin-top: 8px;
 }
 
+@media (max-width: 600px) {
+  .cal-footer {
+    padding: 12px 16px 16px;
+    gap: 12px;
+  }
+}
+
+.cal-footer-top {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap; /* ← los chips saltan de línea en lugar de cortarse */
+}
+
+.cal-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* ── Chips ── */
 .cal-chip {
   background: #fff;
   border: 1px solid #d0d0d0;
@@ -238,6 +300,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
+  white-space: nowrap; /* ← no rompe el texto del chip */
   transition:
     border-color 0.15s,
     background 0.15s,
@@ -255,15 +318,50 @@
   font-weight: 700;
 }
 
+@media (max-width: 600px) {
+  .cal-chip {
+    font-size: 12.5px;
+    padding: 6px 12px;
+  }
+}
+
+/* ── Botones acción ── */
+.btn-clear {
+  background: none;
+  border: none;
+  color: #191e3b;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+.btn-done {
+  background: #191e3b;
+  color: white;
+  border: none;
+  padding: 10px 32px;
+  border-radius: 25px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn-done:hover {
+  opacity: 0.9;
+}
+
 /* ── Fechas Flexibles ── */
 .flex-body {
   padding: 24px 32px 28px;
 }
 
+@media (max-width: 600px) {
+  .flex-body {
+    padding: 16px;
+  }
+}
+
 .flex-section {
   margin-bottom: 0;
 }
-
 .flex-title {
   font-size: 15px;
   font-weight: 700;
@@ -271,14 +369,12 @@
   text-align: center;
   margin: 0 0 16px;
 }
-
 .flex-subtitle {
   font-size: 13px;
   color: #6e6e6e;
   text-align: center;
   margin: -10px 0 16px;
 }
-
 .flex-chips {
   display: flex;
   justify-content: center;
@@ -286,7 +382,6 @@
   flex-wrap: wrap;
   margin-bottom: 14px;
 }
-
 .flex-weekend {
   display: flex;
   align-items: center;
@@ -299,7 +394,6 @@
 .flex-weekend input {
   display: none;
 }
-
 .flex-check-box {
   width: 18px;
   height: 18px;
@@ -318,18 +412,32 @@
   background: #191e3b;
   border-color: #191e3b;
 }
-
 .flex-divider {
   height: 1px;
   background: #e0e0e0;
   margin: 20px 0;
 }
 
+/* Meses: fila en desktop, grid 3 col en mobile */
 .flex-months {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+@media (max-width: 600px) {
+  .flex-months {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+}
+
+@media (max-width: 360px) {
+  .flex-months {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .flex-month-card {
@@ -348,6 +456,14 @@
     background 0.15s;
   font-family: inherit;
 }
+
+@media (max-width: 600px) {
+  .flex-month-card {
+    min-width: 0;
+    padding: 10px 8px;
+  }
+}
+
 .flex-month-card:hover {
   border-color: #191e3b;
 }
@@ -358,7 +474,6 @@
 .flex-month-card.active svg {
   stroke: #191e3b;
 }
-
 .flex-month-name {
   font-size: 13px;
   font-weight: 700;
@@ -371,43 +486,4 @@
 .flex-month-card.active .flex-month-name,
 .flex-month-card.active .flex-month-year {
   color: #191e3b;
-}
-
-.cal-footer {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.cal-footer-top {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.cal-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding-top: 8px;
-}
-.btn-clear {
-  background: none;
-  border: none;
-  color: #191e3b;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 14px;
-}
-.btn-done {
-  background: #191e3b;
-  color: white;
-  border: none;
-  padding: 10px 32px;
-  border-radius: 25px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.btn-done:hover {
-  opacity: 0.9;
 }

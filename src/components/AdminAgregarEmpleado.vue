@@ -48,7 +48,19 @@
         <div class="ah-row ah-row-3">
           <div class="ah-field">
             <label>Fecha de nacimiento</label>
-            <input v-model="form.fecha_nacimiento" type="date" />
+            <input 
+              :value="form.fecha_nacimiento" 
+              readonly 
+              @click="showCalNacimiento = !showCalNacimiento" 
+              placeholder="Seleccionar..." 
+              class="calendar-selector" />
+            <CalendarSelector 
+              v-if="showCalNacimiento" 
+              :range="false" 
+              :modelValue="{ start: form.fecha_nacimiento ? new Date(form.fecha_nacimiento + 'T00:00:00') : null }"
+              @update:dates="(d) => form.fecha_nacimiento = d.start" 
+              @close="showCalNacimiento = false" 
+            />
           </div>
           <div class="ah-field">
             <label>Tipo de sangre</label>
@@ -134,11 +146,35 @@
           </div>
           <div class="ah-field">
             <label>Fecha emisión</label>
-            <input v-model="form.fecha_emision" type="date" />
+            <input 
+              :value="form.fecha_emision" 
+              readonly 
+              @click="showCalEmision = !showCalEmision" 
+              placeholder="Seleccionar..." 
+              class="calendar-selector" />
+            <CalendarSelector 
+              v-if="showCalEmision" 
+              :range="false" 
+              :modelValue="{ start: form.fecha_emision ? new Date(form.fecha_emision + 'T00:00:00') : null }"
+              @update:dates="(d) => form.fecha_emision = d.start" 
+              @close="showCalEmision = false" 
+            />
           </div>
           <div class="ah-field">
             <label>Fecha expiración</label>
-            <input v-model="form.fecha_expiracion" type="date" />
+            <input 
+              :value="form.fecha_expiracion" 
+              readonly 
+              @click="showCalExpiracion = !showCalExpiracion" 
+              placeholder="Seleccionar..." 
+              class="calendar-selector" />
+            <CalendarSelector 
+              v-if="showCalExpiracion" 
+              :range="false" 
+              :modelValue="{ start: form.fecha_expiracion ? new Date(form.fecha_expiracion + 'T00:00:00') : null }"
+              @update:dates="(d) => form.fecha_expiracion = d.start" 
+              @close="showCalExpiracion = false" 
+            />
           </div>
         </div>
       </div>
@@ -151,7 +187,19 @@
         <div class="ah-row">
           <div class="ah-field">
             <label>Fecha de contratación</label>
-            <input v-model="form.fecha_contratacion" type="date" />
+            <input 
+              :value="form.fecha_contratacion" 
+              readonly 
+              @click="showCalContratacion = !showCalContratacion" 
+              placeholder="Seleccionar..." 
+              class="calendar-selector" />
+            <CalendarSelector 
+              v-if="showCalContratacion" 
+              :range="false" 
+              :modelValue="{ start: form.fecha_contratacion ? new Date(form.fecha_contratacion + 'T00:00:00') : null }"
+              @update:dates="(d) => form.fecha_contratacion = d.start" 
+              @close="showCalContratacion = false" 
+            />
           </div>
           <div class="ah-field">
             <label>Puesto</label>
@@ -316,9 +364,16 @@
 <script setup>
   import { reactive, ref, onMounted } from 'vue'
   import AppSelect from './AppSelect.vue'
+  import CalendarSelector from './CalendarSelector.vue'
   import { apiFetch } from '../services/api'
 
   const emit = defineEmits(['alerta'])
+
+  // Estados para controlar la visibilidad de los calendarios
+  const showCalNacimiento = ref(false)
+  const showCalEmision = ref(false)
+  const showCalExpiracion = ref(false)
+  const showCalContratacion = ref(false)
 
   const form = reactive({
     nombre_completo: '',
@@ -462,6 +517,11 @@
 
 <style scoped>
   @import '../assets/css/adminAgregarHotel.css';
+  @import '../assets/css/CalendarSelector.css';
+
+  .ah-field {
+    position: relative;
+  }
 
   .ah-idioma-list {
     display: flex;
@@ -495,5 +555,14 @@
   }
   .ah-row-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 768px) {
+    .ah-grid {
+      grid-template-columns: 1fr;
+    }
+    .ah-row-3 {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

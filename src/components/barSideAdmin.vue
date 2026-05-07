@@ -1,9 +1,15 @@
 <template>
-  <aside :class="['sidebar', { 'sidebar--collapsed': collapsed }]">
+  <!-- Overlay (mobile) -->
+  <div
+    class="sidebar-overlay"
+    :class="{ active: isOpen }"
+    @click="isOpen = false"
+  />
+
+  <aside :class="['sidebar', { 'sidebar--collapsed': collapsed, 'sidebar--open': isOpen }]">
     <div class="sidebar__brand">
       <span class="sidebar__brand-text">Hotelier Admin</span>
     </div>
-
     <nav class="sidebar__nav">
       <div
         v-for="item in menuItems"
@@ -18,7 +24,6 @@
         <span v-if="item.badge && !collapsed" class="nav-item__badge">{{ item.badge }}</span>
       </div>
     </nav>
-
     <footer class="sidebar__footer">
       <div
         class="nav-item logout-item"
@@ -29,7 +34,7 @@
         <span class="nav-item__label">Cerrar sesión</span>
       </div>
     </footer>
-
+    <!-- Toggle solo desktop -->
     <button class="sidebar__toggle" @click="collapsed = !collapsed">
       <i :class="collapsed ? 'fas fa-chevron-right' : 'fas fa-chevron-left'"></i>
     </button>
@@ -37,13 +42,22 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
-const router   = useRouter()
-const route    = useRoute()
-const activeId = ref('dashboard')
+const props = defineProps({ forceOpen: Boolean })
+const emit  = defineEmits(['close'])
+
+const router    = useRouter()
+const route     = useRoute()
+const activeId  = ref('dashboard')
 const collapsed = ref(false)
+const isOpen    = ref(false)
+
+// Sincronizar con el padre
+watch(() => props.forceOpen, (val) => {
+  isOpen.value = val
+})
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard',     icon: 'fas fa-home',           route: '/admin' },
@@ -55,7 +69,6 @@ const menuItems = [
 
 const syncActive = () => {
   const matched = menuItems.find(item => {
-    // ✅ Dashboard solo activo en /admin exacto
     if (item.id === 'dashboard') return route.path === '/admin/dashboard' || route.path === '/admin'
     return route.path.startsWith(item.route)
   })
@@ -63,15 +76,15 @@ const syncActive = () => {
 }
 
 onMounted(syncActive)
-
 watch(() => route.path, syncActive)
 
 const navigate = (item) => {
   activeId.value = item.id
+  isOpen.value   = false
+  emit('close')
   router.push(item.route)
 }
 
-// ✅ Redirige a /login, no a /register
 const logout = () => {
   localStorage.clear()
   router.push('/login')

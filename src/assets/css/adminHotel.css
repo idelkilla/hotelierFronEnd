@@ -46,6 +46,7 @@ body, #app {
   width: 100%;
   top: 0;
   z-index: 10;
+  gap: 0;
 }
 
 .admin-topbar h2 {
@@ -149,4 +150,57 @@ body, #app {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.sidebar__hamburger {
+  display: none; /* oculto en desktop */
+}
+
+@media (max-width: 767px) {
+  .sidebar__hamburger {
+    display: flex !important;
+    background: transparent;
+    border: none;
+    color: #265073;
+    font-size: 20px;
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 0;
+    order: 1;
+  }
+
+  .admin-topbar {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding: 0 16px !important;
+    gap: 10px !important;
+  }
+
+  .admin-topbar h2 {
+    font-size: 16px !important;
+    margin: 0 !important;
+    order: 2 !important;
+    flex: 1 !important;
+  }
+
+  .sidebar__hamburger {
+    order: 1 !important;
+  }
+
+  .topbar-profile {
+    order: 3 !important;
+    margin-left: auto !important;
+    padding: 4px 6px;
+  }
+
+  .topbar-info {
+    display: none !important;
+  }
 }

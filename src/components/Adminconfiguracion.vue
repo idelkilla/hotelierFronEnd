@@ -751,18 +751,21 @@ function showToast(message, type = 'success') {
   }
 
   .config-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
     min-width: unset;
     position: static;
+    padding: 0.5rem;
+    gap: 0.5rem;
   }
 
-  .tab-btn span {
-    display: none;
+  .tab-btn {
+    padding: 0.5rem 1rem;
   }
 
-  .tab-btn i {
-    width: auto;
+  .config-content {
+    width: 100%;
   }
 }
 </style>

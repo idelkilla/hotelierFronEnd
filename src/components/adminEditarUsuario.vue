@@ -56,7 +56,19 @@
             </div>
             <div class="ah-field">
               <label>Fecha de contratación</label>
-              <input v-model="form.fecha_contratacion" type="date" />
+              <input 
+                :value="form.fecha_contratacion" 
+                readonly 
+                @click="showCalContratacion = !showCalContratacion" 
+                placeholder="Seleccionar..." 
+                class="calendar-selector" />
+              <CalendarSelector 
+                v-if="showCalContratacion" 
+                :range="false" 
+                :modelValue="{ start: form.fecha_contratacion ? new Date(form.fecha_contratacion + 'T00:00:00') : null }"
+                @update:dates="(d) => form.fecha_contratacion = d.start" 
+                @close="showCalContratacion = false" 
+              />
             </div>
           </div>
         </template>
@@ -112,7 +124,19 @@
             </div>
             <div class="ah-field">
               <label>Fecha de inicio</label>
-              <input v-model="form.fecha_inicio" type="date" />
+              <input 
+                :value="form.fecha_inicio" 
+                readonly 
+                @click="showCalInicio = !showCalInicio" 
+                placeholder="Seleccionar..." 
+                class="calendar-selector" />
+              <CalendarSelector 
+                v-if="showCalInicio" 
+                :range="false" 
+                :modelValue="{ start: form.fecha_inicio ? new Date(form.fecha_inicio + 'T00:00:00') : null }"
+                @update:dates="(d) => form.fecha_inicio = d.start" 
+                @close="showCalInicio = false" 
+              />
             </div>
           </div>
         </template>
@@ -218,6 +242,7 @@
 <script setup>
 import { reactive, ref, computed, onMounted } from 'vue'
 import AppSelect from './AppSelect.vue'
+import CalendarSelector from './CalendarSelector.vue'
 
 const props = defineProps({
   usuario: { type: Object, required: true },
@@ -231,6 +256,10 @@ const API_BASE = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onre
 const guardando  = ref(false)
 const eliminando = ref(false)
 const showConfirm = ref(false)
+
+// Estados para calendarios
+const showCalContratacion = ref(false)
+const showCalInicio = ref(false)
 
 // Tipo normalizado
 const tipo = computed(() => form.tipo || '')
@@ -343,6 +372,11 @@ const eliminar = async () => {
 
 <style scoped>
 @import '../assets/css/adminAgregarHotel.css';
+@import '../assets/css/CalendarSelector.css';
+
+.ah-field {
+  position: relative;
+}
 
 .ah-tel-row { display: flex; gap: 8px; }
 
