@@ -90,7 +90,8 @@ export default {
   color: #191e3b;
   margin-bottom: 12px;
   letter-spacing: -0.02em;
-  margin-left: 120px;
+  text-align: left;
+  padding-left: 100px; /* <--- AJUSTA ESTE VALOR para mover el título a la derecha */
 }
 
 .cards-container {
@@ -99,16 +100,17 @@ export default {
   overflow-x: auto;
   padding-bottom: 8px;
   margin-top: 45px;
-  padding-left: 120px;
+  justify-content: center;
   scrollbar-width: none;
 }
 .Texto{
     color:#191e3b;
-    margin-left: 120px;
+    text-align: left;
     font-family: 'Inter', sans-serif;
     font-weight: 400;
     font-size: 16px;
     margin-bottom: 28px;
+    padding-left: 100px; /* <--- AJUSTA ESTE VALOR para que coincida con el título */
 
 }
 .cards-container::-webkit-scrollbar {
@@ -121,16 +123,12 @@ export default {
   overflow: hidden;
   cursor: pointer;
   position: relative;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   /* Fix: Mantiene bordes redondeados en zoom y previene parpadeo */
   transform: translateZ(0);
   backface-visibility: hidden;
   will-change: transform;
-}
-
-.card:hover {
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
 }
 
 .card-img-wrapper {
@@ -183,10 +181,14 @@ export default {
   .Texto,
   .cards-container {
     margin-left: 0;
-    padding-left: 16px; /* Margen pequeño para móvil */
+    padding-left: 0; /* En móviles quitamos el desplazamiento para aprovechar el espacio */
+    text-align: left; /* Mantenemos alineación a la izquierda en móvil para mejor legibilidad */
   }
 
-  .cards-container { padding-left: 16px; }
+  .cards-container { 
+    padding-left: 16px; 
+    justify-content: flex-start; /* El scroll horizontal en móvil debe empezar desde la izquierda */
+  }
 
   .card {
     flex: 0 0 175px;
