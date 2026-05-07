@@ -780,7 +780,6 @@
     <footer />
   </div>
 </template>
-
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -788,13 +787,11 @@ import Header from '../components/Header.vue'
 import footer from '../components/footer.vue'
 import AppSelect from '../components/AppSelect.vue'
 import Toast from '../components/alert.vue'
-// ✅ CORRECCIÓN: importar sanitizeProfilePayload junto con los demás helpers
 import { apiGet, apiPost, apiPut, apiDelete, sanitizeProfilePayload } from '../services/api'
 
 const activeSection = ref('perfil')
 const router        = useRouter()
 
-// ── Estado de guardado ────────────────────────────────────────
 const guardando     = ref(false)
 const guardadoOk    = ref(false)
 const guardadoError = ref(false)
@@ -813,7 +810,6 @@ const navItems = [
   { key: 'ayuda',          label: 'Ayuda y comentarios',       sub: 'Obtén asistencia',                                   svg: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>` },
 ]
 
-// ── Estado del perfil ─────────────────────────────────────────
 const perfil = reactive({
   id_persona: null,
   nombre_completo: localStorage.getItem('user_name') || '',
@@ -852,7 +848,6 @@ const perfil = reactive({
   }
 })
 
-// ── Formulario unificado del perfil ───────────────────────────
 const formPerfil = reactive({
   nombre_completo: '',
   apellidos: '',
@@ -881,79 +876,12 @@ const formPerfil = reactive({
   estado_civil: ''
 })
 
-// ── Opciones para AppSelect ───────────────────────────────────
 const genderOptions = [
   { value: 'M', label: 'Masculino' },
   { value: 'F', label: 'Femenino' },
   { value: 'O', label: 'Otro' }
 ]
 
-const paisOptions = computed(() =>
-  listaPaises.value.map(p => ({ value: p.ID_PAIS, label: p.NOMBRE }))
-)
-
-const ciudadOptions = computed(() =>
-  listaCiudades.value.map(c => ({ value: c.ID_CIUDAD, label: c.NOMBRE }))
-)
-
-const ubicacionOptions = computed(() =>
-  listaUbicaciones.value.map(u => ({
-    value: u.id,
-    label: u.nombre + (u.tipo ? ` (${u.tipo})` : '')
-  }))
-)
-
-const sangreOptions  = ['A+','A-','B+','B-','O+','O-','AB+','AB-'].map(t => ({ value: t, label: t }))
-const tarjetaOptions = [
-  { value: 'Visa',       label: 'Visa' },
-  { value: 'Mastercard', label: 'Mastercard' },
-  { value: 'Amex',       label: 'American Express' }
-]
-// ── Catálogos de estado civil y nacionalidad ──────────────────
-const listaEstadoCivil    = ref([])
-const listaNacionalidades = ref([])
-
-async function fetchEstadoCivil() {
-  try {
-    listaEstadoCivil.value = await apiGet('/catalogos/estados-civiles')
-  } catch (e) { console.error('Error cargando estados civiles:', e) }
-}
-
-async function fetchNacionalidades() {
-  try {
-    const data = await apiGet('/catalogos/nacionalidades')
-    console.log('NACI:', JSON.stringify(data[0]))  // ← agrega esto
-    listaNacionalidades.value = data
-  } catch (e) { console.error('Error cargando nacionalidades:', e) }
-}
-
-const nacionalidadOptions = computed(() =>
-  listaNacionalidades.value.map(n => ({
-    value: n.NOMBRE_NACIONALIDAD ?? n.nombre_nacionalidad,
-    label: n.NOMBRE_NACIONALIDAD ?? n.nombre_nacionalidad
-  }))
-)
-const estadoCivilOptions = computed(() =>
-  listaEstadoCivil.value.map(e => ({
-    value: e.NOMBRE_ESTADO ?? e.nombre_estado,
-    label: e.NOMBRE_ESTADO ?? e.nombre_estado
-  }))
-)
-const listaOcupaciones = ref([])
-
-async function fetchOcupaciones() {
-  try {
-    listaOcupaciones.value = await apiGet('/catalogos/ocupaciones')
-  } catch (e) { console.error('Error cargando ocupaciones:', e) }
-}
-
-const ocupacionOptions = computed(() =>
-  listaOcupaciones.value.map(o => ({
-    value: o.NOMBRE ?? o.nombre,
-    label: o.NOMBRE ?? o.nombre
-  }))
-)
-// ── Catálogos ─────────────────────────────────────────────────
 const listaPaises         = ref([])
 const listaCiudades       = ref([])
 const listaUbicaciones    = ref([])
@@ -961,73 +889,72 @@ const cargandoPaises      = ref(false)
 const cargandoCiudades    = ref(false)
 const cargandoUbicaciones = ref(false)
 
+const paisOptions     = computed(() => listaPaises.value.map(p => ({ value: p.ID_PAIS, label: p.NOMBRE })))
+const ciudadOptions   = computed(() => listaCiudades.value.map(c => ({ value: c.ID_CIUDAD, label: c.NOMBRE })))
+const ubicacionOptions = computed(() => listaUbicaciones.value.map(u => ({ value: u.id, label: u.nombre + (u.tipo ? ` (${u.tipo})` : '') })))
+const sangreOptions   = ['A+','A-','B+','B-','O+','O-','AB+','AB-'].map(t => ({ value: t, label: t }))
+const tarjetaOptions  = [
+  { value: 'Visa', label: 'Visa' },
+  { value: 'Mastercard', label: 'Mastercard' },
+  { value: 'Amex', label: 'American Express' }
+]
+
+const listaEstadoCivil    = ref([])
+const listaNacionalidades = ref([])
+const listaOcupaciones    = ref([])
+
+async function fetchEstadoCivil() {
+  try { listaEstadoCivil.value = await apiGet('/catalogos/estados-civiles') } catch (e) { console.error(e) }
+}
+async function fetchNacionalidades() {
+  try { listaNacionalidades.value = await apiGet('/catalogos/nacionalidades') } catch (e) { console.error(e) }
+}
+async function fetchOcupaciones() {
+  try { listaOcupaciones.value = await apiGet('/catalogos/ocupaciones') } catch (e) { console.error(e) }
+}
+
+const nacionalidadOptions = computed(() => listaNacionalidades.value.map(n => ({ value: n.NOMBRE_NACIONALIDAD ?? n.nombre_nacionalidad, label: n.NOMBRE_NACIONALIDAD ?? n.nombre_nacionalidad })))
+const estadoCivilOptions  = computed(() => listaEstadoCivil.value.map(e => ({ value: e.NOMBRE_ESTADO ?? e.nombre_estado, label: e.NOMBRE_ESTADO ?? e.nombre_estado })))
+const ocupacionOptions    = computed(() => listaOcupaciones.value.map(o => ({ value: o.NOMBRE ?? o.nombre, label: o.NOMBRE ?? o.nombre })))
+
 async function fetchPaises() {
   if (listaPaises.value.length) return
   try {
     cargandoPaises.value = true
     listaPaises.value = await apiGet('/catalogos/paises')
-  } catch (e) {
-    console.error('Error cargando países:', e)
-  } finally { cargandoPaises.value = false }
+  } catch (e) { console.error(e) } finally { cargandoPaises.value = false }
 }
 
 async function onPaisChangePerfil() {
-  formPerfil.id_ciudad    = ''
-  formPerfil.id_ubicacion = ''
-  listaCiudades.value     = []
-  listaUbicaciones.value  = []
+  formPerfil.id_ciudad = ''; formPerfil.id_ubicacion = ''
+  listaCiudades.value = []; listaUbicaciones.value = []
   if (!formPerfil.id_pais) return
   try {
     cargandoCiudades.value = true
     listaCiudades.value = await apiGet(`/catalogos/ciudades?id_pais=${formPerfil.id_pais}`)
-  } catch (e) {
-    console.error('Error cargando ciudades:', e)
-  } finally { cargandoCiudades.value = false }
+  } catch (e) { console.error(e) } finally { cargandoCiudades.value = false }
 }
 
 async function onCiudadChangePerfil() {
-  formPerfil.id_ubicacion = ''
-  listaUbicaciones.value  = []
+  formPerfil.id_ubicacion = ''; listaUbicaciones.value = []
   if (!formPerfil.id_ciudad) return
   try {
     cargandoUbicaciones.value = true
-    const idCiudad = parseInt(formPerfil.id_ciudad) || formPerfil.id_ciudad
-    listaUbicaciones.value = await apiGet(`/catalogos/ubicaciones/${idCiudad}`)
-  } catch (e) {
-    console.error('Error cargando ubicaciones:', e)
-  } finally { cargandoUbicaciones.value = false }
+    listaUbicaciones.value = await apiGet(`/catalogos/ubicaciones/${parseInt(formPerfil.id_ciudad) || formPerfil.id_ciudad}`)
+  } catch (e) { console.error(e) } finally { cargandoUbicaciones.value = false }
 }
 
-// ── Guardar todos los datos ───────────────────────────────────
 async function guardarTodosLosDatos() {
-  // Limpiar errores anteriores
   Object.keys(errores).forEach(k => delete errores[k])
-
-  // Validaciones frontend
-  if (!formPerfil.nombre_completo?.trim()) {
-    errores.nombre_completo = 'El nombre no puede estar vacío.'
-    return
-  }
-  if (!formPerfil.apellidos?.trim()) {
-    errores.apellidos = 'Los apellidos no pueden estar vacíos.'
-    return
-  }
+  if (!formPerfil.nombre_completo?.trim()) { errores.nombre_completo = 'El nombre no puede estar vacío.'; return }
+  if (!formPerfil.apellidos?.trim())       { errores.apellidos = 'Los apellidos no pueden estar vacíos.'; return }
   const emailVal = formPerfil.email || ''
-  if (!emailVal.includes('@') || !emailVal.includes('.')) {
-    errores.email = 'Ingresa un correo electrónico válido.'
-    return
-  }
+  if (!emailVal.includes('@') || !emailVal.includes('.')) { errores.email = 'Ingresa un correo electrónico válido.'; return }
 
-  guardando.value     = true
-  guardadoOk.value    = false
-  guardadoError.value = false
-
+  guardando.value = true; guardadoOk.value = false; guardadoError.value = false
   try {
-    // ✅ sanitizeProfilePayload limpia tipos y valores vacíos antes de enviar
     const payload = sanitizeProfilePayload(formPerfil)
     await apiPut('/perfil/profile/update', payload)
-
-    // Actualizar estado reactivo local
     perfil.nombre_completo            = formPerfil.nombre_completo
     perfil.apellidos                  = formPerfil.apellidos
     perfil.fecha_nacimiento           = formPerfil.fecha_nacimiento
@@ -1053,20 +980,15 @@ async function guardarTodosLosDatos() {
     perfil.DOCUMENTACION.FECHA_EMISION        = formPerfil.documento_emision
     perfil.DOCUMENTACION.FECHA_EXPIRACION     = formPerfil.documento_expiracion
     perfil.DOCUMENTACION.EMISOR               = formPerfil.documento_emisor
-
     const paisSel = listaPaises.value.find(p => p.ID_PAIS === formPerfil.id_pais)
     if (paisSel) perfil.pais_nombre = paisSel.NOMBRE
-
     loginItems.value[0].value = formPerfil.email
-
     guardadoOk.value = true
     setTimeout(() => { guardadoOk.value = false }, 3000)
   } catch (e) {
     console.error('Error al guardar:', e)
     guardadoError.value = true
-  } finally {
-    guardando.value = false
-  }
+  } finally { guardando.value = false }
 }
 
 // ── Favoritos ─────────────────────────────────────────────────
@@ -1075,24 +997,19 @@ const cargandoFav = ref(false)
 
 async function cambiarSeccion(key) {
   activeSection.value = key
-  if (key === 'favoritos')  await fetchFavoritos()
-  if (key === 'creditos')   await fetchMembresia()
-  if (key === 'opiniones')  await fetchOpiniones()   // ← agregar esta línea
+  if (key === 'favoritos') await fetchFavoritos()
+  if (key === 'creditos')  await fetchMembresia()
+  if (key === 'opiniones') await fetchOpiniones()
 }
+
 async function fetchFavoritos() {
-  try {
-    cargandoFav.value = true
-    favoritos.value = await apiGet('/favoritos')
-  } catch (e) {
-    console.error('Error al cargar favoritos:', e)
-  } finally { cargandoFav.value = false }
+  try { cargandoFav.value = true; favoritos.value = await apiGet('/favoritos') }
+  catch (e) { console.error(e) } finally { cargandoFav.value = false }
 }
 
 async function quitarFavorito(id) {
-  try {
-    await apiDelete(`/favoritos/${id}`)
-    favoritos.value = favoritos.value.filter(f => f.id !== id)
-  } catch (e) { toastRef.value?.show('error', 'No se pudo quitar de favoritos.') }
+  try { await apiDelete(`/favoritos/${id}`); favoritos.value = favoritos.value.filter(f => f.id !== id) }
+  catch (e) { toastRef.value?.show('error', 'No se pudo quitar de favoritos.') }
 }
 
 function irADetalle(id) { router.push(`/hospedaje/${id}`) }
@@ -1104,53 +1021,35 @@ const guardandoTarjeta    = ref(false)
 const cargandoTarjetas    = ref(false)
 const errorCargaTarjetas  = ref('')
 const errorTarjeta        = ref('')
-
-const formTarjeta = reactive({
-  tipo: 'Visa', numero: '', nombre: '', expiracion: '', cvv: '', codigoPostal: '', guardar: false
-})
+const formTarjeta = reactive({ tipo: 'Visa', numero: '', nombre: '', expiracion: '', cvv: '', codigoPostal: '', guardar: false })
 
 async function fetchTarjetas() {
-  try {
-    cargandoTarjetas.value   = true
-    errorCargaTarjetas.value = ''
-    tarjetas.value = await apiGet('/metodos-pago')
-  } catch (e) {
-    console.error('Error cargando tarjetas:', e)
-    errorCargaTarjetas.value = 'No se pudieron cargar tus tarjetas. Intenta de nuevo.'
-  } finally { cargandoTarjetas.value = false }
+  try { cargandoTarjetas.value = true; errorCargaTarjetas.value = ''; tarjetas.value = await apiGet('/metodos-pago') }
+  catch (e) { errorCargaTarjetas.value = 'No se pudieron cargar tus tarjetas.' } finally { cargandoTarjetas.value = false }
 }
 
 function abrirModalTarjeta() {
   Object.assign(formTarjeta, { tipo: 'Visa', numero: '', nombre: '', expiracion: '', cvv: '', codigoPostal: '', guardar: false })
   errorTarjeta.value = ''; guardandoTarjeta.value = false; mostrarModalTarjeta.value = true
 }
-
 function cerrarModalTarjeta() { mostrarModalTarjeta.value = false }
 
 async function guardarTarjeta() {
   const num = formTarjeta.numero.replace(/\s/g, '')
-  if (num.length < 13)                                  { errorTarjeta.value = 'El número de tarjeta debe tener al menos 13 dígitos.'; return }
-  if (!formTarjeta.nombre.trim())                       { errorTarjeta.value = 'El nombre en la tarjeta es requerido.'; return }
-  if (!formTarjeta.expiracion.match(/^\d{2}\/\d{2}$/)) { errorTarjeta.value = 'La fecha de vencimiento debe tener el formato MM/AA.'; return }
+  if (num.length < 13)                                  { errorTarjeta.value = 'El número debe tener al menos 13 dígitos.'; return }
+  if (!formTarjeta.nombre.trim())                       { errorTarjeta.value = 'El nombre es requerido.'; return }
+  if (!formTarjeta.expiracion.match(/^\d{2}\/\d{2}$/)) { errorTarjeta.value = 'Formato MM/AA requerido.'; return }
   try {
     guardandoTarjeta.value = true; errorTarjeta.value = ''
-    const nueva = await apiPost('/metodos-pago', {
-      tipo: formTarjeta.tipo, numero: formTarjeta.numero, nombre: formTarjeta.nombre,
-      expiracion: formTarjeta.expiracion, codigoPostal: formTarjeta.codigoPostal || null, guardar: formTarjeta.guardar
-    })
-    tarjetas.value.unshift(nueva)
-    cerrarModalTarjeta()
-  } catch (e) {
-    errorTarjeta.value = e?.message || 'Error al guardar la tarjeta. Intenta de nuevo.'
-  } finally { guardandoTarjeta.value = false }
+    const nueva = await apiPost('/metodos-pago', { tipo: formTarjeta.tipo, numero: formTarjeta.numero, nombre: formTarjeta.nombre, expiracion: formTarjeta.expiracion, codigoPostal: formTarjeta.codigoPostal || null, guardar: formTarjeta.guardar })
+    tarjetas.value.unshift(nueva); cerrarModalTarjeta()
+  } catch (e) { errorTarjeta.value = e?.message || 'Error al guardar.' } finally { guardandoTarjeta.value = false }
 }
 
 async function eliminarTarjeta(id) {
   if (!confirm('¿Eliminar esta tarjeta?')) return
-  try {
-    await apiDelete(`/metodos-pago/${id}`)
-    tarjetas.value = tarjetas.value.filter(t => t.id !== id)
-  } catch (e) { toastRef.value?.show('error', 'Error al eliminar la tarjeta.') }
+  try { await apiDelete(`/metodos-pago/${id}`); tarjetas.value = tarjetas.value.filter(t => t.id !== id) }
+  catch (e) { toastRef.value?.show('error', 'Error al eliminar.') }
 }
 
 async function toggleGuardarTarjeta(tarjeta) {
@@ -1159,14 +1058,13 @@ async function toggleGuardarTarjeta(tarjeta) {
     await apiPut(`/metodos-pago/${tarjeta.id}/guardar`, { guardar: nuevoValor })
     const idx = tarjetas.value.findIndex(t => t.id === tarjeta.id)
     if (idx !== -1) tarjetas.value[idx].guardada = nuevoValor
-  } catch (e) { toastRef.value?.show('error', 'Error al actualizar la tarjeta.') }
+  } catch (e) { toastRef.value?.show('error', 'Error al actualizar.') }
 }
 
 function formatearNumeroTarjeta(e) {
   let v = e.target.value.replace(/\D/g, '').slice(0, 16)
   formTarjeta.numero = v.replace(/(.{4})/g, '$1 ').trim()
 }
-
 function formatearExpiracion(e) {
   let v = e.target.value.replace(/\D/g, '').slice(0, 4)
   if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2)
@@ -1174,21 +1072,18 @@ function formatearExpiracion(e) {
 }
 
 const iconoTarjeta = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="8" rx="1.5" stroke="#2D9596" stroke-width="1.3"/><path d="M2 6h12" stroke="#2D9596" stroke-width="1.3"/><path d="M5 11v2M11 11v2M3 13h10" stroke="#2D9596" stroke-width="1.2" stroke-linecap="round"/></svg>`
-
 const formaPagoRowsExtras = [
-  { label: 'Cuentas conectadas',   value: '2 servicios vinculados',   muted: false, badge: null, icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="2.5" stroke="#2D9596" stroke-width="1.3"/><path d="M3 13c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="#2D9596" stroke-width="1.3" stroke-linecap="round"/></svg>` },
-  { label: 'Organizador de viajes', value: 'Sin itinerarios activos', muted: false, badge: null, icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.8 3.6L14 6.5l-3 2.9.7 4.1L8 11.4l-3.7 2.1.7-4.1-3-2.9 4.2-.9z" stroke="#2D9596" stroke-width="1.2" stroke-linejoin="round"/></svg>` },
+  { label: 'Cuentas conectadas',    value: '2 servicios vinculados',   muted: false, badge: null, icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="2.5" stroke="#2D9596" stroke-width="1.3"/><path d="M3 13c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="#2D9596" stroke-width="1.3" stroke-linecap="round"/></svg>` },
+  { label: 'Organizador de viajes', value: 'Sin itinerarios activos',  muted: false, badge: null, icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.8 3.6L14 6.5l-3 2.9.7 4.1L8 11.4l-3.7 2.1.7-4.1-3-2.9 4.2-.9z" stroke="#2D9596" stroke-width="1.2" stroke-linejoin="round"/></svg>` },
 ]
 
-// ── Formas de pago ────────────────────────────────────────────
+// ── Formas de pago / Pasajeros ────────────────────────────────
 const formaPagoTabs     = ['Mi cuenta', 'Otros pasajeros']
 const formaPagoTab      = ref('Mi cuenta')
 const showPassengerForm = ref(false)
-
-// ── Pasajeros ─────────────────────────────────────────────────
 const pasajerosGuardados = ref([])
-const formPasajero       = reactive({ nombre: '', nombre2: '', apellidos: '', genero: '', fecha_nacimiento: '', telefono: '', telefono2: '' })
-const errorPasajero      = ref('')
+const formPasajero = reactive({ nombre: '', nombre2: '', apellidos: '', genero: '', fecha_nacimiento: '', telefono: '', telefono2: '' })
+const errorPasajero = ref('')
 
 function guardarPasajero() {
   if (!formPasajero.nombre.trim() || !formPasajero.apellidos.trim()) { errorPasajero.value = 'Nombre y apellidos son requeridos.'; return }
@@ -1196,31 +1091,24 @@ function guardarPasajero() {
   Object.assign(formPasajero, { nombre: '', nombre2: '', apellidos: '', genero: '', fecha_nacimiento: '', telefono: '', telefono2: '' })
   errorPasajero.value = ''; showPassengerForm.value = false
 }
-
 function eliminarPasajero(id) { pasajerosGuardados.value = pasajerosGuardados.value.filter(p => p.id !== id) }
 
 // ── Notificaciones ────────────────────────────────────────────
 const mostrarModalNotif = ref(false)
 const notifModalTitulo  = ref('')
 const notifModalKey     = ref('')
-
 const canalesNotif = [
   { key: 'push',     label: 'Notificaciones push' },
   { key: 'email',    label: 'Correo electrónico' },
   { key: 'sms',      label: 'SMS' },
   { key: 'whatsapp', label: 'WhatsApp' },
 ]
-
 const notifConfig = reactive({
   general: { push: true,  email: true,  sms: false, whatsapp: false },
   onekey:  { push: true,  email: false, sms: false, whatsapp: false },
   cuenta:  { push: false, email: true,  sms: false, whatsapp: false },
 })
-
-function abrirModalNotif(key, titulo) {
-  notifModalKey.value = key; notifModalTitulo.value = titulo; mostrarModalNotif.value = true
-}
-
+function abrirModalNotif(key, titulo) { notifModalKey.value = key; notifModalTitulo.value = titulo; mostrarModalNotif.value = true }
 function resumenNotif(key) {
   const activos = canalesNotif.filter(c => notifConfig[key][c.key]).map(c => c.label)
   return activos.length ? activos.join(', ') : 'Sin canales activos'
@@ -1235,7 +1123,6 @@ const loginItems = ref([
   { id: 5, label: 'Dispositivos conectados', value: '',                                        type: 'devices' },
 ])
 const accountItems = ref([{ id: 6, label: 'Organizador de viajes' }])
-
 const mostrarModalSeguridad     = ref(false)
 const seguridadTipoModal        = ref('')
 const seguridadModalTitulo      = ref('')
@@ -1246,7 +1133,6 @@ const seguridadValor            = ref('')
 const seguridadNuevaPass        = ref('')
 const errorSeguridad            = ref('')
 const seguridadOk               = ref(false)
-
 const seguridadConfig = {
   email:    { titulo: 'Cambiar correo electrónico', label: 'Correo electrónico actual', placeholder: 'tu@email.com',      tipo: 'email'    },
   phone:    { titulo: 'Cambiar número de celular',  label: 'Número de celular',         placeholder: '+1 809 000 0000',   tipo: 'tel'      },
@@ -1254,210 +1140,114 @@ const seguridadConfig = {
   link:     { titulo: 'Cuentas conectadas',         label: 'Cuenta',                    placeholder: '',                  tipo: 'text'     },
   devices:  { titulo: 'Dispositivos conectados',    label: 'Dispositivo',               placeholder: '',                  tipo: 'text'     },
 }
-
 function abrirModalSeguridad(item) {
-  const cfg = seguridadConfig[item.type]
-  if (!cfg) return
+  const cfg = seguridadConfig[item.type]; if (!cfg) return
   seguridadTipoModal.value = item.type; seguridadModalTitulo.value = cfg.titulo
   seguridadModalLabel.value = cfg.label; seguridadModalPlaceholder.value = cfg.placeholder
   seguridadTipoInput.value = cfg.tipo; seguridadValor.value = ''; seguridadNuevaPass.value = ''
   errorSeguridad.value = ''; seguridadOk.value = false; mostrarModalSeguridad.value = true
 }
-
 function cerrarModalSeguridad() { mostrarModalSeguridad.value = false }
-
 function guardarSeguridad() {
   errorSeguridad.value = ''
   if (!seguridadValor.value.trim()) { errorSeguridad.value = 'Este campo es requerido.'; return }
-  if (seguridadTipoModal.value === 'email' && (!seguridadValor.value.includes('@') || !seguridadValor.value.includes('.'))) {
-    errorSeguridad.value = 'Ingresa un correo válido.'; return
-  }
-  if (seguridadTipoModal.value === 'password' && !seguridadNuevaPass.value.trim()) {
-    errorSeguridad.value = 'Ingresa tu nueva contraseña.'; return
-  }
-  if (seguridadTipoModal.value === 'email') {
-    loginItems.value[0].value = seguridadValor.value; perfil.email = seguridadValor.value
-  } else if (seguridadTipoModal.value === 'phone') {
-    loginItems.value[1].value = seguridadValor.value; perfil.telefono_numero = seguridadValor.value
-  }
-  seguridadOk.value = true
-  setTimeout(() => cerrarModalSeguridad(), 1000)
+  if (seguridadTipoModal.value === 'email' && (!seguridadValor.value.includes('@') || !seguridadValor.value.includes('.'))) { errorSeguridad.value = 'Ingresa un correo válido.'; return }
+  if (seguridadTipoModal.value === 'password' && !seguridadNuevaPass.value.trim()) { errorSeguridad.value = 'Ingresa tu nueva contraseña.'; return }
+  if (seguridadTipoModal.value === 'email')  { loginItems.value[0].value = seguridadValor.value; perfil.email = seguridadValor.value }
+  else if (seguridadTipoModal.value === 'phone') { loginItems.value[1].value = seguridadValor.value; perfil.telefono_numero = seguridadValor.value }
+  seguridadOk.value = true; setTimeout(() => cerrarModalSeguridad(), 1000)
 }
-
 function confirmarEliminarCuenta() {
-  if (confirm('¿Estás seguro que deseas eliminar tu cuenta? Esta acción es permanente.')) {
-    alert('Cuenta eliminada (acción pendiente de integración).')
-  }
+  if (confirm('¿Estás seguro que deseas eliminar tu cuenta? Esta acción es permanente.')) alert('Cuenta eliminada (acción pendiente de integración).')
 }
 
 // ── Ayuda ─────────────────────────────────────────────────────
 const mostrarFormComentario = ref(false)
 const textoComentario       = ref('')
 const comentarioEnviado     = ref(false)
-
 const helpItems = [
   { id: 1, label: 'Iniciar chat',          iconHtml: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#265073" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`, action: () => toastRef.value?.show('success', 'Iniciando chat de soporte...') },
   { id: 2, label: 'Ir al centro de ayuda', iconHtml: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#265073" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>`, action: () => window.open('https://help.example.com', '_blank') },
   { id: 3, label: 'Compartir comentarios', iconHtml: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#265073" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`, action: () => { mostrarFormComentario.value = true } },
 ]
-
 function enviarComentario() {
   if (!textoComentario.value.trim()) return
   comentarioEnviado.value = true
   setTimeout(() => { mostrarFormComentario.value = false; textoComentario.value = ''; comentarioEnviado.value = false }, 1500)
 }
-import { Router } from 'express'
-import { getProfile, updateProfile } from '../controllers/userController.js'
-import { authenticateToken } from '../middleware/authMiddleware.js'
-import * as db from '../db.js'
 
-const router = Router()
-router.use(authenticateToken)
+// ── Membresía ─────────────────────────────────────────────────
+const membresia            = ref(null)
+const cargandoMembresia    = ref(false)
+const mostrarFormMembresia = ref(false)
+const guardandoMembresia   = ref(false)
+const errorMembresia       = ref('')
+const nivelesMembresia     = ref([])
+const cargandoNiveles      = ref(false)
+const formMembresia        = reactive({ id_nivel: null })
 
-// Helper para obtener ID_PERSONA desde ID_USUARIO
-async function getIdPersona(idUsuario) {
-  const { rows } = await db.query(
-    `SELECT "ID_PERSONA" FROM "USUARIO" WHERE "ID_USUARIO" = $1`,
-    [idUsuario]
-  )
-  return rows[0]?.ID_PERSONA || null
+async function fetchMembresia() {
+  try { cargandoMembresia.value = true; membresia.value = await apiGet('/perfil/membresia') }
+  catch (e) { console.error(e); membresia.value = null } finally { cargandoMembresia.value = false }
+}
+async function abrirFormMembresia() {
+  mostrarFormMembresia.value = true; errorMembresia.value = ''; formMembresia.id_nivel = null
+  if (nivelesMembresia.value.length) return
+  try { cargandoNiveles.value = true; nivelesMembresia.value = await apiGet('/perfil/membresia/niveles') }
+  catch (e) { console.error(e) } finally { cargandoNiveles.value = false }
+}
+async function crearMembresia() {
+  if (!formMembresia.id_nivel) { errorMembresia.value = 'Selecciona un nivel.'; return }
+  try {
+    guardandoMembresia.value = true; errorMembresia.value = ''
+    membresia.value = await apiPost('/perfil/membresia', { id_nivel: formMembresia.id_nivel })
+    mostrarFormMembresia.value = false
+  } catch (e) { errorMembresia.value = e?.message || 'Error al registrar membresía.' } finally { guardandoMembresia.value = false }
+}
+function formatFecha(fecha) {
+  if (!fecha) return '—'
+  return new Date(fecha).toLocaleDateString('es-DO', { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
-router.get('/profile',        getProfile)
-router.put('/profile/update', updateProfile)
+// ── Opiniones ─────────────────────────────────────────────────
+const opiniones         = ref([])
+const cargandoOpiniones = ref(false)
 
-// ── GET membresía ─────────────────────────────────────────────
-router.get('/membresia', async (req, res, next) => {
-  try {
-    const idPersona = await getIdPersona(req.user.id)
-    if (!idPersona) return res.json(null)
+async function fetchOpiniones() {
+  try { cargandoOpiniones.value = true; opiniones.value = await apiGet('/perfil/resenas') }
+  catch (e) { console.error('Error cargando reseñas:', e) } finally { cargandoOpiniones.value = false }
+}
 
-    const { rows } = await db.query(`
-      SELECT m."NUMERO_MIEMBRO", m."FECHA_INICIO", m."PUNTOS_FIDELIDAD",
-             n."ID_NIVEL", n."NOMBRE_NIVEL", n."DESCRIPCION", n."PUNTOS_MINIMOS"
-      FROM "MIEMBRO" m
-      JOIN "NIVEL_MEMBRESIA" n ON n."ID_NIVEL" = m."ID_NIVEL"
-      WHERE m."ID_CLIENTE" = $1
-    `, [idPersona])
+function eliminarOpinion(id) { opiniones.value = opiniones.value.filter(o => o.id !== id) }
 
-    res.json(rows[0] || null)
-  } catch (err) { next(err) }
-})
-
-// ── GET niveles disponibles ───────────────────────────────────
-router.get('/membresia/niveles', async (req, res, next) => {
-  try {
-    const { rows } = await db.query(`
-      SELECT "ID_NIVEL", "NOMBRE_NIVEL", "PUNTOS_MINIMOS", "DESCRIPCION"
-      FROM "NIVEL_MEMBRESIA"
-      ORDER BY "PUNTOS_MINIMOS" ASC
-    `)
-    res.json(rows)
-  } catch (err) { next(err) }
-})
-
-// ── POST crear membresía ──────────────────────────────────────
-router.post('/membresia', async (req, res, next) => {
-  try {
-    const idPersona = await getIdPersona(req.user.id)
-    if (!idPersona) return res.status(400).json({ error: 'Usuario sin perfil.' })
-
-    const { id_nivel } = req.body
-    if (!id_nivel) return res.status(400).json({ error: 'El nivel es requerido.' })
-
-    const { rows: existe } = await db.query(
-      `SELECT 1 FROM "MIEMBRO" WHERE "ID_CLIENTE" = $1`, [idPersona]
-    )
-    if (existe.length) return res.status(409).json({ error: 'Ya tienes una membresía activa.' })
-
-    const { rows: cliente } = await db.query(
-      `SELECT 1 FROM "CLIENTE" WHERE "ID_CLIENTE" = $1`, [idPersona]
-    )
-    if (!cliente.length) {
-      await db.query(`
-        INSERT INTO "CLIENTE" ("ID_CLIENTE","ESTADO_CLIENTE","FECHA_REGISTRO")
-        VALUES ($1, 'A', CURRENT_DATE)
-      `, [idPersona])
-    }
-
-    const numeroMiembro = 'MEM-' + String(idPersona).padStart(5, '0')
-
-    await db.query(`
-      INSERT INTO "MIEMBRO" ("ID_CLIENTE","NUMERO_MIEMBRO","FECHA_INICIO","PUNTOS_FIDELIDAD","ID_NIVEL")
-      VALUES ($1, $2, CURRENT_DATE, 0, $3)
-    `, [idPersona, numeroMiembro, id_nivel])
-
-    const { rows: result } = await db.query(`
-      SELECT m."NUMERO_MIEMBRO", m."FECHA_INICIO", m."PUNTOS_FIDELIDAD",
-             n."ID_NIVEL", n."NOMBRE_NIVEL", n."DESCRIPCION", n."PUNTOS_MINIMOS"
-      FROM "MIEMBRO" m
-      JOIN "NIVEL_MEMBRESIA" n ON n."ID_NIVEL" = m."ID_NIVEL"
-      WHERE m."ID_CLIENTE" = $1
-    `, [idPersona])
-
-    res.status(201).json(result[0])
-  } catch (err) { next(err) }
-})
-
-// ── GET reseñas ───────────────────────────────────────────────
-router.get('/resenas', async (req, res, next) => {
-  try {
-    const idPersona = await getIdPersona(req.user.id)
-    if (!idPersona) return res.json([])
-
-    const { rows } = await db.query(`
-      SELECT r."ID_RESENA"    AS id,
-             r."COMENTARIO"   AS texto,
-             r."CALIFICACION" AS estrellas,
-             s."NOMBRE"       AS titulo
-      FROM "RESENA" r
-      JOIN "SERVICIO" s ON s."ID_SERVICIO" = r."ID_SERVICIO"
-      WHERE r."ID_CLIENTE" = $1
-      ORDER BY r."ID_RESENA" DESC
-    `, [idPersona])
-
-    res.json(rows)
-  } catch (err) { next(err) }
-})
-
-export default router
 // ── Cupones ───────────────────────────────────────────────────
 const cupones           = ref([])
 const codigoCupon       = ref('')
 const mensajeCupon      = ref('')
 const mensajeCuponError = ref(false)
-
 const codigosValidos = {
   PROMO2025:  { descripcion: 'Descuento promocional 2025',  descuento: '10%'    },
   VERANO50:   { descripcion: 'RD$500 en vuelos nacionales', descuento: 'RD$500' },
   BIENVENIDO: { descripcion: '5% en tu primera compra',     descuento: '5%'     },
 }
-
 function canjearCupon() {
   if (!codigoCupon.value.trim()) return
   const codigo = codigoCupon.value.trim().toUpperCase()
-  if (cupones.value.find(c => c.codigo === codigo)) {
-    mensajeCupon.value = 'Este cupón ya está activo en tu cuenta.'; mensajeCuponError.value = true
-  } else if (codigosValidos[codigo]) {
-    cupones.value.push({ id: Date.now(), codigo, ...codigosValidos[codigo] })
-    mensajeCupon.value = '¡Cupón canjeado exitosamente!'; mensajeCuponError.value = false; codigoCupon.value = ''
-  } else {
-    mensajeCupon.value = 'El código ingresado no es válido.'; mensajeCuponError.value = true
-  }
+  if (cupones.value.find(c => c.codigo === codigo)) { mensajeCupon.value = 'Este cupón ya está activo.'; mensajeCuponError.value = true }
+  else if (codigosValidos[codigo]) { cupones.value.push({ id: Date.now(), codigo, ...codigosValidos[codigo] }); mensajeCupon.value = '¡Cupón canjeado!'; mensajeCuponError.value = false; codigoCupon.value = '' }
+  else { mensajeCupon.value = 'El código no es válido.'; mensajeCuponError.value = true }
   setTimeout(() => { mensajeCupon.value = '' }, 3000)
 }
 
 // ── Helpers ───────────────────────────────────────────────────
 const fixPhoto = (url) => {
   if (!url) return ''
-  if (url.includes('googleusercontent'))
-    return /=s\d+/.test(url) ? url.replace(/=s\d+(-c)?/, '=s80-c') : url
+  if (url.includes('googleusercontent')) return /=s\d+/.test(url) ? url.replace(/=s\d+(-c)?/, '=s80-c') : url
   return url
 }
-
 const loadLocalData = () => {
-  const photo  = localStorage.getItem('user_photo')
-  const name   = localStorage.getItem('user_name')
+  const photo = localStorage.getItem('user_photo')
+  const name  = localStorage.getItem('user_name')
   const stored = localStorage.getItem('user_initial')
   try {
     perfil.photo   = photo || null
@@ -1465,13 +1255,11 @@ const loadLocalData = () => {
   } catch { perfil.initial = name ? name.charAt(0).toUpperCase() : '?' }
 }
 
-// ── Cargar datos del servidor ─────────────────────────────────
 async function fetchUserData() {
   try {
     const data = await apiGet('/perfil/profile')
     const { DOCUMENTACION, ...rest } = data
     Object.assign(perfil, rest)
-
     if (data.nombre)       perfil.nombre_completo = data.nombre
     if (data.SANGRE)       perfil.SANGRE          = data.SANGRE
     if (data.ESTATURA)     perfil.ESTATURA        = data.ESTATURA
@@ -1479,19 +1267,16 @@ async function fetchUserData() {
     if (data.OCUPACION)    perfil.OCUPACION       = data.OCUPACION
     if (data.NACIONALIDAD) perfil.NACIONALIDAD    = data.NACIONALIDAD
     if (data.ESTADO_CIVIL) perfil.ESTADO_CIVIL    = data.ESTADO_CIVIL
-
     if (DOCUMENTACION) Object.assign(perfil.DOCUMENTACION, DOCUMENTACION)
-
     loginItems.value[0].value = perfil.email
-
     Object.assign(formPerfil, {
       nombre_completo:            perfil.nombre_completo,
       apellidos:                  perfil.apellidos,
       fecha_nacimiento:           perfil.fecha_nacimiento,
       genero:                     perfil.genero,
       descripcion_personal:       perfil.descripcion_personal,
-      id_pais:                    perfil.id_pais     || '',
-      id_ciudad:                  perfil.id_ciudad   || '',
+      id_pais:                    perfil.id_pais      || '',
+      id_ciudad:                  perfil.id_ciudad    || '',
       id_ubicacion:               perfil.id_ubicacion || '',
       email:                      perfil.email,
       telefono_numero:            perfil.telefono_numero,
@@ -1504,14 +1289,13 @@ async function fetchUserData() {
       documento_emisor:           perfil.DOCUMENTACION?.EMISOR               || '',
       num_viajero_conocido:       perfil.num_viajero_conocido,
       num_dhs_trip:               perfil.num_dhs_trip,
-      sangre:    (perfil.SANGRE    || '').trim(),
-estatura:  (perfil.ESTATURA  || '').trim(),
-peso:      (perfil.PESO      || '').trim(),
-      ocupacion:                  perfil.OCUPACION,
-      nacionalidad:               perfil.NACIONALIDAD,
-      estado_civil:               perfil.ESTADO_CIVIL,
+      sangre:      (perfil.SANGRE    || '').trim(),
+      estatura:    (perfil.ESTATURA  || '').trim(),
+      peso:        (perfil.PESO      || '').trim(),
+      ocupacion:   perfil.OCUPACION,
+      nacionalidad: perfil.NACIONALIDAD,
+      estado_civil: perfil.ESTADO_CIVIL,
     })
-
     if (perfil.id_pais) {
       await fetchPaises()
       listaCiudades.value = await apiGet(`/catalogos/ciudades?id_pais=${perfil.id_pais}`)
@@ -1519,9 +1303,7 @@ peso:      (perfil.PESO      || '').trim(),
     if (perfil.id_ciudad) {
       listaUbicaciones.value = await apiGet(`/catalogos/ubicaciones/${parseInt(perfil.id_ciudad) || perfil.id_ciudad}`)
     }
-  } catch (error) {
-    console.error('Error cargando perfil:', error)
-  }
+  } catch (error) { console.error('Error cargando perfil:', error) }
 }
 
 onMounted(() => {
@@ -1529,9 +1311,9 @@ onMounted(() => {
   fetchUserData()
   fetchTarjetas()
   fetchPaises()
-  fetchEstadoCivil()      // ← agrega
-  fetchNacionalidades()   // ← agrega
-   fetchOcupaciones()   // ← agrega esto
+  fetchEstadoCivil()
+  fetchNacionalidades()
+  fetchOcupaciones()
 })
 
 function confirmarCerrarSesion() {
