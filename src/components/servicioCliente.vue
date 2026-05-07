@@ -19,7 +19,10 @@
 
         <div class="empty-reservation">
           <p class="info_reserva">¿Tienes problemas?</p>
-          <button class="primary-btn">Contactanos</button>
+          <button class="primary-btn" @click="abrirWhatsApp">Contáctanos</button>
+        </div>
+
+        <div class="empty-reservation">
         </div>
       </section>
 
@@ -147,7 +150,6 @@
     <FooterComponent />
   </div>
 </template>
-
 <script>
 import Header from './Header.vue'
 import SearchBox from './searchBox.vue'
@@ -357,6 +359,12 @@ export default {
     cerrarPanel() {
       this.categoriaActiva = null
       this.articuloActivo = null
+    },
+
+    abrirWhatsApp() {
+      const numero = '18299589983'
+      const mensaje = encodeURIComponent('Hola, necesito ayuda con una reservación.')
+      window.open(`https://wa.me/${numero}?text=${mensaje}`, '_blank')
     },
   },
 }
