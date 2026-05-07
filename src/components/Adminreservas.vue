@@ -210,7 +210,7 @@ async function fetchReservas() {
   error.value = null
   try {
     const [dataRes, dataEst] = await Promise.all([
-      apiFetch('/reservas'),
+      apiFetch('/reservas/admin/todas'),
       apiFetch('/catalogos/estados-reserva'),
     ])
     reservas.value = dataRes
