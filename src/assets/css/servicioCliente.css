@@ -2,26 +2,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600&display=swap');
 
 :root {
-  --color-primary:      #265073;   /* azul principal — botones, bordes, íconos */
-  --dark: #191e3b;   /* hover/sombra del primario */
+  --color-primary:      #1a2d4a;   /* azul principal — botones, bordes, íconos */
+  --dark: #1a2332;   /* hover/sombra del primario */
   /* ── Fondos ──────────────────────────────── */
-  --color-bg:           #ECF4D6;   /* fondo general de página */
+  --color-bg:           #f4f5f7;   /* fondo general de página */
   --color-white:        #ffffff;   /* tarjetas, formularios */
   --color-surface:      #f0f7ff;   /* hover suave en dropdowns */
   --color-surface-alt:  #F8FBF9;   /* inputs, fondos secundarios */
   /* ── Acentos ─────────────────────────────── */
-  --color-accent:       #2D9596;   /* teal — acciones secundarias */
-  --color-mint:         #9AD0C2;   /* mint — hover navbar, detalles */
+  --color-accent:       #1a5f6e;   /* teal — acciones secundarias */
+  --color-mint:         #a0aec0;   /* mint — hover navbar, detalles */
   /* ── Texto ───────────────────────────────── */
-  --color-text:         #1a1a1a;   /* texto principal fuerte */
+  --color-text:         #1a2332;   /* texto principal fuerte */
   --color-text-dark:    #333333;   /* labels, campos */
   --color-text-medium:  #444444;   /* ítem spans, subtítulos */
-  --color-text-muted:   #5e6d77;   /* texto secundario suave */
-  --color-text-subtle:  #5e5e5e;   /* detalles, loc-details */
-  --color-placeholder:  #999999;   /* placeholder inputs */
+  --color-text-muted:   #7a8899;   /* texto secundario suave */
+  --color-text-subtle:  #666666;   /* detalles, loc-details */
+  --color-placeholder:  #b0b8c4;   /* placeholder inputs */
   /* ── Bordes ──────────────────────────────── */
-  --color-border:       #265073;   /* borde activo / primario */
-  --color-border-light: #cccccc;   /* borde por defecto inputs */
+  --color-border:       #1a2d4a;   /* borde activo / primario */
+  --color-border-light: #edf0f4;   /* borde por defecto inputs */
   --color-border-soft:  #eeeeee;   /* separadores internos */
   /* ── Tipografía ──────────────────────────── */
   --font-display: 'Playfair Display', serif;
@@ -45,12 +45,12 @@
 .page {
   font-family: 'Inter', sans-serif;
   background: #ffffff;
-  color: #265073;
+  color: #191e3b;
 }
 
 /* NAVBAR */
 .navbar {
-  background: #265073;
+  background: #191e3b;
   padding: 18px 50px;
   display: flex;
   justify-content: space-between;
@@ -64,7 +64,7 @@
   background: none;
   border: none;
   font-size: 20px;
-  color: #265073;
+  color: #191e3b;
   cursor: pointer;
   width: auto;
   padding: 5px;
@@ -81,7 +81,7 @@
 }
 
 .menu {
-  color: #ecf4d6;
+  color: #ffffff;
   text-decoration: none;
   font-weight: 400;
   letter-spacing: 0.8px;
@@ -114,7 +114,7 @@ h2 {
 }
 
 .card {
-  background: #265073;
+  background: #191e3b;
   border-radius: 30px;
   padding: 40px 28px;
   text-align: center;
@@ -168,7 +168,7 @@ select {
   margin-top: 6px;
   padding: 13px;
   border-radius: 12px;
-  border: 1px solid #265073;
+  border: 1px solid #191e3b;
   font-size: 14px;
   background: #f8fbf9;
 }
@@ -177,7 +177,7 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: #265073;
+  border-color: #191e3b;
 }
 
 /* BOTÓN */
@@ -188,7 +188,7 @@ button {
   padding: 13px;
   border-radius: 30px;
   border: none;
-  background: #265073;
+  background: #191e3b;
   color: #ecf4d6;
   font-size: 14px;
   font-weight: 500;
@@ -231,7 +231,7 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 16px;
-  border: 1px solid #265073;
+  border: 1px solid #191e3b;
   transition: all 0.35s ease;
 }
 
@@ -253,7 +253,7 @@ button:hover {
 /* ICONO FINO */
 .luxury-item i {
   font-size: 18px;
-  color: #265073;
+  color: #191e3b;
   opacity: 0.9;
 }
 
@@ -262,7 +262,7 @@ button:hover {
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.4px;
-  color: #265073;
+  color: #191e3b;
 }
 
 /* HOVER ELEGANTE */
@@ -289,7 +289,7 @@ button:hover {
 
 .info_reserva {
   text-align: center;
-  color: #265073;
+  color: #191e3b;
   font-size: 16px;
   margin-top: 20px;
   justify-content: center;
@@ -311,6 +311,6 @@ button:hover {
 
 .secondary-btn:hover {
   background-color: #f0f7ff;
-  color: #265073;
+  color: #191e3b;
   box-shadow: none;
 }

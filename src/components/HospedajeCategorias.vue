@@ -88,9 +88,8 @@ export default {
   font-size: 28px;
   font-weight: 600;
   color: #191e3b;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   letter-spacing: -0.02em;
-  margin-left: 120px;
 }
 
 .cards-container {
@@ -98,17 +97,14 @@ export default {
   gap: 14px;
   overflow-x: auto;
   padding-bottom: 8px;
-  margin-top: 45px;
-  padding-left: 120px;
   scrollbar-width: none;
 }
 .Texto{
     color:#191e3b;
-    margin-left: 120px;
     font-family: 'Inter', sans-serif;
     font-weight: 400;
     font-size: 16px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
 
 }
 .cards-container::-webkit-scrollbar {
@@ -121,15 +117,13 @@ export default {
   overflow: hidden;
   cursor: pointer;
   position: relative;
+  border: 1px solid #e2e8f0;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  /* Fix: Mantiene bordes redondeados en zoom y previene parpadeo */
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  will-change: transform;
 }
 
 .card:hover {
+  transform: translateY(-6px) scale(1.02);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
 }
 
@@ -144,6 +138,10 @@ export default {
   object-fit: cover;
   display: block;
   transition: transform 0.5s ease;
+}
+
+.card:hover .card-img {
+  transform: scale(1.07);
 }
 
 .card-overlay {
@@ -178,15 +176,6 @@ export default {
   .section-title {
     font-size: 22px;
   }
-
-  .section-title,
-  .Texto,
-  .cards-container {
-    margin-left: 0;
-    padding-left: 16px; /* Margen pequeño para móvil */
-  }
-
-  .cards-container { padding-left: 16px; }
 
   .card {
     flex: 0 0 175px;

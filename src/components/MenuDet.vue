@@ -22,7 +22,7 @@
         </button>
 
         <div class="detalle-actions">
-          <button class="btn-accion">
+          <button class="btn-accion" @click="compartir">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
@@ -119,6 +119,26 @@ function onFechasUpdate(fechas) {
   searchEntrada.value = fechas.entrada;
   searchSalida.value  = fechas.salida;
   emit('update:fechas', fechas);
+}
+
+/**
+ * Implementa la funcionalidad de compartir usando la Web Share API si está disponible,
+ * o copiando el enlace al portapapeles como respaldo.
+ */
+function compartir() {
+  const url = window.location.href
+  if (navigator.share) {
+    navigator.share({
+      title: 'Mira este hospedaje en Hotelier',
+      url: url
+    }).catch(() => { /* El usuario canceló la acción */ })
+  } else {
+    navigator.clipboard.writeText(url).then(() => {
+      toastRef.value?.show('success', '¡Enlace copiado al portapapeles!')
+    }).catch(() => {
+      toastRef.value?.show('error', 'No se pudo copiar el enlace automáticamente.')
+    })
+  }
 }
 
 const sliderClass = computed(() => `pos-${activeTab.value}`);
