@@ -1393,11 +1393,29 @@ async function fetchOpiniones() {
   }
 }
 
-function guardarOpinion() {
+async function guardarOpinion() {
   if (!formOpinion.titulo.trim() || !formOpinion.texto.trim() || formOpinion.estrellas === 0) {
     errorOpinion.value = 'Completa todos los campos y selecciona una calificación.'
     return
   }
+  try {
+    const nueva = await apiPost('/perfil/resenas', {
+      titulo:    formOpinion.titulo,
+      texto:     formOpinion.texto,
+      estrellas: formOpinion.estrellas
+    })
+    opiniones.value.unshift({
+      ...nueva,
+      titulo: formOpinion.titulo,
+      fecha:  new Date().toLocaleDateString('es-DO')
+    })
+    Object.assign(formOpinion, { titulo: '', texto: '', estrellas: 0 })
+    errorOpinion.value = ''
+    mostrarFormOpinion.value = false
+  } catch (e) {
+    errorOpinion.value = e?.message || 'Error al publicar la reseña.'
+  }
+}
   // Solo local por ahora — cuando tengas endpoint POST /perfil/resenas, llámalo aquí
   opiniones.value.unshift({
     id:        Date.now(),
