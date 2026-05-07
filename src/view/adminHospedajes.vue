@@ -333,23 +333,6 @@ onMounted(async () => {
   }
 })
 
-// ── Sincronización con Rutas ──────────────────────────────────
-const syncRoute = () => {
-  const path = route.path
-  if (path.includes('/consultar')) {
-    vista.value = 'consultar'
-    if (hospedajes.value.length === 0) cargarListadoSilencioso()
-  } else {
-    vista.value = 'agregar'
-  }
-}
-
-watch(() => route.path, syncRoute, { immediate: true })
-
-const navegar = (v) => {
-  router.push(`/admin/hospedajes/${v}`)
-}
-
 // ── Consultar listado ───────────────────────────────────────────
 const cargarListado = async () => {
   editando.value = null
@@ -497,6 +480,21 @@ const guardarEdicion = async () => {
     guardandoEdit.value = false
   }
 }
+
+// ── Sincronización con Rutas ──────────────────────────────────
+const syncRoute = () => {
+  const path = route.path
+  if (path.includes('/consultar')) {
+    vista.value = 'consultar'
+    if (hospedajes.value.length === 0) cargarListadoSilencioso()
+  } else {
+    vista.value = 'agregar'
+  }
+}
+
+const navegar = (v) => { router.push(`/admin/hospedajes/${v}`) }
+
+watch(() => route.path, syncRoute, { immediate: true })
 
 // ── Eliminar ────────────────────────────────────────────────────
 const confirmarEliminar = (id) => { modalEliminar.value = id }

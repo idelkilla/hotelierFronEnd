@@ -148,7 +148,14 @@
         <div class="ah-card-title"><i class="fas fa-info-circle"></i> Información del Registro</div>
         <div class="ah-info-row">
           <span class="ah-info-label">Tipo</span>
-          <span :class="['usr-badge', tipoBadge]">{{ props.usuario.tipo }}</span>
+          <AppSelect
+            v-model="form.tipo"
+            :options="[
+              { value: 'cliente',  label: 'Cliente'  },
+              { value: 'empleado', label: 'Empleado' },
+              { value: 'miembro',  label: 'Miembro'  },
+            ]"
+          />
         </div>
         <div class="ah-info-row">
           <span class="ah-info-label">ID</span>
@@ -226,7 +233,7 @@ const eliminando = ref(false)
 const showConfirm = ref(false)
 
 // Tipo normalizado
-const tipo = computed(() => props.usuario.tipo?.toLowerCase() || '')
+const tipo = computed(() => form.tipo || '')
 
 // Form inicializado con los datos actuales del usuario
 const buildForm = () => ({
@@ -237,6 +244,7 @@ const buildForm = () => ({
   codigo_pais:         props.usuario.codigo_pais      || '+1',
   numero_telefonico:   props.usuario.numero_telefonico|| '',
   nueva_contrasena:    '',
+  tipo:                (props.usuario.rol_principal || props.usuario.tipo || '').toLowerCase(),
   // Empleado
   id_puesto:           props.usuario.id_puesto        || '',
   turno:               props.usuario.turno            || 'Matutino',
