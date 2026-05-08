@@ -213,15 +213,27 @@ html {
 .filter-checkbox-row input[type="checkbox"] {
     appearance: none;
     -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    border: 1.5px solid #aab0bc;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #aab0bc;
     border-radius: 4px;
     cursor: pointer;
     background: white;
     flex-shrink: 0;
     position: relative;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.filter-checkbox-row input[type="checkbox"]:hover {
+    border-color: #113955;
+    box-shadow: 0 0 4px rgba(17, 57, 85, 0.2);
+}
+
+.filter-checkbox-row input[type="checkbox"]:checked {
+    background-color: #113955;
+    border-color: #113955;
+    box-shadow: 0 0 6px rgba(17, 57, 85, 0.3);
 }
 
 .filter-checkbox-row input[type="checkbox"]:checked {
@@ -232,10 +244,10 @@ html {
 .filter-checkbox-row input[type="checkbox"]:checked::after {
     content: '';
     position: absolute;
-    left: 4px;
+    left: 5px;
     top: 1px;
-    width: 5px;
-    height: 9px;
+    width: 6px;
+    height: 10px;
     border: 2px solid white;
     border-top: none;
     border-left: none;
@@ -267,16 +279,22 @@ html {
 .star-row input[type="checkbox"] {
     appearance: none;
     -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    border: 1.5px solid #aab0bc;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #aab0bc;
     border-radius: 4px;
-    cursor: pointer;
     background: white;
+    cursor: pointer;
     flex-shrink: 0;
     position: relative;
-    transition: all 0.2s;
-    margin-right: 0;
+    transition: all 0.2s ease;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.08);
+    margin-right: 10px;
+}
+
+.star-row input[type="checkbox"]:hover {
+    border-color: #113955;
+    box-shadow: 0 0 4px rgba(17, 57, 85, 0.18);
 }
 
 .star-row input[type="checkbox"]:checked {
@@ -284,9 +302,38 @@ html {
     border-color: #113955;
 }
 
+.star-row input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 1px;
+    width: 6px;
+    height: 10px;
+    border: 2px solid white;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+}
+
 .star-icons {
     display: inline-flex;
     gap: 2px;
+}
+
+.star-icons.clickable {
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.star-icons.clickable:hover {
+    background-color: rgba(255, 215, 0, 0.12);
+}
+
+.star-icons.selected {
+    background-color: rgba(17, 57, 85, 0.1);
+    border: 1px solid #113955;
 }
 
 /* Grid de servicios */
@@ -317,6 +364,12 @@ html {
 .service-card:hover {
     border-color: #113955;
     background: #f0f5fa;
+}
+
+.service-card.selected {
+    border-color: #113955;
+    background: #e9f1f6;
+    box-shadow: 0 2px 4px rgba(17, 57, 85, 0.1);
 }
 
 .service-icon {

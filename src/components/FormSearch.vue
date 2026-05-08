@@ -182,7 +182,7 @@ const props = defineProps({
 
 const router  = useRouter()
 
-const emit = defineEmits(['update:fechas'])
+const emit = defineEmits(['update:fechas', 'search'])
 
 const originWrapper = ref(null)
 const destinationWrapper = ref(null)
@@ -408,6 +408,17 @@ async function handleSearch() {
     const actualizadas = [nuevaBusqueda, ...filtradas].slice(0, 5)
     localStorage.setItem('busquedas_recientes', JSON.stringify(actualizadas))
   } catch (_) {}
+
+  if (props.compact) {
+    emit('search', {
+      destino: busquedaDestino.value,
+      id_ubicacion: selectedUbicacion.value?.id ?? '',
+      entrada: fechaInicio.value,
+      salida: fechaFin.value,
+      huespedes: habitaciones.value,
+    })
+    return
+  }
 
   router.push({
     path: '/head',

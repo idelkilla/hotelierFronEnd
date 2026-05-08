@@ -14,8 +14,8 @@
       <ContinuaPlanes />
       <Ofertasfindesemana />
       <AnotaLaFecha />
+      <HospedajeCategorias/>
       <TravelPropositions />
-       <HospedajeCategorias/>
     </main>
 
     <LoginPromoPopup />
