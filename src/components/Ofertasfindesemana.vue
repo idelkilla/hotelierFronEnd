@@ -8,7 +8,6 @@
           <h2 class="ofs-title">Ofertas de última hora para el fin de semana</h2>
           <p class="ofs-subtitle">Descuento mínimo del 20% para tu próxima escapada de fin de semana</p>
         </div>
-        <button class="ofs-btn-all">Ver todas las ofertas</button>
       </div>
 
       <!-- Loading / Error States -->

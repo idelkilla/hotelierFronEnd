@@ -6,21 +6,24 @@ const plans = [
     description: 'Obtén más por menos con las ofertas de paquete',
     icon: 'luggage',
     badge: 'attach_money',
-    buttonText: 'Más información'
+    buttonText: 'Más información',
+    path: '/servicio-cliente'
   },
   {
-    title: 'Vuelos directos',
-    description: 'Encuentra las rutas más rápidas al mejor precio',
-    icon: 'flight_takeoff',
-    badge: 'bolt',
-    buttonText: 'Buscar vuelos'
+    title: 'Hospedajes perfectos',
+    description: 'Explora una amplia variedad de hoteles y casas vacacionales',
+    icon: 'bed',
+    badge: 'star',
+    buttonText: 'Ver hospedajes',
+    path: '/head'
   },
   {
     title: 'Precios claros',
     description: 'Sin sorpresas: incluimos impuestos y cargos extra',
     icon: 'verified',
     badge: 'check',
-    buttonText: 'Ver detalles'
+    buttonText: 'Ver detalles',
+    path: '/servicio-cliente'
   }
 ];
 </script>
@@ -51,7 +54,7 @@ const plans = [
           </div>
 
           <div class="footer-section">
-            <router-link to="/servicio-cliente" class="action-button">{{ plan.buttonText }}</router-link>
+            <router-link :to="plan.path" class="action-button">{{ plan.buttonText }}</router-link>
           </div>
         </div>
       </div>
