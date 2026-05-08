@@ -1,5 +1,5 @@
 <template>
-  <div class="calendar-modal">
+  <div class="calendar-modal" :class="{ 'is-single-mode': !range }">
 
     <!-- Tabs -->
     <div class="cal-tabs" v-if="range">

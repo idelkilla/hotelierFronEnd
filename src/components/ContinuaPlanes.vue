@@ -43,7 +43,7 @@
               </div>
 
               <router-link
-                :to="`/mis-reservas/${r.id_reserva}`"
+                to="/mis-viajes"
                 class="cp-btn-finalizar"
               >
                 {{ r.estado_label === 'pendiente' ? 'Finalizar reservación' : 'Ver reserva' }}
