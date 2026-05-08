@@ -3,30 +3,25 @@
     <Header />
 
     <div class="mv-content-wrapper">
-      <!-- Header de la página Mis Viajes -->
       <div class="mv-page-header">
         <span class="mv-header__eyebrow">Panel de viajero</span>
         <h1 class="mv-header__title">Mis viajes</h1>
         <p class="mv-header__sub">Todo tu historial de reservas en un solo lugar</p>
       </div>
 
-      <!-- Contenido principal de Mis Viajes -->
       <main class="mv-main-content">
 
-      <!-- Loading -->
     <div v-if="loading" class="mv-loading">
       <div class="mv-spinner"></div>
       <p>Cargando tus reservas…</p>
     </div>
 
-    <!-- Error -->
     <div v-else-if="error" class="mv-error">
       <p>{{ error }}</p>
       <button class="mv-btn mv-btn--primary" @click="cargarReservas">Reintentar</button>
     </div>
 
     <template v-else>
-      <!-- Stats -->
       <section class="mv-stats" aria-label="Resumen de viajes">
         <div class="mv-stat" v-for="stat in stats" :key="stat.label">
           <p class="mv-stat__label">{{ stat.label }}</p>
@@ -34,7 +29,6 @@
         </div>
       </section>
 
-      <!-- Filters -->
       <div class="mv-filters" role="group" aria-label="Filtrar reservas">
         <button
           v-for="f in filtros"
@@ -48,7 +42,6 @@
         </button>
       </div>
 
-      <!-- Cards -->
       <div class="mv-list" v-if="reservasFiltradas.length">
         <article
           class="mv-card"
@@ -144,7 +137,6 @@
         </article>
       </div>
 
-      <!-- Empty -->
       <div class="mv-empty" v-else>
         <div class="mv-empty__icon">✈</div>
         <p class="mv-empty__text">No hay reservas en esta categoría</p>
@@ -154,7 +146,6 @@
       </main>
     </div>
 
-    <!-- Detail Modal -->
     <transition name="fade">
       <div class="mv-modal-backdrop" v-if="reservaSeleccionada" @click.self="reservaSeleccionada = null">
         <div class="mv-modal">
@@ -191,7 +182,6 @@
       </div>
     </transition>
 
-    <!-- Toast -->
     <Toast
       ref="toastRef"
     />
@@ -207,7 +197,6 @@ import Header from '../components/Header.vue'
 import FooterComponent from '../components/footer.vue'
 import Toast from '../components/alert.vue'
 
-// ── Estado ───────────────────────────────────────────────────
 const reservas   = ref([])
 const loading    = ref(true)
 const error      = ref(null)
@@ -216,13 +205,11 @@ const reservaSeleccionada = ref(null)
 const cancelando = ref(null)
 const toastRef   = ref(null)
 
-// ── Carga de datos ───────────────────────────────────────────
 async function cargarReservas() {
   loading.value = true
   error.value   = null
   try {
     const data = await apiGet('/reservas/mis-reservas')
-    // Normalizamos las claves a minúsculas por si el backend las devuelve en MAYÚSCULAS
     reservas.value = (data || []).map(res => {
       const normalized = {}
       Object.keys(res).forEach(key => {
@@ -238,17 +225,13 @@ async function cargarReservas() {
 }
 
 onMounted(cargarReservas)
-
-// ── Colores por estado ───────────────────────────────────────
 function colorEstado(estado) {
   const e = (estado || '').toLowerCase()
   if (e.includes('confirm'))  return { accent: '#1a6b3c', bg: '#d4f0e0', text: '#1a6b3c' }
   if (e.includes('pendiente')) return { accent: '#d97706', bg: '#fde8c0', text: '#92520a' }
   if (e.includes('cancel'))   return { accent: '#c0392b', bg: '#fdd8d8', text: '#8b1a1a' }
-  return { accent: '#888888', bg: '#ebebeb', text: '#4a4a4a' }  // completada / default
+  return { accent: '#888888', bg: '#ebebeb', text: '#4a4a4a' }
 }
-
-// ── Filtros ──────────────────────────────────────────────────
 const filtros = [
   { key: 'todas',       label: 'Todas'       },
   { key: 'proximas',    label: 'Próximas'    },
@@ -276,7 +259,6 @@ function contarFiltro(key) {
   return count
 }
 
-// ── Stats ────────────────────────────────────────────────────
 const stats = computed(() => {
   const activas = reservas.value.filter(r => !(r.estado || '').toLowerCase().includes('cancel'))
   const gastado = activas.reduce((s, r) => s + Number(r.precio_total || 0), 0)
@@ -292,7 +274,6 @@ const stats = computed(() => {
   ]
 })
 
-// ── Helpers de fecha ─────────────────────────────────────────
 function fmtFecha(str) {
   if (!str) return '—'
   const d = new Date(str)
@@ -301,7 +282,6 @@ function fmtFecha(str) {
   return `${d.getUTCDate()} ${meses[d.getUTCMonth()]} ${d.getUTCFullYear()}`
 }
 
-// ── Modal detalle ────────────────────────────────────────────
 function verDetalle(r) {
   reservaSeleccionada.value = r
 }
@@ -318,17 +298,15 @@ function detalleModal(r) {
   return obj
 }
 
-// ── Cancelación ──────────────────────────────────────────────
 function toDateOnlyUTC(fechaStr) {
   if (!fechaStr) return null
   const d = new Date(String(fechaStr) + 'T00:00:00Z')
   if (isNaN(d)) return null
-  return d.toISOString().split('T')[0] // YYYY-MM-DD (UTC)
+  return d.toISOString().split('T')[0]
 }
 
 function puedeGestionar(r) {
   const e = (r.estado || '').toLowerCase()
-  // Permitir cancelar si está confirmada o pendiente
   if (!e.includes('confirm') && !e.includes('pendiente')) return false
   if (!r.fecha_limite_cancelacion) return true
 
@@ -351,14 +329,12 @@ async function confirmarCancelacion(r) {
   try {
     await apiDelete(`/reservas/${idReserva}/cancelar`)
 
-    // ✅ Actualizar localmente de inmediato para reflejar el cambio sin esperar recarga
     const idx = reservas.value.findIndex(x => Number(x.id_reserva) === idReserva)
     if (idx !== -1) reservas.value[idx].estado = 'Cancelada'
 
     toastRef.value?.show('success', 'Reserva cancelada exitosamente.')
     reservaSeleccionada.value = null
 
-    // Recargar en segundo plano para sincronizar con el backend
     await cargarReservas()
   } catch (err) {
     toastRef.value?.show('error', err.message || 'Error al cancelar la reserva.')
@@ -370,35 +346,29 @@ async function confirmarCancelacion(r) {
 
 <style scoped>
 .mis-viajes {
-  --c-bg: #ffffff; /* Fondo blanco para toda la página */
+  --c-bg: #ffffff;
   --c-surface: #ffffff;
-  --c-border: #e2e8f0; /* Borde más claro, similar a otros componentes */
-  --c-text: #113955; /* Color de texto principal, similar al header */
-  --c-muted: #6b7280; /* Color de texto secundario, similar a otros componentes */
+  --c-border: #e2e8f0;
+  --c-text: #113955;
+  --c-muted: #6b7280;
   --font-display: 'Inter', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
   --font-body: 'Inter', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
-  --color-primary: #113955; /* Definir color primario para botones, etc. */
+  --color-primary: #113955;
   --color-primary-dark: #0c2a40;
-
-  /* Ajuste para el header fijo */
-  padding-top: 80px; /* Espacio para el header fijo de 60px + un margen */
-
+  padding-top: 80px;
   background: var(--c-bg);
   min-height: 100vh;
-  font-family: 'Inter', var(--font-body); /* asegurar Inter */
-  color: var(--c-text); /* Mantener el color de texto */
+  font-family: 'Inter', var(--font-body);
+  color: var(--c-text);
 }
-
 .mv-content-wrapper {
-  max-width: 1200px; /* Ajustado para un ancho más amplio, puedes usar 100% si quieres que ocupe todo */
-  margin: 0 auto; /* Centra el contenido */
-  padding: 0 1.5rem 4rem; /* Padding lateral y espacio inferior antes del footer */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
 }
-
-/* ── Header de la página Mis Viajes (no el Header global) ── */
 .mv-page-header {
   margin-bottom: 2.5rem;
 }
