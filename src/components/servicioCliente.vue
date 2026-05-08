@@ -1,6 +1,5 @@
 <template>
-  <div class="page">
-    <Header />
+  <div class="customer-service-content">
     <main class="container">
       <section class="help-center">
         <h2>Centro de ayuda</h2>
@@ -147,17 +146,14 @@
       </section>
 
     </main>
-    <FooterComponent />
   </div>
 </template>
 <script>
-import Header from './Header.vue'
 import SearchBox from './searchBox.vue'
-import FooterComponent from './footer.vue'
 
 export default {
   name: 'AtencionAlCliente',
-  components: { Header, SearchBox, FooterComponent },
+  components: { SearchBox },
 
   data() {
     return {

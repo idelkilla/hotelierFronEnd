@@ -10,7 +10,7 @@ import ForgotPassword    from '../view/ForgotPassword.vue';
 import MisViajes         from '../view/MisViajes.vue';
 import ResetPassword     from '../view/ResetPassword.vue';
 import head              from '../view/head.vue';
-import servicioCliente   from '../components/servicioCliente.vue';
+import servicioCliente   from '../view/servicioCliente.vue';
 
 // Services & Details
 import DetalleHospedaje  from '../view/DetalleHospedaje.vue';

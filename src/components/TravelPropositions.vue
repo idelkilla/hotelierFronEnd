@@ -51,7 +51,7 @@ const plans = [
           </div>
 
           <div class="footer-section">
-            <a href="#" class="action-button">{{ plan.buttonText }}</a>
+            <router-link to="/servicio-cliente" class="action-button">{{ plan.buttonText }}</router-link>
           </div>
         </div>
       </div>
