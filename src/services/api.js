@@ -42,16 +42,16 @@ export function sanitizeProfilePayload(raw) {
   }
 
   const payload = {}
-
-  if (strOrNull(raw.nombre_completo))        payload.nombre_completo            = strOrNull(raw.nombre_completo)
-  if (strOrNull(raw.apellidos))              payload.apellidos                  = strOrNull(raw.apellidos)
+if (strOrNull(raw.nombre_completo))   payload.nombre_completo = strOrNull(raw.nombre_completo)
+payload.segundo_nombre = strOrNull(raw.segundo_nombre)   // ← sin if, siempre se incluye (puede ser null)
+if (strOrNull(raw.apellidos))         payload.apellidos = strOrNull(raw.apellidos)
   if (strOrNull(raw.fecha_nacimiento))       payload.fecha_nacimiento           = strOrNull(raw.fecha_nacimiento)
   if (raw.genero)                            payload.genero                     = generoNorm(raw.genero)
   if (strOrNull(raw.descripcion_personal) !== null) payload.descripcion_personal = strOrNull(raw.descripcion_personal)
   if (intOrNull(raw.id_pais)    !== null)    payload.id_pais                    = intOrNull(raw.id_pais)
   if (intOrNull(raw.id_ciudad)  !== null)    payload.id_ciudad                  = intOrNull(raw.id_ciudad)
   if (intOrNull(raw.id_ubicacion) !== null)  payload.id_ubicacion               = intOrNull(raw.id_ubicacion)
-
+ 
   if (raw.email?.trim())                     payload.email                      = raw.email.trim()
   if (strOrNull(raw.telefono_numero))        payload.telefono_numero            = strOrNull(raw.telefono_numero)
   if (strOrNull(raw.contacto_emergencia_nombre)) payload.contacto_emergencia_nombre = strOrNull(raw.contacto_emergencia_nombre)
@@ -75,7 +75,9 @@ export function sanitizeProfilePayload(raw) {
   if (strOrNull(raw.nacionalidad))           payload.nacionalidad               = strOrNull(raw.nacionalidad)
   if (strOrNull(raw.estado_civil))           payload.estado_civil               = strOrNull(raw.estado_civil)
 
-  return payload
+   // al final de sanitizeProfilePayload, antes del return:
+  console.log('🚀 payload enviado:', JSON.stringify(payload, null, 2))
+  return payload 
 }
 // ─────────────────────────────────────────────
 // Core fetch wrapper

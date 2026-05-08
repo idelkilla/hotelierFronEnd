@@ -740,260 +740,454 @@ html {
 
 .search-button:hover { background-color: #113955; }
 
-
 /* ═══════════════════════════════════════════════════════════════
    RESPONSIVE — TABLET  (≤ 1024px)
 ═══════════════════════════════════════════════════════════════ */
 @media (max-width: 1024px) {
-    .main-content-layout {
-        grid-template-columns: 240px 1fr;
-        gap: 16px;
-    }
+  .main-content-layout { gap: 16px; }
 
-    .tab {
-        padding: 10px 28px;
-        font-size: 13px;
-    }
+  .tab { padding: 10px 20px; font-size: 13px; }
 
-    .accommodation-tabs {
-        margin: 15px 0 10px auto;
-    }
-
-    .card-image-placeholder {
-        width: 190px;
-        min-width: 190px;
-        height: 160px;
-    }
-
-    .card-pricing {
-        width: 150px;
-        min-width: 150px;
-    }
-
-    .price-per-night {
-        font-size: 17px;
-    }
+  .card-image-placeholder { width: 190px; min-width: 190px; height: 160px; }
+  .card-pricing { width: 150px; min-width: 150px; }
+  .price-per-night { font-size: 17px; }
 }
-
 
 /* ═══════════════════════════════════════════════════════════════
    RESPONSIVE — TABLET PEQUEÑA / MÓVIL GRANDE  (≤ 768px)
-   Los filtros se ocultan detrás de un botón desplegable y
-   los resultados ocupan el ancho completo.
 ═══════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
 
-    /* --- Barra de búsqueda --- */
-    .search-bar-content {
-        align-items: stretch;
-    }
+  .search-bar-content { align-items: stretch; }
 
-    .accommodation-tabs {
-        margin: 12px auto 8px;
-        width: 100%;
-        justify-content: center;
-    }
+  .accommodation-tabs {
+    margin: 12px auto 8px;
+    width: 100%;
+    justify-content: center;
+  }
 
-    .tab {
-        padding: 8px 12px;
-        font-size: 12px;
-        gap: 6px;
-    }
+  .tab { padding: 8px 12px; font-size: 12px; gap: 6px; }
+  .tab svg { width: 18px; height: 18px; }
 
-    .tab svg {
-        width: 18px;
-        height: 18px;
-    }
+  /* Layout: columna única */
+  .main-content-layout {
+    flex-direction: column;   /* ← era grid, ahora flex column */
+    gap: 0;
+    padding: 0 12px;
+  }
 
-    /* --- Layout: columna única --- */
-    .main-content-layout {
-        grid-template-columns: 1fr;
-        gap: 0;
-        padding: 0 12px;
-    }
+  /* Resultados primero, filtros debajo */
+  .listings-column { order: 1; }
+  .filters-column  { order: 2; width: 100%; }
 
-    /* --- Filtros colapsables en móvil --- */
-    .filters-column {
-        order: 2; /* va debajo de los resultados */
-        gap: 10px;
-    }
+  /* Botón toggle visible en móvil */
+  .filters-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    background: #113955;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
 
-    /* Botón de "Mostrar filtros" — lo añadimos con JS en el componente Vue,
-       pero aquí definimos el estilo por si se usa */
-    .filters-toggle-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        width: 100%;
-        padding: 12px;
-        background: #113955;
-        color: white;
-        font-size: 14px;
-        font-weight: 600;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        margin-bottom: 12px;
-    }
+  /* Ocultar el contenido de filtros cuando está colapsado */
+  .filters-panel { display: none; }
+  .filters-panel.is-open { display: flex; flex-direction: column; gap: 10px; }
 
-    /* El panel de filtros empieza colapsado en móvil */
-    .filters-panel {
-        display: none;
-    }
+  .services-grid { grid-template-columns: repeat(3, 1fr); }
 
-    .filters-panel.is-open {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    /* Grid de servicios: 3 columnas en tablet pequeña */
-    .services-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    /* --- Resultados: columna completa --- */
-    .listings-column {
-        order: 1;
-    }
-
-    /* --- Hotel card: vertical en móvil grande --- */
-    .hotel-card {
-        flex-direction: column;
-        padding: 12px;
-        gap: 12px;
-    }
-
-    .card-image-placeholder {
-        width: 100%;
-        min-width: unset;
-        height: 200px;
-    }
-
-    .card-pricing {
-        width: 100%;
-        min-width: unset;
-        border-left: none;
-        border-top: 1px solid #f3f4f6;
-        padding: 10px 0 0;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 4px;
-    }
-
-    .card-details {
-        padding: 0;
-    }
-
-    .card-details h3 {
-        font-size: 16px;
-        white-space: normal; /* Permite salto de línea en pantallas pequeñas */
-    }
-
-    .price-per-night {
-        font-size: 18px;
-    }
-
-    .taxes-info {
-        width: 100%;
-        text-align: left;
-    }
+  /* Hotel card: vertical */
+  .hotel-card { flex-direction: column; padding: 12px; gap: 12px; }
+  .card-image-placeholder { width: 100%; min-width: unset; height: 200px; }
+  .card-pricing {
+    width: 100%; min-width: unset;
+    border-left: none; border-top: 1px solid #f3f4f6;
+    padding: 10px 0 0;
+    flex-direction: row; align-items: center;
+    justify-content: space-between; flex-wrap: wrap; gap: 4px;
+  }
+  .card-details { padding: 0; }
+  .card-details h3 { font-size: 16px; white-space: normal; }
+  .price-per-night { font-size: 18px; }
+  .taxes-info { width: 100%; text-align: left; }
 }
-
 
 /* ═══════════════════════════════════════════════════════════════
    RESPONSIVE — MÓVIL  (≤ 480px)
 ═══════════════════════════════════════════════════════════════ */
 @media (max-width: 480px) {
+  .main-container { margin-top: 50px; padding-bottom: 60px; }
+  .search-section-container { padding: 12px 12px 0; }
 
-    .main-container {
-        margin-top: 50px;
-        padding-bottom: 60px;
-    }
+  .accommodation-tabs { border-radius: 12px; padding: 3px; }
+  .tab { padding: 8px 10px; font-size: 11px; gap: 4px; border-radius: 10px; }
+  .tab svg { width: 16px; height: 16px; flex-shrink: 0; }
 
-    .search-section-container {
-        padding: 12px 12px 0;
-    }
+  .services-grid { grid-template-columns: repeat(2, 1fr); }
+  .service-card { min-height: 64px; }
 
-    /* Tabs: solo iconos o texto muy corto */
-    .accommodation-tabs {
-        border-radius: 12px;
-        padding: 3px;
-    }
+  .hotel-card { border-radius: 10px; padding: 10px; }
+  .card-image-placeholder { height: 180px; }
+  .card-details h3 { font-size: 15px; }
+  .amenity-tag { font-size: 11px; padding: 3px 8px; }
+  .price-per-night { font-size: 17px; }
+  .total-price { font-size: 13px; }
+  .rating-info { flex-wrap: wrap; }
+  .card-pricing { flex-direction: column; align-items: flex-start; }
+  .encontrdos { font-size: 14px; }
+  .filter-card-title { font-size: 14px; }
+  .filter-card-box { padding: 14px; }
+}
+/* En desktop el panel siempre visible */
+@media (min-width: 769px) {
+  .filters-panel { display: flex !important; flex-direction: column; gap: 16px; }
+  .filters-toggle-btn { display: none !important; }
+}
+/* ─/* ══════════════════════════════════════════════════
+   CHIPS MÓVIL — siempre ocultos en desktop
+══════════════════════════════════════════════════ */
+.mobile-filter-chips {
+  display: none;
+}
 
-    .tab {
-        padding: 8px 10px;
-        font-size: 11px;
-        gap: 4px;
-        border-radius: 10px;
-    }
+/* ══════════════════════════════════════════════════
+   RESPONSIVE ≤ 768px  (móvil)
+══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
 
-    .tab svg {
-        width: 16px;
-        height: 16px;
-        flex-shrink: 0;
-    }
+  /* Layout: columna única, filters-column DESAPARECE */
+  .main-content-layout {
+    flex-direction: column;
+    gap: 0;
+    padding: 0 12px;
+  }
 
-    /* Grid de servicios: 2 columnas en móvil */
-    .services-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+  .filters-column {
+    display: none !important;   /* oculto en móvil */
+  }
 
-    .service-card {
-        min-height: 64px;
-    }
+  .listings-column {
+    width: 100%;
+  }
 
-    /* Hotel card ajustada */
-    .hotel-card {
-        border-radius: 10px;
-        padding: 10px;
-    }
+  /* Chips scrolleables debajo de los tabs */
+  .mobile-filter-chips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 8px 0 4px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    width: 100%;
+  }
+  .mobile-filter-chips::-webkit-scrollbar { display: none; }
 
-    .card-image-placeholder {
-        height: 180px;
-    }
+  .chip-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    padding: 7px 14px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 50px;
+    background: white;
+    font-size: 13px;
+    font-weight: 500;
+    color: #113955;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
 
-    .card-details h3 {
-        font-size: 15px;
-    }
+  /* Chip principal "Filtros" con ícono — igual que Expedia */
+  .chip-filter-btn.chip-main {
+    background: #113955;
+    color: white;
+    border-color: #113955;
+    font-weight: 600;
+  }
 
-    .amenity-tag {
-        font-size: 11px;
-        padding: 3px 8px;
-    }
+  .chip-filter-btn.active {
+    background: #113955;
+    color: white;
+    border-color: #113955;
+  }
 
-    .price-per-night {
-        font-size: 17px;
-    }
+  /* Hotel card vertical */
+  .hotel-card {
+    flex-direction: column;
+    padding: 12px;
+    gap: 12px;
+  }
+  .card-image-placeholder {
+    width: 100%;
+    min-width: unset;
+    height: 200px;
+  }
+  .card-pricing {
+    width: 100%;
+    min-width: unset;
+    border-left: none;
+    border-top: 1px solid #f3f4f6;
+    padding: 10px 0 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .card-details { padding: 0; }
+  .card-details h3 { font-size: 16px; white-space: normal; }
+  .price-per-night { font-size: 18px; }
+  .taxes-info { width: 100%; text-align: left; }
+}
 
-    .total-price {
-        font-size: 13px;
-    }
+/* ══════════════════════════════════════════════════
+   RESPONSIVE ≤ 480px  (móvil pequeño)
+══════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .main-container { margin-top: 50px; padding-bottom: 60px; }
+  .search-section-container { padding: 12px 12px 0; }
+  .accommodation-tabs { border-radius: 12px; padding: 3px; }
+  .tab { padding: 8px 10px; font-size: 11px; gap: 4px; border-radius: 10px; }
+  .tab svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .hotel-card { border-radius: 10px; padding: 10px; }
+  .card-image-placeholder { height: 180px; }
+  .card-details h3 { font-size: 15px; }
+  .amenity-tag { font-size: 11px; padding: 3px 8px; }
+  .price-per-night { font-size: 17px; }
+  .total-price { font-size: 13px; }
+  .rating-info { flex-wrap: wrap; }
+  .card-pricing { flex-direction: column; align-items: flex-start; }
+  .encontrdos { font-size: 14px; }
+}
 
-    /* Rating compacto */
-    .rating-info {
-        flex-wrap: wrap;
-    }
+/* ══════════════════════════════════════════════════
+   DESKTOP > 768px — filters-column siempre visible
+══════════════════════════════════════════════════ */
+@media (min-width: 769px) {
+  .filters-column { display: flex !important; flex-direction: column; gap: 16px; }
+  .mobile-filter-chips { display: none !important; }
+  .filter-drawer-overlay { display: none !important; }
+}
 
-    /* Precio en fila */
-    .card-pricing {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+/* Drawer — global porque usa teleport to="body" */
+.filter-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 9999;
+  display: flex;
+  align-items: flex-end;
+}
+.filter-drawer {
+  background: #fff;
+  width: 100%;
+  max-height: 85vh;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.filter-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
+}
+.filter-drawer-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #113955;
+  margin: 0;
+}
+.drawer-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #555;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+.filter-drawer-body {
+  overflow-y: auto;
+  padding: 16px 20px;
+  flex: 1;
+}
+.drawer-section {
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.drawer-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+.drawer-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #113955;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.filter-drawer-footer {
+  display: flex;
+  gap: 12px;
+  padding: 14px 20px;
+  border-top: 1px solid #eee;
+  flex-shrink: 0;
+}
+.drawer-clear-btn {
+  flex: 1;
+  padding: 12px;
+  border: 1.5px solid #113955;
+  background: white;
+  color: #113955;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.drawer-apply-btn {
+  flex: 2;
+  padding: 12px;
+  border: none;
+  background: #113955;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+}
+/* Animación */
+.drawer-enter-active,
+.drawer-leave-active { transition: opacity 0.25s ease; }
+.drawer-enter-active .filter-drawer,
+.drawer-leave-active .filter-drawer { transition: transform 0.3s cubic-bezier(.32,.72,0,1); }
+.drawer-enter-from,
+.drawer-leave-to { opacity: 0; }
+.drawer-enter-from .filter-drawer,
+.drawer-leave-to .filter-drawer { transform: translateY(100%); }
 
-    .encontrdos {
-        font-size: 14px;
-    }
-
-    /* Filtro: title más compacto */
-    .filter-card-title {
-        font-size: 14px;
-    }
-
-    .filter-card-box {
-        padding: 14px 14px;
-    }
+/* Checkboxes y stars dentro del drawer */
+.drawer-section .filter-checkbox-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.drawer-section .filter-checkbox-row:last-child { border-bottom: none; }
+.drawer-section .filter-checkbox-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.drawer-section .filter-checkbox-label { font-size: 14px; color: #333; }
+.drawer-section .filter-checkbox-count { font-size: 12px; color: #888; }
+.drawer-section input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid #aab0bc;
+  border-radius: 4px;
+  cursor: pointer;
+  background: white;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.2s;
+}
+.drawer-section input[type="checkbox"]:checked {
+  background-color: #113955;
+  border-color: #113955;
+}
+.drawer-section input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 6px;
+  height: 10px;
+  border: 2px solid white;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+.drawer-section .star-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.drawer-section .star-row:last-child { border-bottom: none; }
+.drawer-section .star-icons {
+  display: inline-flex;
+  gap: 2px;
+}
+.drawer-section .name-search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: white;
+}
+.drawer-section .name-search-input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+  color: #333;
+}
+.drawer-section .price-inputs-container {
+  display: flex;
+  gap: 10px;
+}
+.drawer-section .price-card {
+  flex: 1;
+  border: 1px solid #aab0bc;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+.drawer-section .price-label {
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 4px;
+}
+.drawer-section .price-input-wrapper {
+  display: flex;
+  align-items: center;
+}
+.drawer-section .currency {
+  font-size: 14px;
+  font-weight: bold;
+  color: #113955;
+  margin-right: 2px;
+}
+.drawer-section .price-input-wrapper input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 15px;
+  font-weight: bold;
+  color: #113955;
+  background: transparent;
 }

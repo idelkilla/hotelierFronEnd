@@ -2,7 +2,6 @@
   <div class="main-container">
     <div class="search-section-container">
       <div class="search-bar-content">
-        <!-- Reemplazamos el buscador actual con el componente FormSearch -->
         <FormSearch
           :initial-destino="searchDestino"
           :initial-entrada="searchEntrada"
@@ -179,101 +178,170 @@
       <!-- RESULTADOS -->
       <div class="listings-column">
 
-        <!-- TABS ahora viven aquí -->
+        <!-- TABS -->
         <div class="accommodation-tabs">
           <button class="tab" :class="{ active: activeTab === 'all' }" @click="activeTab = 'all'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-              <path d="M7 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/>
-              <path d="M22 17v-3h-20"/><path d="M2 8v9"/>
-              <path d="M12 14h10v-2a3 3 0 0 0 -3 -3h-7v5z"/>
-            </svg>
-            Todos los hospedajes
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M22 17v-3h-20"/><path d="M2 8v9"/><path d="M12 14h10v-2a3 3 0 0 0 -3 -3h-7v5z"/></svg>
+            Todos
           </button>
-
           <button class="tab" :class="{ active: activeTab === 'Hotel' }" @click="activeTab = 'Hotel'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-              <path d="M3 21l18 0"/><path d="M9 8l1 0"/><path d="M9 12l1 0"/>
-              <path d="M9 16l1 0"/><path d="M14 8l1 0"/><path d="M14 12l1 0"/>
-              <path d="M14 16l1 0"/><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16"/>
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 21l18 0"/><path d="M9 8l1 0"/><path d="M9 12l1 0"/><path d="M9 16l1 0"/><path d="M14 8l1 0"/><path d="M14 12l1 0"/><path d="M14 16l1 0"/><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16"/></svg>
             Hoteles
           </button>
-
           <button class="tab" :class="{ active: activeTab === 'Casa' }" @click="activeTab = 'Casa'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-              <path d="M5 12l-2 0l9 -9l9 9l-2 0"/>
-              <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"/>
-              <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"/>
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l-2 0l9 -9l9 9l-2 0"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"/><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"/></svg>
             Casa
           </button>
         </div>
 
-        <div v-if="isLoading" class="estado-busqueda">
-          <p>Buscando hospedajes...</p>
+        <!-- CHIPS (solo móvil ≤768px) -->
+        <div class="mobile-filter-chips">
+          <button class="chip-filter-btn chip-main" @click="abrirDrawer('todos')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+            Filtros
+          </button>
+          <button class="chip-filter-btn" :class="{ active: selectedTipos.length > 0 }" @click="abrirDrawer('tipo')">
+            Tipo <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <button class="chip-filter-btn" :class="{ active: minPrice || maxPrice }" @click="abrirDrawer('precio')">
+            Precio <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <button class="chip-filter-btn" :class="{ active: selectedServicios.length > 0 }" @click="abrirDrawer('servicios')">
+            Servicios <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <button class="chip-filter-btn" :class="{ active: selectedStars.length > 0 }" @click="abrirDrawer('estrellas')">
+            Puntuación <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
         </div>
 
-        <div v-else-if="errorMsg" class="estado-busqueda">
-          <p style="color: #c00">{{ errorMsg }}</p>
-        </div>
+        <!-- DRAWER (teleport al body para evitar z-index issues) -->
+        <teleport to="body">
+          <transition name="drawer">
+            <div v-if="drawerAbierto" class="filter-drawer-overlay" @click.self="cerrarDrawer">
+              <div class="filter-drawer">
+                <div class="filter-drawer-header">
+                  <h3>{{ drawerTitulo }}</h3>
+                  <button class="drawer-close-btn" @click="cerrarDrawer">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </button>
+                </div>
+                <div class="filter-drawer-body">
 
-        <div v-else-if="filteredHoteles.length === 0" class="estado-busqueda">
-          <p>No se encontraron hospedajes para tu búsqueda.</p>
-        </div>
+                  <template v-if="filtroActivo === 'todos'">
+                    <div class="drawer-section">
+                      <p class="drawer-section-title">Buscar por nombre</p>
+                      <div class="name-search-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <input type="text" v-model="searchByName" placeholder="ej., Marriott" class="name-search-input" />
+                      </div>
+                    </div>
+                    <div class="drawer-section">
+                      <p class="drawer-section-title">Rango de Precio</p>
+                      <div class="price-inputs-container">
+                        <div class="price-card"><span class="price-label">Mínimo</span><div class="price-input-wrapper"><span class="currency">$</span><input type="text" v-model="minPrice" placeholder="0" /></div></div>
+                        <div class="price-card"><span class="price-label">Máximo</span><div class="price-input-wrapper"><span class="currency">$</span><input type="text" v-model="maxPrice" placeholder="0" /></div></div>
+                      </div>
+                    </div>
+                    <div class="drawer-section">
+                      <p class="drawer-section-title">Tipo de alojamiento</p>
+                      <div v-for="tipo in tiposDisponibles" :key="tipo" class="filter-checkbox-row">
+                        <div class="filter-checkbox-left"><input type="checkbox" :value="tipo" v-model="selectedTipos" /><span class="filter-checkbox-label">{{ tipo }}</span></div>
+                      </div>
+                    </div>
+                    <div class="drawer-section">
+                      <p class="drawer-section-title">Servicios populares</p>
+                      <div v-for="servicio in serviciosDisponibles" :key="servicio" class="filter-checkbox-row">
+                        <div class="filter-checkbox-left"><input type="checkbox" :value="servicio" v-model="selectedServicios" /><span class="filter-checkbox-label">{{ servicio }}</span></div>
+                      </div>
+                    </div>
+                    <div class="drawer-section">
+                      <p class="drawer-section-title">Puntuación</p>
+                      <div class="star-row"><div class="filter-checkbox-left"><input type="checkbox" v-model="selectedStars" value="5" /><span class="star-icons"><svg v-for="i in 5" :key="i" width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2"><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/></svg></span></div><span class="filter-checkbox-count">{{ contarPorCalificacion(9) }}</span></div>
+                      <div class="star-row"><div class="filter-checkbox-left"><input type="checkbox" v-model="selectedStars" value="4" /><span class="star-icons"><svg v-for="i in 4" :key="i" width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2"><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/></svg></span></div><span class="filter-checkbox-count">{{ contarPorCalificacion(7) }}</span></div>
+                      <div class="star-row"><div class="filter-checkbox-left"><input type="checkbox" v-model="selectedStars" value="3" /><span class="star-icons"><svg v-for="i in 3" :key="i" width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2"><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/></svg></span></div><span class="filter-checkbox-count">{{ contarPorCalificacion(5) }}</span></div>
+                    </div>
+                  </template>
+
+                  <template v-else-if="filtroActivo === 'precio'">
+                    <div class="drawer-section">
+                      <p class="drawer-section-title">Rango de Precio</p>
+                      <div class="price-inputs-container">
+                        <div class="price-card"><span class="price-label">Mínimo</span><div class="price-input-wrapper"><span class="currency">$</span><input type="text" v-model="minPrice" placeholder="0" /></div></div>
+                        <div class="price-card"><span class="price-label">Máximo</span><div class="price-input-wrapper"><span class="currency">$</span><input type="text" v-model="maxPrice" placeholder="0" /></div></div>
+                      </div>
+                    </div>
+                  </template>
+
+                  <template v-else-if="filtroActivo === 'tipo'">
+                    <div class="drawer-section">
+                      <p class="drawer-section-title">Tipo de alojamiento</p>
+                      <div v-for="tipo in tiposDisponibles" :key="tipo" class="filter-checkbox-row">
+                        <div class="filter-checkbox-left"><input type="checkbox" :value="tipo" v-model="selectedTipos" /><span class="filter-checkbox-label">{{ tipo }}</span></div>
+                      </div>
+                    </div>
+                  </template>
+
+                  <template v-else-if="filtroActivo === 'servicios'">
+                    <div class="drawer-section">
+                      <p class="drawer-section-title">Servicios</p>
+                      <div v-for="servicio in serviciosDisponibles" :key="servicio" class="filter-checkbox-row">
+                        <div class="filter-checkbox-left"><input type="checkbox" :value="servicio" v-model="selectedServicios" /><span class="filter-checkbox-label">{{ servicio }}</span></div>
+                      </div>
+                    </div>
+                  </template>
+
+                  <template v-else-if="filtroActivo === 'estrellas'">
+                    <div class="drawer-section">
+                      <p class="drawer-section-title">Puntuación</p>
+                      <div class="star-row"><div class="filter-checkbox-left"><input type="checkbox" v-model="selectedStars" value="5" /><span class="star-icons"><svg v-for="i in 5" :key="i" width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2"><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/></svg></span><span style="margin-left:8px">{{ contarPorCalificacion(9) }}</span></div></div>
+                      <div class="star-row"><div class="filter-checkbox-left"><input type="checkbox" v-model="selectedStars" value="4" /><span class="star-icons"><svg v-for="i in 4" :key="i" width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2"><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/></svg></span><span style="margin-left:8px">{{ contarPorCalificacion(7) }}</span></div></div>
+                      <div class="star-row"><div class="filter-checkbox-left"><input type="checkbox" v-model="selectedStars" value="3" /><span class="star-icons"><svg v-for="i in 3" :key="i" width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="2"><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/></svg></span><span style="margin-left:8px">{{ contarPorCalificacion(5) }}</span></div></div>
+                    </div>
+                  </template>
+
+                </div>
+                <div class="filter-drawer-footer">
+                  <button class="drawer-clear-btn" @click="limpiarFiltros">Limpiar todo</button>
+                  <button class="drawer-apply-btn" @click="cerrarDrawer">Ver {{ filteredHoteles.length }} resultados</button>
+                </div>
+              </div>
+            </div>
+          </transition>
+        </teleport>
+
+        <!-- RESULTADOS -->
+        <div v-if="isLoading" class="estado-busqueda"><p>Buscando hospedajes...</p></div>
+        <div v-else-if="errorMsg" class="estado-busqueda"><p style="color:#c00">{{ errorMsg }}</p></div>
+        <div v-else-if="filteredHoteles.length === 0" class="estado-busqueda"><p>No se encontraron hospedajes para tu búsqueda.</p></div>
 
         <template v-else>
           <h2 class="encontrdos">{{ filteredHoteles.length }} hospedajes encontrados</h2>
 
-          <div class="hotel-card" v-for="hotel in filteredHoteles" :key="hotel.id_servicio" @click="verDetalle(hotel)"
-            style="cursor: pointer">
+          <div class="hotel-card" v-for="hotel in filteredHoteles" :key="hotel.id_servicio" @click="verDetalle(hotel)" style="cursor:pointer">
             <div class="card-image-placeholder slider-container">
               <button class="slider-arrow left" @click.stop="prevImg(hotel)">&#10094;</button>
-
               <template v-if="hotel.imagenes && hotel.imagenes.length > 0">
                 <img :src="hotel.imagenes[hotel.currentImg]" :alt="hotel.hotel" class="hotel-img" />
               </template>
-              <div v-else class="img-sin-foto">
-                <span>Sin foto</span>
-              </div>
-
-              <button class="wishlist-button" :class="{ 'is-active': hotel.isFavorite }"
-                @click.stop="hotel.isFavorite = !hotel.isFavorite">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" fill="none"
-                  class="heart-svg-fix">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" />
-                </svg>
+              <div v-else class="img-sin-foto"><span>Sin foto</span></div>
+              <button class="wishlist-button" :class="{ 'is-active': hotel.isFavorite }" @click.stop="hotel.isFavorite = !hotel.isFavorite">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" fill="none" class="heart-svg-fix"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"/></svg>
               </button>
-
               <button class="slider-arrow right" @click.stop="nextImg(hotel)">&#10095;</button>
-
               <div class="slider-dots">
-                <span v-for="(img, index) in hotel.imagenes" :key="index"
-                  :class="{ active: index === hotel.currentImg }"></span>
+                <span v-for="(img, index) in hotel.imagenes" :key="index" :class="{ active: index === hotel.currentImg }"></span>
               </div>
             </div>
 
             <div class="card-details">
               <h3>{{ hotel.hotel }}</h3>
               <p class="subtitle">{{ hotel.ubicacion }}</p>
-
               <div class="amenities">
-                <span v-for="amenity in hotel.amenidades.slice(0, 4)" :key="amenity" class="amenity-tag">
-                  {{ amenity }}
-                
-                </span>
-                <span v-if="hotel.amenidades.length > 4" class="amenity-tag">
-                  +{{ hotel.amenidades.length - 4 }} más
-                </span>
+                <span v-for="amenity in hotel.amenidades.slice(0, 4)" :key="amenity" class="amenity-tag">{{ amenity }}</span>
+                <span v-if="hotel.amenidades.length > 4" class="amenity-tag">+{{ hotel.amenidades.length - 4 }} más</span>
               </div>
-
               <div class="rating-info">
-                <span class="rating" :style="!hotel.calificacion_promedio ? 'background:#ccc' : ''">
-                  {{ hotel.calificacion_promedio ?? '—' }}
-                </span>
+                <span class="rating" :style="!hotel.calificacion_promedio ? 'background:#ccc' : ''">{{ hotel.calificacion_promedio ?? '—' }}</span>
                 <div class="rating-text-stack">
                   <span class="rating-status">{{ textoCalificacion(hotel.calificacion_promedio) }}</span>
                   <span class="reviews">{{ hotel.total_resenas ?? 0 }} opiniones</span>
@@ -282,19 +350,17 @@
             </div>
 
             <div class="card-pricing">
-              <span class="price-per-night">
-                ${{ hotel.precio_min.toFixed(2) }} <small>por noche</small>
-              </span>
-              <span class="total-price" v-if="noches > 0">
-                ${{ (hotel.precio_min * noches).toFixed(2) }} <small>en total</small>
-              </span>
+              <span class="price-per-night">${{ hotel.precio_min.toFixed(2) }} <small>por noche</small></span>
+              <span class="total-price" v-if="noches > 0">${{ (hotel.precio_min * noches).toFixed(2) }} <small>en total</small></span>
               <p class="taxes-info">Total con impuestos y cargos incluidos</p>
             </div>
           </div>
         </template>
-      </div>
-    </div>
-  </div>
+
+      </div><!-- fin listings-column -->
+
+    </div><!-- fin main-content-layout -->
+  </div><!-- fin main-container -->
 </template>
 
 <script setup>
@@ -435,7 +501,11 @@ function contarPorEstrellas(estrellas) {
     return getStarBucket(parseFloat(h.calificacion_promedio)) === Number(estrellas)
   }).length
 }
-
+function toggleServicio(nombre) {
+  const idx = selectedServicios.value.indexOf(nombre)
+  if (idx === -1) selectedServicios.value.push(nombre)
+  else selectedServicios.value.splice(idx, 1)
+}
 function contarPorServicio(nombre) {
   return hoteles.value.filter(h =>
     (h.amenidades || []).some(a => a.toLowerCase().includes(nombre.toLowerCase()))
@@ -477,7 +547,7 @@ function verDetalle(hotel) {
     },
   })
 }
-
+const filtrosAbiertos = ref(false)
 // ── Backend ───────────────────────────────────────────────────────────────────
 async function ejecutarBusqueda() {
   isLoading.value = true
@@ -579,7 +649,38 @@ function verEnMapa() {
   // Lógica para abrir mapa pantalla completa
   console.log("Abriendo mapa...")
 }
+// Estado del drawer
+const drawerAbierto  = ref(false)
+const filtroActivo   = ref('todos')
 
+const drawerTitulos = {
+  todos:     'Todos los filtros',
+  precio:    'Precio',
+  tipo:      'Tipo de alojamiento',
+  servicios: 'Servicios',
+  estrellas: 'Puntuación',
+}
+const drawerTitulo = computed(() => drawerTitulos[filtroActivo.value] || 'Filtros')
+
+function abrirDrawer(tipo) {
+  filtroActivo.value  = tipo
+  drawerAbierto.value = true
+  document.body.style.overflow = 'hidden'
+}
+
+function cerrarDrawer() {
+  drawerAbierto.value = false
+  document.body.style.overflow = ''
+}
+
+function limpiarFiltros() {
+  minPrice.value         = null
+  maxPrice.value         = null
+  selectedStars.value    = []
+  selectedServicios.value = []
+  selectedTipos.value    = []
+  searchByName.value     = ''
+}
 </script>
 
 <style scoped src="../assets/css/cuerpo.css"></style>
