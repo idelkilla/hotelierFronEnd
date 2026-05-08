@@ -172,6 +172,12 @@
                   <span v-if="errores.apellidos" class="error">{{ errores.apellidos }}</span>
                 </div>
               </div>
+              <div class="form-row-2">
+  <div class="form-field">
+    <label>Segundo nombre <span style="color:#aaa; font-weight:400;">(opcional)</span></label>
+    <input v-model="formPerfil.segundo_nombre" type="text" placeholder="Opcional" />
+  </div>
+</div>
               <div class="form-row-3">
                 <div class="form-field">
                   <label>Fecha de nacimiento</label>
@@ -247,10 +253,7 @@
                   <input v-model="formPerfil.contacto_emergencia_tel" type="tel" />
                 </div>
               </div>
-              <div class="form-field">
-                <label>Dirección / Ubicación</label>
-                <input v-model="formPerfil.ubicacion_nombre" type="text" placeholder="Ciudad, País" />
-              </div>
+              
             </div>
 
          <!-- Datos biográficos & salud -->
@@ -801,6 +804,7 @@ const navItems = [
 const perfil = reactive({
   id_persona: null,
   nombre_completo: localStorage.getItem('user_name') || '',
+  segundo_nombre: '',   // ← AGREGAR
   apellidos: '',
   num_viajero_conocido: '',
   num_dhs_trip: '',
@@ -838,6 +842,7 @@ const perfil = reactive({
 
 const formPerfil = reactive({
   nombre_completo: '',
+  segundo_nombre: '',  
   apellidos: '',
   fecha_nacimiento: '',
   genero: '',
@@ -944,6 +949,7 @@ async function guardarTodosLosDatos() {
     const payload = sanitizeProfilePayload(formPerfil)
     await apiPut('/perfil/profile/update', payload)
     perfil.nombre_completo            = formPerfil.nombre_completo
+    perfil.segundo_nombre             = formPerfil.segundo_nombre 
     perfil.apellidos                  = formPerfil.apellidos
     perfil.fecha_nacimiento           = formPerfil.fecha_nacimiento
     perfil.genero                     = formPerfil.genero
@@ -1258,8 +1264,9 @@ async function fetchUserData() {
     if (DOCUMENTACION) Object.assign(perfil.DOCUMENTACION, DOCUMENTACION)
     loginItems.value[0].value = perfil.email
     Object.assign(formPerfil, {
-      nombre_completo:            perfil.nombre_completo,
-      apellidos:                  perfil.apellidos,
+      nombre_completo:  perfil.nombre_completo,
+  apellidos:        perfil.apellidos,
+  segundo_nombre:   perfil.segundo_nombre ?? '', 
       fecha_nacimiento:           perfil.fecha_nacimiento,
       genero:                     perfil.genero,
       descripcion_personal:       perfil.descripcion_personal,
