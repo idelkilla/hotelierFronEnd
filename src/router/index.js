@@ -7,6 +7,7 @@ import Register          from '../view/register.vue';
 import Home              from '../view/Home.vue';
 import Perfil            from '../view/Perfil.vue';
 import ForgotPassword    from '../view/ForgotPassword.vue';
+import MisViajes         from '../view/MisViajes.vue';
 import ResetPassword     from '../view/ResetPassword.vue';
 import head              from '../view/head.vue';
 import servicioCliente   from '../components/servicioCliente.vue';
@@ -38,6 +39,7 @@ const routes = [
   { path: '/home',             name: 'Home',             component: Home },
   { path: '/login',            name: 'Login',            component: Login },
   { path: '/register',         name: 'Register',         component: Register },
+  { path: '/mis-viajes',       name: 'MisViajes',        component: MisViajes, meta: { requiresAuth: true } },
   { path: '/services',         name: 'servicesMenu',     component: servicesMenu },
   { path: '/head',             name: 'Head',             component: head },
   { path: '/vuelos',           name: 'Vuelos',           component: () => import('../components/Vuelos.vue') },

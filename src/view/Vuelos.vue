@@ -166,16 +166,19 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+
 import Header from "../components/Header.vue";
-import VuelosBuscar from"../components/VuelosSearch.vue";
-import FiltrosVuelos from"../components/FiltrosVuelos.vue";
-import OpcionesVuelos from '../components/OpcionesVuelos.vue';
-import { buscarVuelos } from '../services/vueloService';
-import { useRouter } from 'vue-router';
+import FooterComponent from '../components/footer.vue';
+import VuelosBuscar from "../components/VuelosSearch.vue";
+import FiltrosVuelos from "../components/FiltrosVuelos.vue";
+import OpcionesVuelos from "../components/OpcionesVuelos.vue";
+
+import { buscarVuelos } from "../services/vueloService";
 
 const route = useRoute();
 const router = useRouter();
+
 const vuelosResultados = ref([]);
 const cargando = ref(false);
 
@@ -188,14 +191,20 @@ async function ejecutarBusqueda() {
   busqueda.value.id_origen = route.query.id_origen || null;
   busqueda.value.id_destino = route.query.id_destino || null;
 
-  if (!route.query.id_origen && !route.query.id_destino) return;
+  // Evita requests incompletas: el servicio requiere fecha_salida.
+  const fecha_salida = route.query.fecha_salida;
+  if (!route.query.id_origen || !route.query.id_destino || !fecha_salida) {
+    vuelosResultados.value = [];
+    return;
+  }
 
   cargando.value = true;
   try {
+    // Enviamos solamente lo que el vueloService sabe mapear a la API.
     const data = await buscarVuelos(route.query);
     vuelosResultados.value = data;
   } catch (error) {
-    console.error('Error en búsqueda de vuelos:', error);
+    console.error("Error en búsqueda de vuelos:", error);
   } finally {
     cargando.value = false;
   }
@@ -203,23 +212,33 @@ async function ejecutarBusqueda() {
 
 onMounted(ejecutarBusqueda);
 
-watch(() => route.query, ejecutarBusqueda, { deep: true });
+watch(
+  () => route.query,
+  () => ejecutarBusqueda(),
+  { deep: true }
+);
 
 function aplicarFiltros(filtros) {
-  console.log('Filtros aplicados:', filtros);
   const query = { ...route.query };
 
+  // Nombre (si tu backend lo soporta)
   if (filtros.nombre) query.nombre = filtros.nombre;
   else delete query.nombre;
 
-  if (filtros.aerolineas?.length) query.aerolineas = filtros.aerolineas.join(',');
+  // Aerolíneas: el backend suele aceptar una lista (por coma)
+  if (filtros.aerolineas?.length) query.aerolineas = filtros.aerolineas.join(",");
   else delete query.aerolineas;
 
-  if (filtros.escalas?.length) query.escalas = filtros.escalas[0];
+  // Escalas (directo / 1 escala / 2+). En tu FiltrosVuelos emite "valor" como '0'|'1'|'2+'
+  if (filtros.escalas?.length) query.escalas = filtros.escalas.join(",");
   else delete query.escalas;
 
-  if (filtros.claseId) query.clase = filtros.claseId;
-  if (filtros.tiempoMaximoHoras) query.tiempo_max = filtros.tiempoMaximoHoras;
+  // IMPORTANTE: tu vueloService/buscarVuelos espera id_clase y max_horas
+  if (filtros.claseId) query.id_clase = filtros.claseId;
+  else delete query.id_clase;
+
+  if (filtros.tiempoMaximoHoras) query.max_horas = filtros.tiempoMaximoHoras;
+  else delete query.max_horas;
 
   router.push({ query });
 }

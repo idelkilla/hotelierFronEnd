@@ -68,7 +68,7 @@
     <template v-if="isMobile">
       <div class="divider mobile-only-content" />
       <router-link to="/servicio-cliente" class="menu-item mobile-only-content">Servicio al cliente</router-link>
-      <button class="menu-item mobile-only-content" type="button">Mis viajes</button>
+      <button class="menu-item mobile-only-content" type="button" @click="irAMisViajes">Mis viajes</button>
       <button class="menu-item mobile-only-content" type="button" @click="$emit('open-services')">Planea tu viaje</button>
       <div class="divider mobile-only-content" />
     </template>
@@ -164,6 +164,11 @@ const irAFav = () => {
 
 const irAServicioCliente = () => {
   router.push('/servicio-cliente');
+  emit("close");
+};
+
+const irAMisViajes = () => {
+  router.push('/mis-viajes');
   emit("close");
 };
 

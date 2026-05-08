@@ -67,15 +67,23 @@ export async function buscarVuelos(params = {}) {
   const qs = new URLSearchParams()
 
   // Required
-  qs.set('id_origen',    params.id_origen)
-  qs.set('id_destino',   params.id_destino)
+  qs.set('id_origen', params.id_origen)
+  qs.set('id_destino', params.id_destino)
   qs.set('fecha_salida', params.fecha_salida)
 
-  // Optional
-  if (params.pasajeros)    qs.set('pasajeros',    params.pasajeros)
-  if (params.id_clase)     qs.set('id_clase',     params.id_clase)
+  // Optional (base)
+  if (params.pasajeros) qs.set('pasajeros', params.pasajeros)
+  if (params.id_clase) qs.set('id_clase', params.id_clase)
   if (params.id_proveedor) qs.set('id_proveedor', params.id_proveedor)
-  if (params.max_horas)    qs.set('max_horas',    params.max_horas)
+  if (params.max_horas) qs.set('max_horas', params.max_horas)
+
+  // Optional (filtros sidebar)
+  // - nombre: texto libre
+  // - aerolineas: lista (normalmente por coma)
+  // - escalas: lista (normalmente por coma)
+  if (params.nombre) qs.set('nombre', params.nombre)
+  if (params.aerolineas) qs.set('aerolineas', params.aerolineas)
+  if (params.escalas) qs.set('escalas', params.escalas)
 
   return apiFetch(`/api/vuelos/buscar?${qs}`)
 }

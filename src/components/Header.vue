@@ -22,7 +22,7 @@
     <div class="header-right">
       <nav class="header-links desktop-only">
         <router-link to="/servicio-cliente">Servicio al cliente</router-link>
-        <a>Mis viajes</a>
+        <router-link to="/mis-viajes">Mis viajes</router-link>
       </nav>
 
       <div class="message-icon">

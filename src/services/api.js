@@ -75,9 +75,8 @@ if (strOrNull(raw.apellidos))         payload.apellidos = strOrNull(raw.apellido
   if (strOrNull(raw.nacionalidad))           payload.nacionalidad               = strOrNull(raw.nacionalidad)
   if (strOrNull(raw.estado_civil))           payload.estado_civil               = strOrNull(raw.estado_civil)
 
-   // al final de sanitizeProfilePayload, antes del return:
-  console.log('🚀 payload enviado:', JSON.stringify(payload, null, 2))
-  return payload 
+  // al final de sanitizeProfilePayload, antes del return:
+  return payload
 }
 // ─────────────────────────────────────────────
 // Core fetch wrapper
@@ -86,18 +85,10 @@ export async function apiFetch(path, options = {}) {
   const token   = localStorage.getItem('user_token')
   const headers = { ...options.headers }
 
-  console.log('🌐 apiFetch:', {
-    path,
-    method: options.method || 'GET',
-    hasToken: !!token,
-    url: `${API}${path}`
-  })
+  // No loguear info sensible/operativa (tokens/URLs) en consola.
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`
-    console.log(`✅ Token añadido: ${token.slice(0, 20)}...`)
-  } else {
-    console.warn('⚠️ No hay token en localStorage')
   }
 
   if (!(options.body instanceof FormData) && !headers['Content-Type']) {
@@ -111,7 +102,7 @@ export async function apiFetch(path, options = {}) {
       credentials: 'include'  // necesario para cookies de sesión
     })
 
-    console.log(`📊 Response status: ${res.status} ${res.statusText}`)
+    // status logs deshabilitados para no saturar consola
 
     if (res.status === 401 && token) {
       let errBody = {}
@@ -123,7 +114,7 @@ export async function apiFetch(path, options = {}) {
       const esSesionExpirada = msg.includes('token') || msg.includes('autenti')
 
       if (esSesionExpirada && msg.includes('token')) {
-        console.warn('⚠️ Token inválido o expirado. Redirigiendo a login.')
+      // Mensaje genérico para no filtrar detalles en consola
         localStorage.removeItem('user_token')
         localStorage.removeItem('user_role')
         localStorage.removeItem('user_name')
@@ -145,11 +136,7 @@ export async function apiFetch(path, options = {}) {
         err = { message: `Error ${res.status}` }
       }
 
-      console.error('❌ API Error:', {
-        status:  res.status,
-        message: err.message || err.error,
-        details: err
-      })
+      // Error detallado solo en el backend; en frontend mostramos mensaje genérico.
 
       // Lanzar con el mensaje del backend para que el componente lo muestre
       const error    = new Error(err.message || err.error || `Error ${res.status}`)
@@ -159,11 +146,10 @@ export async function apiFetch(path, options = {}) {
     }
 
     const data = await res.json()
-    console.log('✅ Response data:', data)
     return data
 
   } catch (err) {
-    console.error('❌ Fetch error:', err.message)
+    // Evitar imprimir detalles internos en consola del cliente.
     throw err
   }
 }

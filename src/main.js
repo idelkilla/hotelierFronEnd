@@ -7,8 +7,7 @@ import './assets/css/styles.css';
 const loginHandler = async (response) => {
     
     if (!router) {
-        console.error("CRÍTICO: Router no inicializado para el Google Login.");
-        return; 
+        return
     }
     
     try {
@@ -18,8 +17,8 @@ const loginHandler = async (response) => {
         // Redirige al Home
         router.push('/Home'); 
         
-    } catch (err) {
-        console.error("Error de autenticación GSI:", err);
+    } catch (_err) {
+        // Mensaje genérico para no exponer detalles en consola
     }
 };
 

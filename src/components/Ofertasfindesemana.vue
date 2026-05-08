@@ -102,18 +102,18 @@ onMounted(async () => {
     console.log('Datos de ofertas recibidos:', data) // Revisa la consola del navegador
 
     hotels.value = data.map(h => ({
-      id:              h.id || h.ID_HOSPEDAJE,
+      id:              h.id,
       name:            h.nombre,
       location:        `${h.ciudad}, ${h.pais}`,
       // Intentamos leer la calificación de varias formas posibles
-      score:           (h.calificacion || h.CALIFICACION || h.puntuacion) ? Number(h.calificacion || h.CALIFICACION || h.puntuacion).toFixed(1) : 0,
-      reviews:         h.total_opiniones || h.TOTAL_OPINIONES || h.opiniones || 0,
+      score:           h.calificacion ? Number(h.calificacion).toFixed(1) : 0,
+      reviews:         h.total_opiniones || 0,
       vip:             false,
       discountAmount:  Number(h.ahorro_noche),
       pricePerNight:   Number(h.precio_noche_oferta),
       discountedTotal: Number(h.precio_noche_oferta) * 2,
       originalTotal:   Number(h.precio_noche_original) * 2,
-      images:          (h.imagenes ?? []).map(i => i.url),
+      images:          Array.isArray(h.imagenes) ? h.imagenes.map(i => i.url) : [],
     }))
 
     // Cargar favoritos actuales si el usuario está logueado

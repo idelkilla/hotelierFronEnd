@@ -501,6 +501,15 @@ function contarPorEstrellas(estrellas) {
     return getStarBucket(parseFloat(h.calificacion_promedio)) === Number(estrellas)
   }).length
 }
+
+// Usado en el drawer de estrellas (p.ej. contarPorCalificacion(9), 7, 5...)
+// Debe devolver cuántos hoteles caen en el bucket de esas estrellas.
+function contarPorCalificacion(cal) {
+  const bucket = getStarBucket(Number(cal))
+  if (!bucket) return 0
+  return contarPorEstrellas(bucket)
+}
+
 function contarPorServicio(nombre) {
   return hoteles.value.filter(h =>
     (h.amenidades || []).some(a => a.toLowerCase().includes(nombre.toLowerCase()))

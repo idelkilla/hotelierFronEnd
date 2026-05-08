@@ -360,8 +360,57 @@
               <p class="nf-eyebrow">Mi cuenta</p>
               <h1 class="nf-title">Notificaciones</h1>
             </div>
+
+            <!-- Loading -->
+            <div v-if="cargandoNotifs" style="padding:40px 0; text-align:center; color:#888; font-size:14px;">
+              Cargando notificaciones...
+            </div>
+
+            <!-- Sin notificaciones -->
+            <div v-else-if="notificaciones.length === 0" class="nf-section" style="padding:40px 0; text-align:center;">
+              <p style="color:#888; font-size:14px;">No tienes notificaciones todavía.</p>
+            </div>
+
+            <!-- Lista de notificaciones -->
+            <div v-else class="nf-section">
+              <p class="nf-section-desc">
+                Tienes {{ notificaciones.filter(n => !n.leida).length }} notificación(es) sin leer.
+              </p>
+              <div
+                v-for="notif in notificaciones"
+                :key="notif.id_notificacion"
+                class="nf-item nf-item--clickable"
+                :class="{ 'nf-item--unread': !notif.leida }"
+                @click="marcarLeida(notif)"
+                style="cursor:pointer; border-radius:10px; margin-bottom:8px; padding:14px 16px; border:1px solid #eee; background: #fff; transition: background 0.15s;"
+              >
+                <div class="nf-item-icon" style="flex-shrink:0;">
+                  <!-- Ícono según tipo -->
+                  <svg v-if="notif.tipo?.toLowerCase().includes('reserva')" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#265073" stroke-width="1.5">
+                    <rect x="2" y="7" width="20" height="14" rx="2"/>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                  </svg>
+                  <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#265073" stroke-width="1.5">
+                    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 01-3.46 0"/>
+                  </svg>
+                </div>
+                <div class="nf-item-text" style="flex:1; min-width:0;">
+                  <p class="nf-item-name" style="font-weight: 600; margin:0 0 2px;">{{ notif.titulo }}</p>
+                  <p class="nf-item-sub" style="margin:0 0 4px; color:#555; font-size:13px;">{{ notif.mensaje }}</p>
+                  <p style="font-size:11px; color:#aaa; margin:0;">
+                    {{ formatFechaNotif(notif.fecha_envio) }}
+                    <span v-if="notif.id_reserva" style="margin-left:6px;">· Reserva #{{ notif.id_reserva }}</span>
+                  </p>
+                </div>
+                <!-- Punto de no leída -->
+                <div v-if="!notif.leida" style="width:9px; height:9px; border-radius:50%; background:#2D9596; flex-shrink:0; margin-left:8px;"></div>
+              </div>
+            </div>
+
+            <div class="nf-divider" style="margin: 1.5rem 0;"></div>
             <div class="nf-section">
-              <p class="nf-section-desc">Elige las notificaciones que quieres recibir.</p>
+              <p class="nf-section-desc">Elige cómo deseas recibir notificaciones.</p>
               <div class="nf-item" @click="abrirModalNotif('general', 'Notificaciones generales')">
                 <div class="nf-item-icon">
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -370,40 +419,12 @@
                   </svg>
                 </div>
                 <div class="nf-item-text">
-                  <p class="nf-item-name">Notificaciones</p>
+                  <p class="nf-item-name">Configurar notificaciones</p>
                   <p class="nf-item-sub">{{ resumenNotif('general') }}</p>
                 </div>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="nf-chevron"><path d="M6 4l4 4-4 4" stroke="#9AD0C2" stroke-width="1" stroke-linecap="round"/></svg>
-              </div>
-            </div>
-            <div class="nf-divider"></div>
-            <div class="nf-section">
-              <p class="nf-section-desc">Elige cómo deseas que te notifiquemos sobre las actualizaciones de tu cuenta y de tus recompensas.</p>
-              <div class="nf-item" @click="abrirModalNotif('onekey', 'OneKey')">
-                <div class="nf-item-icon">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <circle cx="10" cy="10" r="7" stroke="#265073" stroke-width="1"/>
-                    <circle cx="10" cy="10" r="3" stroke="#265073" stroke-width="1"/>
-                  </svg>
-                </div>
-                <div class="nf-item-text">
-                  <p class="nf-item-name">OneKey</p>
-                  <p class="nf-item-sub">{{ resumenNotif('onekey') }}</p>
-                </div>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="nf-chevron"><path d="M6 4l4 4-4 4" stroke="#9AD0C2" stroke-width="1" stroke-linecap="round"/></svg>
-              </div>
-              <div class="nf-item" @click="abrirModalNotif('cuenta', 'Ayuda con la cuenta')">
-                <div class="nf-item-icon">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <rect x="3" y="5" width="14" height="10" rx="1.5" stroke="#265073" stroke-width="1"/>
-                    <path d="M3 7l7 5 7-5" stroke="#265073" stroke-width="1" stroke-linecap="round"/>
-                  </svg>
-                </div>
-                <div class="nf-item-text">
-                  <p class="nf-item-name">Ayuda con la cuenta</p>
-                  <p class="nf-item-sub">{{ resumenNotif('cuenta') }}</p>
-                </div>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="nf-chevron"><path d="M6 4l4 4-4 4" stroke="#9AD0C2" stroke-width="1" stroke-linecap="round"/></svg>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="nf-chevron">
+                  <path d="M6 4l4 4-4 4" stroke="#9AD0C2" stroke-width="1" stroke-linecap="round"/>
+                </svg>
               </div>
             </div>
           </div>
@@ -997,6 +1018,7 @@ const cargandoFav = ref(false)
 async function cambiarSeccion(key) {
   activeSection.value = key
   if (key === 'favoritos') await fetchFavoritos()
+  if (key === 'notificaciones') await fetchNotificacionesReales()
   if (key === 'creditos')  await fetchMembresia()
   if (key === 'opiniones') await fetchOpiniones()
 }
@@ -1104,6 +1126,40 @@ const notifConfig = reactive({
   onekey:  { push: true,  email: false, sms: false, whatsapp: false },
   cuenta:  { push: false, email: true,  sms: false, whatsapp: false },
 })
+
+const notificaciones = ref([])
+const cargandoNotifs = ref(false)
+
+// ── Notificaciones reales ─────────────────────────────────────
+async function fetchNotificaciones() {
+  try {
+    cargandoNotifs.value = true
+    notificaciones.value = await apiGet('/notificaciones')
+  } catch (e) {
+    console.error('Error cargando notificaciones:', e)
+  } finally {
+    cargandoNotifs.value = false
+  }
+}
+
+async function marcarLeida(notif) {
+  if (notif.leida) return
+  try {
+    await apiPost(`/notificaciones/${notif.id_notificacion}/leer`, {})
+    const idx = notificaciones.value.findIndex(n => n.id_notificacion === notif.id_notificacion)
+    if (idx !== -1) notificaciones.value[idx].leida = true
+  } catch (e) {
+    console.error('Error marcando notificación:', e)
+  }
+}
+
+function formatFechaNotif(str) {
+  if (!str) return ''
+  const d = new Date(str)
+  if (isNaN(d)) return str
+  return d.toLocaleDateString('es-DO', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+
 function abrirModalNotif(key, titulo) { notifModalKey.value = key; notifModalTitulo.value = titulo; mostrarModalNotif.value = true }
 function resumenNotif(key) {
   const activos = canalesNotif.filter(c => notifConfig[key][c.key]).map(c => c.label)
@@ -1306,6 +1362,7 @@ onMounted(() => {
   fetchUserData()
   fetchTarjetas()
   fetchPaises()
+  fetchNotificaciones()
   fetchEstadoCivil()
   fetchNacionalidades()
   fetchOcupaciones()
@@ -1407,4 +1464,7 @@ function confirmarCerrarSesion() {
   margin-top: 10px;
   font-weight: 500;
 }
+.nf-item--unread { background: #f0f7f7; border-left: 3px solid #265073; }
+.unread-dot { display: inline-block; width: 8px; height: 8px; background: #e05555; border-radius: 50%; margin-left: 5px; }
+.nf-item-date { font-size: 11px; color: #999; margin-top: 4px; }
 </style>
