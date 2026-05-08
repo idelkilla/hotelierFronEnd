@@ -73,6 +73,7 @@
       </div>
 
     </div>
+    <Toast ref="toastRef" />
   </div>
 </template>
 
@@ -82,6 +83,7 @@ import { useRouter } from 'vue-router'
 import BuscarButton from './ButtonSearch.vue'
 import CalendarSelector from './CalendarSelector.vue'
 import LocationDropdown from './LocationDropdown.vue'
+import Toast from './alert.vue'
 
 const props = defineProps({
   initialDestino: String,
@@ -93,6 +95,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onren
 const router  = useRouter()
 
 const busquedaDestino    = ref(props.initialDestino || '')
+const toastRef          = ref(null)
 const selectedUbicacion  = ref(null)
 const labelUbicacion     = ref('')
 const destinoActivo      = ref(false)
@@ -178,7 +181,7 @@ function editarDestino() {
 
 async function handleSearch() {
   if (!busquedaDestino.value || !fechaInicio.value || !fechaFin.value) {
-    alert('Por favor completa destino y fechas')
+    toastRef.value?.show('error', 'Por favor completa destino y fechas')
     return
   }
   router.push({

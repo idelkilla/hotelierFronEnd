@@ -40,7 +40,7 @@ const routes = [
   { path: '/register',         name: 'Register',         component: Register },
   { path: '/services',         name: 'servicesMenu',     component: servicesMenu },
   { path: '/head',             name: 'Head',             component: head },
-  { path: '/Vuelos',           name: 'Vuelos',           component: Vuelos },
+  { path: '/vuelos',           name: 'Vuelos',           component: () => import('../components/Vuelos.vue') },
   { path: '/servicio-cliente', name: 'ServicioCliente',  component: servicioCliente },
   { path: '/hospedaje/:id',    name: 'DetalleHospedaje', component: DetalleHospedaje },
   { path: '/auto/:id',         name: 'DetalleCarros',    component: DetalleCarros },

@@ -155,6 +155,7 @@
       </template>
 
     </div>
+    <Toast ref="toastRef" />
   </div>
 </template>
 
@@ -165,6 +166,7 @@ import BuscarButton from './ButtonSearch.vue'
 import GuestSelector from './GuestSelector.vue'
 import CalendarSelector from './CalendarSelector.vue'
 import LocationDropdown from './LocationDropdown.vue'
+import Toast from './alert.vue'
 import VuelosSearch from './VuelosSearch.vue'
 import ActividadesSearch from './ActividadesSearch.vue'
 import CrucerosSearch from './CrucerosSearch.vue'
@@ -187,6 +189,7 @@ const emit = defineEmits(['update:fechas', 'search'])
 const originWrapper = ref(null)
 const destinationWrapper = ref(null)
 
+const toastRef          = ref(null)
 const activeOption      = ref('hospedaje')
 const busquedaDestino   = ref(props.initialDestino || '')
 const origenVuelo       = ref('')
@@ -376,12 +379,12 @@ function editarDestino() {
 
 async function handleSearch() {
   if (!busquedaDestino.value || !fechaInicio.value || !fechaFin.value) {
-    alert('Por favor completa destino y fechas')
+    toastRef.value?.show('error', 'Por favor completa destino y fechas')
     return
   }
 
   if (fechaFin.value !== 'FLEXIBLE' && new Date(fechaFin.value) <= new Date(fechaInicio.value)) {
-    alert('La fecha de salida debe ser posterior a la de entrada')
+    toastRef.value?.show('error', 'La fecha de salida debe ser posterior a la de entrada')
     return
   }
 

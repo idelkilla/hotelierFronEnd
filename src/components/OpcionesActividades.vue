@@ -14,7 +14,12 @@
 
       <!-- Imagen -->
       <div class="card-img-wrapper">
-        <img :src="a.imagen" :alt="a.titulo" class="card-img" />
+        <img 
+          :src="a.imagen" 
+          :alt="a.titulo" 
+          class="card-img" 
+          loading="lazy" 
+          decoding="async" />
         <span v-if="a.oferta" class="img-badge oferta">Oferta</span>
       </div>
 
@@ -39,9 +44,13 @@
         </div>
 
         <div class="rating-row">
+          <div class="stars-mini">
+            <span v-for="i in 5" :key="i" class="star-icon" :class="{ active: i <= Math.round(a.rating / 2) }">★</span>
+          </div>
           <span class="rating-badge">{{ a.rating }}</span>
           <span class="rating-label">{{ a.label }}</span>
           <span class="rating-count">{{ a.opiniones }} opiniones</span>
+          <span class="rating-count">({{ a.opiniones }} opiniones)</span>
         </div>
 
         <div class="beneficios">
@@ -286,13 +295,33 @@ const cerrarModal = () => {
   font-size: 13px; color: #666;
 }
 .rating-row { display: flex; align-items: center; gap: 8px; }
+.rating-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.stars-mini { display: flex; gap: 1px; }
+.star-icon { color: #ddd; font-size: 14px; line-height: 1; }
+.star-icon.active { color: #f5a623; }
 .rating-badge {
   background: #1a3a5c; color: white;
   font-size: 12px; font-weight: 700;
   padding: 3px 8px; border-radius: 6px;
+  background: #265073; 
+  color: white;
+  font-size: 11px; 
+  font-weight: 800;
+  padding: 2px 6px; 
+  border-radius: 4px;
+  margin-left: 2px;
 }
 .rating-label { font-size: 13px; font-weight: 600; color: #1a1a2e; }
 .rating-count { font-size: 12px; color: #888; }
+.rating-label { 
+  font-size: 13px; 
+  font-weight: 700; 
+  color: #1a1a2e; 
+}
+.rating-count { 
+  font-size: 12px; 
+  color: #717171;
+}
 
 .beneficios { display: flex; flex-direction: column; gap: 4px; margin-top: auto; }
 .beneficio {

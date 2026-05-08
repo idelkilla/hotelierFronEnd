@@ -99,12 +99,15 @@ const currentImage = ref({})
 onMounted(async () => {
   try {
     const data = await apiFetch('/hospedajes/ofertas-finde')
+    console.log('Datos de ofertas recibidos:', data) // Revisa la consola del navegador
+
     hotels.value = data.map(h => ({
-      id:              h.id,
+      id:              h.id || h.ID_HOSPEDAJE,
       name:            h.nombre,
       location:        `${h.ciudad}, ${h.pais}`,
-      score:           0,
-      reviews:         0,
+      // Intentamos leer la calificación de varias formas posibles
+      score:           (h.calificacion || h.CALIFICACION || h.puntuacion) ? Number(h.calificacion || h.CALIFICACION || h.puntuacion).toFixed(1) : 0,
+      reviews:         h.total_opiniones || h.TOTAL_OPINIONES || h.opiniones || 0,
       vip:             false,
       discountAmount:  Number(h.ahorro_noche),
       pricePerNight:   Number(h.precio_noche_oferta),

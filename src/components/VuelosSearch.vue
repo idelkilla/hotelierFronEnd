@@ -271,6 +271,7 @@
       </div>
     </div>
 
+    <Toast ref="toastRef" />
   </div>
 </template>
 
@@ -281,6 +282,7 @@ import BuscarButton    from './ButtonSearch.vue'
 import CalendarSelector from './CalendarSelector.vue'
 import LocationDropdown from './LocationDropdown.vue'
 import PasajerosSelector from './PasajerosSelector.vue'
+import Toast from './alert.vue'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 const router  = useRouter()
@@ -318,6 +320,7 @@ const resumenPasajeros  = computed(
 )
 
 const origen  = ref('')
+const toastRef = ref(null)
 const destino = ref(props.initialDestino || '')
 const selectedOrigen  = ref(null)
 const labelOrigen     = ref('')
@@ -562,10 +565,17 @@ const handleOutsideClick = (e) => {
 onMounted(() => window.addEventListener('mousedown', handleOutsideClick))
 onUnmounted(() => window.removeEventListener('mousedown', handleOutsideClick))
 
+  // Fetch available classes on mount
+  onMounted(async () => {
+    const filtros = await vueloService.getFiltrosVuelos();
+    clasesDisponibles.value = filtros.clases;
+    clases.value = filtros.clases.map(c => c.label); // Update the string array for PasajerosSelector
+  });
+
 function handleSearch() {
   if (tipoViaje.value === 'MULTIDESTINO') {
     const incompleto = vuelos.value.some(v => !v.origen || !v.destino || !v.fecha)
-    if (incompleto) { alert('Completa todos los tramos'); return }
+    if (incompleto) { toastRef.value?.show('error', 'Completa todos los tramos'); return }
     router.push({
       path: '/vuelos',
       query: {
@@ -579,16 +589,19 @@ function handleSearch() {
       }
     })
   } else {
-    if (!origen.value || !destino.value || !fechaInicio.value) { alert('Completa origen, destino y fecha'); return }
+    if (!selectedOrigen.value?.id || !selectedDestino.value?.id || !fechaInicio.value) { toastRef.value?.show('error', 'Completa origen, destino y fecha'); return }
+    const idClase = clasesDisponibles.value.find(c => c.label === claseSeleccionada.value)?.id;
+
     router.push({
       path: '/vuelos',
       query: {
         tipo: tipoViaje.value,
         id_origen: selectedOrigen.value?.id  ?? '',
         id_destino: selectedDestino.value?.id ?? '',
-        origen: origen.value, destino: destino.value,
-        entrada: fechaInicio.value, salida: tipoViaje.value === 'REDONDO' ? fechaFin.value : '',
-        pasajeros: pasajeros.value, clase: claseSeleccionada.value,
+        fecha_salida: fechaInicio.value,
+        fecha_regreso: tipoViaje.value === 'REDONDO' ? fechaFin.value : '', // Use fecha_regreso for round trip
+        pasajeros: pasajeros.value,
+        id_clase: idClase, // Pass the ID
         con_hospedaje: agregarHospedaje.value, con_auto: agregarAuto.value,
       }
     })

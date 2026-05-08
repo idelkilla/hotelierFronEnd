@@ -13,7 +13,13 @@
           class="le-card"
           @click="$emit('select', category)"
         >
-          <img :src="category.image" :alt="category.label" class="le-card__img" loading="lazy" />
+          <img 
+            :src="category.image" 
+            :alt="category.label" 
+            class="le-card__img" 
+            loading="lazy" 
+            decoding="async"
+          />
           <div class="le-card__overlay"></div>
           <span class="le-card__label">{{ category.label }}</span>
         </article>
@@ -37,11 +43,11 @@ defineProps({
   categories: {
     type: Array,
     default: () => [
-      { id: 1, label: 'Casas de vacaciones',       image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&q=80' },
-      { id: 2, label: 'Departamentos y condominios',image: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=900&q=80' },
-      { id: 3, label: 'Cabañas',                   image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=900&q=80' },
-      { id: 4, label: 'Casas de campo',            image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&q=80' },
-      { id: 5, label: 'Villas',                    image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=900&q=80' },
+      { id: 1, label: 'Casas de vacaciones',       image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80&auto=format' },
+      { id: 2, label: 'Departamentos y condominios',image: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&q=80&auto=format' },
+      { id: 3, label: 'Cabañas',                   image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80&auto=format' },
+      { id: 4, label: 'Casas de campo',            image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&q=80&auto=format' },
+      { id: 5, label: 'Villas',                    image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80&auto=format' },
     ]
   }
 })
