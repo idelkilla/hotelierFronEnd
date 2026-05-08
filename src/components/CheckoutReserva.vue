@@ -906,6 +906,7 @@ async function confirmar() {
     })
     emit('reservaConfirmada', resp)
   } catch (err) {
+    console.error('Error en confirmar reserva:', err); // Log para depuración
     let msg = err?.message ?? 'Ocurrió un error al procesar tu reserva. Intenta de nuevo.'
     
     if (msg.includes('Usuario no autenticado como cliente')) {
