@@ -906,7 +906,12 @@ async function confirmar() {
     })
     emit('reservaConfirmada', resp)
   } catch (err) {
-    const msg = err?.message ?? 'Ocurrió un error al procesar tu reserva. Intenta de nuevo.'
+    let msg = err?.message ?? 'Ocurrió un error al procesar tu reserva. Intenta de nuevo.'
+    
+    if (msg.includes('Usuario no autenticado como cliente')) {
+      msg = 'Tu cuenta no está configurada correctamente como cliente. Contacta a soporte.'
+    }
+
     errorGlobal.value = msg
     toastRef.value?.show('error', msg)
   } finally {

@@ -119,8 +119,7 @@ router.beforeEach(async (to, from, next) => {
     }
 
     next()
-  } catch (error) {
-    console.error('Router guard error:', error)
+  } catch (_error) {
     next({ name: 'Login' })
   }
 })

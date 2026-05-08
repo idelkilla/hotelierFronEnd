@@ -653,6 +653,32 @@ function verEnMapa() {
   // Lógica para abrir mapa pantalla completa
   console.log("Abriendo mapa...")
 }
+
+// ── Sincronizar búsqueda desde FormSearch (modo compact) ──
+function handleSearchUpdate(payload) {
+  const destino = payload?.destino ?? ''
+  const idUb = payload?.id_ubicacion ?? ''
+  const entrada = payload?.entrada ?? ''
+  const salida = payload?.salida ?? ''
+  const huespedes = payload?.huespedes ?? habitaciones.value
+
+  // Actualizar inputs del buscador visual
+  searchDestino.value = destino
+  searchEntrada.value = entrada
+  searchSalida.value = salida
+  habitaciones.value = huespedes
+
+  router.push({
+    path: '/head',
+    query: {
+      destino,
+      id_ubicacion: idUb,
+      entrada,
+      salida,
+      huespedes: JSON.stringify(huespedes),
+    },
+  })
+}
 // Estado del drawer
 const drawerAbierto  = ref(false)
 const filtroActivo   = ref('todos')

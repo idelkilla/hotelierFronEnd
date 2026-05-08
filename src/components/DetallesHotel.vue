@@ -117,6 +117,14 @@ const resumenHuespedes = computed(() => {
 const mostrarCalendario = ref(false)
 const fechaInicio       = ref(route.query.entrada || '')
 const fechaFin          = ref(route.query.salida || '')
+
+watch(
+  () => [route.query.entrada, route.query.salida],
+  ([entrada, salida]) => {
+    fechaInicio.value = entrada || ''
+    fechaFin.value = salida || ''
+  },
+)
 const campoEditando     = ref('inicio')
 const dateFieldRef      = ref(null)
 

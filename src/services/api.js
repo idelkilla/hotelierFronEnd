@@ -1,6 +1,9 @@
 // src/services/api.js
 // Single source of truth for the API base URL.
 
+// Desactiva logs en producción (evita exposición accidental de info sensible).
+const DEBUG_LOGS = import.meta.env.DEV
+
 const BASE = (import.meta.env.VITE_API_URL || 'https://hotelierbackend-1.onrender.com/api')
   .trim()
   .replace(/\/+$/, '')          // quita slash final

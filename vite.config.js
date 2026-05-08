@@ -28,6 +28,7 @@ export default defineConfig({
     // Aseguramos que la carpeta de salida sea 'dist'
     outDir: 'dist',
     emptyOutDir: true,
-    assetsDir: 'assets'
+    assetsDir: 'assets',
+    sourcemap: false
   }
 })
