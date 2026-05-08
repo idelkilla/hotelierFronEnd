@@ -501,11 +501,6 @@ function contarPorEstrellas(estrellas) {
     return getStarBucket(parseFloat(h.calificacion_promedio)) === Number(estrellas)
   }).length
 }
-function toggleServicio(nombre) {
-  const idx = selectedServicios.value.indexOf(nombre)
-  if (idx === -1) selectedServicios.value.push(nombre)
-  else selectedServicios.value.splice(idx, 1)
-}
 function contarPorServicio(nombre) {
   return hoteles.value.filter(h =>
     (h.amenidades || []).some(a => a.toLowerCase().includes(nombre.toLowerCase()))
